@@ -38,6 +38,4 @@ public class CreateProductViewModel
 
     [Display(Name = "Alınma Tarixi")]
     public DateTime? DateofReceipt { get; set; }
-
-    public string DateofReceiptFormatted => DateofReceipt?.ToString("dd-MM-yyyy");
 }

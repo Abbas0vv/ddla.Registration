@@ -14,7 +14,7 @@
                 Yeni qeydiyyat
             </h1>
 
-            <form asp-action="Create" method="post" enctype="multipart/form-data" id="addForm">
+            <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
                 <div class="row g-2">
                     <div class="col-md-6">
                         <div class="mb-3">
@@ -36,7 +36,7 @@
                                     <span class="file-input-text">Şəkil seçin...</span>
                                     <span class="file-input-btn"><i class="fas fa-upload me-1"></i>Seçin</span>
                                 </label>
-                                <input asp-for="ImageFile" type="file" class="d-none" id="ImageFile" required/>
+                                <input asp-for="ImageFile" type="file" class="d-none" id="ImageFile"/>
                             </div>
                             <img id="imagePreview" src="#" alt="Şəkil önizləməsi" class="image-preview img-thumbnail mt-1" style="display: none;">
                             <span asp-validation-for="ImageFile" class="text-danger"></span>

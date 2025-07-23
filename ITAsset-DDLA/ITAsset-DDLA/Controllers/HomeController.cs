@@ -30,7 +30,7 @@ public class HomeController : Controller
         if (!ModelState.IsValid) return View(model);
 
         await _productService.Insert(model);
-        return RedirectToAction(nameof(Table));
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]

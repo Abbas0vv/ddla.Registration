@@ -41,6 +41,7 @@ public static class FileExtention
 
     public static void RemoveFile(string path)
     {
+        if (File.Exists(path))
         System.IO.File.Delete(path);
     }
 

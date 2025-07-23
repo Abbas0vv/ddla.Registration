@@ -11,8 +11,8 @@
     <Folder Include="Database\Repositories\Abstract\" />
     <Folder Include="Database\Repositories\Concrete\" />
     <Folder Include="wwwroot\assets\images\Uploads\Documents\" />
+    <Folder Include="wwwroot\assets\images\Uploads\Products\" />
     <Folder Include="wwwroot\assets\images\Uploads\ProfilePicture\" />
-    <Folder Include="wwwroot\Uploads\Products\" />
   </ItemGroup>
 
   <ItemGroup>
