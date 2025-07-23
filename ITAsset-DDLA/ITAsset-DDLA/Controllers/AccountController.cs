@@ -51,7 +51,7 @@ public class AccountController : Controller
     public async Task<IActionResult> LogOut()
     {
         await _userService.LogOut();
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Welcome");
     }
 
     [HttpGet]
