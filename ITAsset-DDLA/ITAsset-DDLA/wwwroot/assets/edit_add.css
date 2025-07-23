@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: linear-gradient(315deg, #3f7ecf 50%, #f9fbfe 50%);
+    background-repeat: no-repeat;
+    background-size: 100% 100vh; /* or use cover */
+    background-position: top;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    color: #212529;
+    box-sizing: border-box;
+    padding: 0 !important;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(315deg, #3f7ecf 50%, #f9fbfe 50%);
+    z-index: -1;
+}
+
+.form-container {
+    background-color: rgb(38, 86, 148);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.file-input-container {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+}
+
+label {
+    color: #e9e9e9;
+    font-size: 0.9rem;
+    margin-bottom: 3px;
+}
+
+.text-muted {
+    color: #e9e9e9 !important;
+    font-size: 0.8rem;
+}
+
+.file-input-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 5px 8px;
+    cursor: pointer;
+    background-color: #f8f9fa;
+}
+
+.file-input-text {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.file-input-btn {
+    background-color: rgb(38, 86, 148);
+    color: white;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+}
+
+.image-preview {
+    display: none;
+    max-width: 100%;
+    max-height: 120px;
+}
+
+.page-title {
+    color: #ffffff;
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #dae9ff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .page-title img {
+        height: 100px;
+    }
+
+.form-control, .form-select {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    height: 36px;
+}
+
+.btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.mb-3 {
+    margin-bottom: 0.8rem !important;
+}
+
+textarea.form-control {
+    height: 70px !important;
+}

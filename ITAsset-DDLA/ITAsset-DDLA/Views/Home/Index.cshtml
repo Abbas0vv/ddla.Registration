@@ -1,0 +1,298 @@
+﻿﻿@using ddla.ITApplication.Database
+@using ddla.ITApplication.Helpers
+
+@model List<Product>
+
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDLA - IT Qeydiyyat Sistemi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="~/assets/table.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="logo-header">
+            <img src="./assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+            <div class="logo-text">
+                <h1>IT Qeydiyyat Sistemi</h1>
+                <small>Dövlət Dəniz və Liman Agentliyi</small>
+            </div>
+        </div>
+
+        <a asp-action="Create" type="button" class="btn btn-primary mb-3">
+            <i class="fas fa-plus"></i> Əlavə et
+        </a>
+        <div class="mb-3">
+            <input type="text" id="globalSearch" class="form-control" placeholder="Ümumi axtarış...">
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>İnventar ID</th>
+                        <th>İstifadəçi adı</th>
+                        <th>Məhsul adı</th>
+                        <th>Şəkil</th>
+                        <th>Departament</th>
+                        <th>Şöbə</th>
+                        <th>Sayı</th>
+                        <th>Təsvir</th>
+                        <th>Verilmə tarixi</th>
+                        <th>Alınma tarixi</th>
+                        <th>Fayl</th>
+                        <th>Əməliyyatlar</th>
+                    </tr>
+                    <tr>
+                        <th></th> <!-- # -->
+                        <th><input type="text" class="form-control form-control-sm column-search" data-column="1" placeholder="Axtar..."></th>
+                        <th><input type="text" class="form-control form-control-sm column-search" data-column="2" placeholder="Axtar..."></th>
+                        <th><input type="text" class="form-control form-control-sm column-search" data-column="3" placeholder="Axtar..."></th>
+                        <th></th> <!-- Şəkil -->
+                        <th><input type="text" class="form-control form-control-sm column-search" data-column="5" placeholder="Axtar..."></th>
+                        <th><input type="text" class="form-control form-control-sm column-search" data-column="6" placeholder="Axtar..."></th>
+                        <th><input type="text" class="form-control form-control-sm column-search" data-column="7" placeholder="Axtar..."></th>
+                        <th></th> <!-- Təsvir -->
+                        <th><input type="text" class="form-control form-control-sm column-search" data-column="9" placeholder="Axtar..."></th>
+                        <th><input type="text" class="form-control form-control-sm column-search" data-column="10" placeholder="Axtar..."></th>
+                        <th></th> <!-- Fayl -->
+                        <th></th> <!-- Əməliyyatlar -->
+                    </tr>
+                </thead>
+                <tbody id="itemsTable">
+                    <!-- Data will be loaded here -->
+                    @{
+                        int counter = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr scope="row">
+                                <td>@counter</td>
+                                <td>@item.InventarId</td>
+                                <td>@item.Recipient</td>
+                                <td>@item.Name</td>
+                                <td>
+                                    <img src="~/assets/images/Uploads/Products/@item.ImageUrl"
+                                         alt="Məhsul şəkli"
+                                         class="file-preview"
+                                         style="object-fit:cover;object-position:center;">
+                                </td>
+                                <td>
+                                    <span class="badge badge-department" style="background-color:#005b96">@item.Department.Name</span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-department" style="background-color:#005b96">@item.Unit.Name</span>
+                                </td>
+                                <td>@item.InUseCount</td>
+                                <td>@item.Description</td>
+                                <td>@item.DateofIssue.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>
+                                    @if (item.DateofReceipt.HasValue)
+                                    {
+                                        @item.DateofReceipt.Value.ToString("dd.MM.yyyy HH:mm")
+                                    }
+                                    else
+                                    {
+                                        <p>Təhvil alınmayıb</p>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="@item.FilePath" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            counter++;
+                        }
+                    }
+                    <tr>
+                        <td>1</td>
+                        <td>DLA-IT-001</td>
+                        <td>Əliyev A.</td>
+                        <td>Dizüstü kompüter</td>
+                        <td><img src="https://via.placeholder.com/50" alt="Məhsul şəkli" class="file-preview"></td>
+                        <td><span class="badge badge-department">IT</span></td>
+                        <td>İnkişaf</td>
+                        <td>1</td>
+                        <td>Yeni işçi üçün</td>
+                        <td>15.05.2023 10:00</td>
+                        <td>-</td>
+                        <td><a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-download"></i></a></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary"><a href="./editProduct.html"><i class="fas fa-edit"></i></a></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>DLA-IT-001</td>
+                        <td>Əliyev A.</td>
+                        <td>Dizüstü kompüter</td>
+                        <td><img src="https://via.placeholder.com/50" alt="Məhsul şəkli" class="file-preview"></td>
+                        <td><span class="badge badge-department">IT</span></td>
+                        <td>İnkişaf</td>
+                        <td>1</td>
+                        <td>Yeni işçi üçün</td>
+                        <td>15.05.2023 10:00</td>
+                        <td>-</td>
+                        <td><a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-download"></i></a></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary"><a href="./editProduct.html"><i class="fas fa-edit"></i></a></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>DLA-IT-001</td>
+                        <td>Əliyev A.</td>
+                        <td>Dizüstü kompüter</td>
+                        <td><img src="https://via.placeholder.com/50" alt="Məhsul şəkli" class="file-preview"></td>
+                        <td><span class="badge badge-department">IT</span></td>
+                        <td>İnkişaf</td>
+                        <td>1</td>
+                        <td>Yeni işçi üçün</td>
+                        <td>15.05.2023 10:00</td>
+                        <td>-</td>
+                        <td><a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-download"></i></a></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary"><a href="./editProduct.html"><i class="fas fa-edit"></i></a></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>DLA-IT-001</td>
+                        <td>Əliyev A.</td>
+                        <td>Dizüstü kompüter</td>
+                        <td><img src="https://via.placeholder.com/50" alt="Məhsul şəkli" class="file-preview"></td>
+                        <td><span class="badge badge-department">IT</span></td>
+                        <td>İnkişaf</td>
+                        <td>1</td>
+                        <td>Yeni işçi üçün</td>
+                        <td>15.05.2023 10:00</td>
+                        <td>-</td>
+                        <td><a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-download"></i></a></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary"><a href="./editProduct.html"><i class="fas fa-edit"></i></a></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>DLA-IT-001</td>
+                        <td>Əliyev A.</td>
+                        <td>Dizüstü kompüter</td>
+                        <td><img src="https://via.placeholder.com/50" alt="Məhsul şəkli" class="file-preview"></td>
+                        <td><span class="badge badge-department">IT</span></td>
+                        <td>İnkişaf</td>
+                        <td>1</td>
+                        <td>Yeni işçi üçün</td>
+                        <td>15.05.2023 10:00</td>
+                        <td>-</td>
+                        <td><a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-download"></i></a></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary"><a href="./editProduct.html"><i class="fas fa-edit"></i></a></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>DLA-IT-001</td>
+                        <td>Əliyev A.</td>
+                        <td>Dizüstü kompüter</td>
+                        <td><img src="https://via.placeholder.com/50" alt="Məhsul şəkli" class="file-preview"></td>
+                        <td><span class="badge badge-department">IT</span></td>
+                        <td>İnkişaf</td>
+                        <td>1</td>
+                        <td>Yeni işçi üçün</td>
+                        <td>15.05.2023 10:00</td>
+                        <td>-</td>
+                        <td><a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-download"></i></a></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary"><a href="./editProduct.html"><i class="fas fa-edit"></i></a></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>DLA-IT-001</td>
+                        <td>Əliyev A.</td>
+                        <td>Dizüstü kompüter</td>
+                        <td><img src="https://via.placeholder.com/50" alt="Məhsul şəkli" class="file-preview"></td>
+                        <td><span class="badge badge-department">IT</span></td>
+                        <td>İnkişaf</td>
+                        <td>1</td>
+                        <td>Yeni işçi üçün</td>
+                        <td>15.05.2023 10:00</td>
+                        <td>-</td>
+                        <td><a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-download"></i></a></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary"><a href="./editProduct.html"><i class="fas fa-edit"></i></a></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>DLA-IT-001</td>
+                        <td>Əliyev A.</td>
+                        <td>Dizüstü kompüter</td>
+                        <td><img src="https://via.placeholder.com/50" alt="Məhsul şəkli" class="file-preview"></td>
+                        <td><span class="badge badge-department">IT</span></td>
+                        <td>İnkişaf</td>
+                        <td>1</td>
+                        <td>Yeni işçi üçün</td>
+                        <td>15.05.2023 10:00</td>
+                        <td>-</td>
+                        <td><a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-download"></i></a></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary"><a href="./editProduct.html"><i class="fas fa-edit"></i></a></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        // Ümumi axtarış
+        document.getElementById('globalSearch').addEventListener('keyup', function () {
+            const value = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#itemsTable tr");
+
+            rows.forEach(row => {
+                const rowText = row.innerText.toLowerCase();
+                row.style.display = rowText.includes(value) ? "" : "none";
+            });
+        });
+
+        // Sütun üzrə axtarış
+        document.querySelectorAll('.column-search').forEach(input => {
+            input.addEventListener('keyup', function () {
+                const column = parseInt(this.dataset.column);
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll("#itemsTable tr");
+
+                rows.forEach(row => {
+                    const cell = row.cells[column];
+                    if (!cell) return;
+                    const text = cell.innerText.toLowerCase();
+                    row.style.display = text.includes(filter) ? "" : "none";
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
