@@ -19,21 +19,6 @@ public class HomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Create()
-    {
-        return View();
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create(CreateProductViewModel model)
-    {
-        if (!ModelState.IsValid) return View(model);
-
-        await _productService.Insert(model);
-        return RedirectToAction(nameof(Index));
-    }
-
-    [HttpGet]
     public async Task<IActionResult> Update(int? id)
     {
         var product = await _productService.GetByIdAsync(id);

@@ -44,39 +44,6 @@ public class ProductService : IProductService
         return await _context.Products.FirstOrDefaultAsync(s => s.Name == name);
     }
 
-    public async Task<Product> Insert(CreateProductViewModel model)
-    {
-        var product = new Product()
-        {
-            Recipient = model.Recipient,
-            Name = model.Name,
-            Description = model.Description,
-            DepartmentId = await _context.Departments
-                .Where(d => d.Name == model.DepartmentName)
-                .Select(d => d.Id)
-                .FirstOrDefaultAsync(),
-            UnitId = await _context.Units
-                .Where(u => u.Name == model.UnitName)
-                .Select(u => u.Id)
-                .FirstOrDefaultAsync(),
-            Unit = await _context.Units
-                .Where(u => u.Name == model.UnitName)
-                .FirstOrDefaultAsync(),
-            Department = await _context.Departments
-                .Where(d => d.Name == model.DepartmentName)
-                .FirstOrDefaultAsync(),
-            InUseCount = model.Count,
-            DateofIssue = DateTime.Now,
-            DateofReceipt = model.DateofReceipt,
-            InventarId = IDGenerator.GenerateId(),
-            ImageUrl = model.ImageFile.CreateImageFile(_webHostEnvironment.WebRootPath, FOLDER_NAME)
-        };
-
-        await _context.Products.AddAsync(product);
-        await _context.SaveChangesAsync();
-        return product;
-    }
-
     public async Task Remove(int? id)
     {
         if (id is null) return;
