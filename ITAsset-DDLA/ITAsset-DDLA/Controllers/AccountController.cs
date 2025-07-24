@@ -44,7 +44,7 @@ public class AccountController : Controller
             return View(model);
         }
 
-        return RedirectToAction("Table", "Home");
+        return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]

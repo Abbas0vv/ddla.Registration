@@ -67,7 +67,7 @@ public class StockService : IStockService
             Department = await _context.Departments
                 .Where(d => d.Name == model.DepartmentName)
                 .FirstOrDefaultAsync(),
-            InUseCount = model.Count,
+            TotalCount = model.Count,
             DateofIssue = DateTime.Now,
             DateofReceipt = model.DateofReceipt,
             InventarId = IDGenerator.GenerateId(),
