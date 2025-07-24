@@ -1,4 +1,6 @@
-﻿@model List<Product>
+﻿@using ITAsset_DDLA.Database.Models.DomainModels
+@using ITAsset_DDLA.Database.Models.ViewModels.Shared
+@model CompositeViewModel
 @{
     Layout = null;
 }
@@ -122,7 +124,7 @@
                     <tbody id="itemsTable">
                         @{
                             int counter = 1;
-                            foreach (var item in Model)
+                            foreach (var item in Model.StockProducts)
                             {
                                 <tr scope="row">
                                     <td>@counter</td>
@@ -132,10 +134,11 @@
                                         <img src="~/assets/images/Uploads/Products/@item.ImageUrl"
                                              alt="Məhsul şəkli"
                                              class="file-preview"
-                                             style="object-fit:contain;object-position:center;">
+                                             style="object-fit:contain;object-position:center;"
+                                             onerror="this.src='/assets/images/default-product.png'">
                                     </td>
-                                    <td>@item.AvailableCount</td>
-                                    <td>@item.InUseCount</td>
+                                    <td>@(item.TotalCount - item.Products.Sum(p => p.InUseCount))</td>
+                                    <td>@item.Products.Sum(p => p.InUseCount)</td>
                                     <td>@item.TotalCount</td>
                                     <td>
                                         <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning">

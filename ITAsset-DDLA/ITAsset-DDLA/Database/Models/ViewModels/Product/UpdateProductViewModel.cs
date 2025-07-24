@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ITAsset_DDLA.Helpers.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace ddla.ITApplication.Database.Models.ViewModels.Product;
 
@@ -16,15 +17,15 @@ public class UpdateProductViewModel
 
     [Display(Name = "Təsvir")]
     [StringLength(500, ErrorMessage = "Təsvir maksimum 500 simvol ola bilər")]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     [Required(ErrorMessage = "Departament seçilməlidir")]
     [Display(Name = "Departament")]
-    public string DepartmentName { get; set; }
+    public DepartmentName DepartmentName { get; set; }
 
     [Required(ErrorMessage = "Şöbə seçilməlidir")]
     [Display(Name = "Şöbə")]
-    public string UnitName { get; set; }
+    public UnitName UnitName { get; set; }
 
     [Required(ErrorMessage = "Sayı mütləq doldurulmalıdır")]
     [Display(Name = "Sayı")]

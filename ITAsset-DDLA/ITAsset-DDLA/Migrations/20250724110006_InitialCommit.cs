@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ITAsset_DDLA.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitialCommit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -55,29 +55,22 @@ namespace ITAsset_DDLA.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Departments",
+                name: "StockProducts",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    InventarId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TotalCount = table.Column<int>(type: "int", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Departments", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Units",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Units", x => x.Id);
+                    table.PrimaryKey("PK_StockProducts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -193,15 +186,17 @@ namespace ITAsset_DDLA.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     InventarId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StockProductId = table.Column<int>(type: "int", nullable: false),
                     Recipient = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DepartmentId = table.Column<int>(type: "int", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UnitId = table.Column<int>(type: "int", nullable: false),
-                    TotalCount = table.Column<int>(type: "int", nullable: false),
                     InUseCount = table.Column<int>(type: "int", nullable: false),
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Department = table.Column<int>(type: "int", nullable: false),
+                    Unit = table.Column<int>(type: "int", nullable: false),
                     DateofIssue = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateofReceipt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -209,15 +204,9 @@ namespace ITAsset_DDLA.Migrations
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Products_Departments_DepartmentId",
-                        column: x => x.DepartmentId,
-                        principalTable: "Departments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Products_Units_UnitId",
-                        column: x => x.UnitId,
-                        principalTable: "Units",
+                        name: "FK_Products_StockProducts_StockProductId",
+                        column: x => x.StockProductId,
+                        principalTable: "StockProducts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -262,14 +251,9 @@ namespace ITAsset_DDLA.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_DepartmentId",
+                name: "IX_Products_StockProductId",
                 table: "Products",
-                column: "DepartmentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_UnitId",
-                table: "Products",
-                column: "UnitId");
+                column: "StockProductId");
         }
 
         /// <inheritdoc />
@@ -300,10 +284,7 @@ namespace ITAsset_DDLA.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Departments");
-
-            migrationBuilder.DropTable(
-                name: "Units");
+                name: "StockProducts");
         }
     }
 }

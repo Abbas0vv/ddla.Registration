@@ -22,6 +22,44 @@ namespace ITAsset_DDLA.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InventarId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TotalCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StockProducts");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -234,23 +272,6 @@ namespace ITAsset_DDLA.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("ddla.ITApplication.Database.Models.DomainModels.Department", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Departments");
-                });
-
             modelBuilder.Entity("ddla.ITApplication.Database.Models.DomainModels.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -264,6 +285,9 @@ namespace ITAsset_DDLA.Migrations
 
                     b.Property<DateTime?>("DateofReceipt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Department")
+                        .HasColumnType("int");
 
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
@@ -294,7 +318,10 @@ namespace ITAsset_DDLA.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TotalCount")
+                    b.Property<int>("StockProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Unit")
                         .HasColumnType("int");
 
                     b.Property<int>("UnitId")
@@ -302,28 +329,9 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("UnitId");
+                    b.HasIndex("StockProductId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("ddla.ITApplication.Database.Models.DomainModels.Unit", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Units");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -379,29 +387,16 @@ namespace ITAsset_DDLA.Migrations
 
             modelBuilder.Entity("ddla.ITApplication.Database.Models.DomainModels.Product", b =>
                 {
-                    b.HasOne("ddla.ITApplication.Database.Models.DomainModels.Department", "Department")
+                    b.HasOne("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", "StockProduct")
                         .WithMany("Products")
-                        .HasForeignKey("DepartmentId")
+                        .HasForeignKey("StockProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ddla.ITApplication.Database.Models.DomainModels.Unit", "Unit")
-                        .WithMany("Products")
-                        .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Department");
-
-                    b.Navigation("Unit");
+                    b.Navigation("StockProduct");
                 });
 
-            modelBuilder.Entity("ddla.ITApplication.Database.Models.DomainModels.Department", b =>
-                {
-                    b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("ddla.ITApplication.Database.Models.DomainModels.Unit", b =>
+            modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", b =>
                 {
                     b.Navigation("Products");
                 });

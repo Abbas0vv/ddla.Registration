@@ -1,4 +1,5 @@
-﻿@using ddla.ITApplication.Database.Models.ViewModels.Warehouse
+﻿@using ITAsset_DDLA.Helpers.Enums
+@using ddla.ITApplication.Database.Models.ViewModels.Warehouse
 @model CreateStockViewModel
 
 @{
@@ -18,12 +19,6 @@
             <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
                 <div class="row g-2">
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="Recipient" class="form-label"></label>
-                            <input asp-for="Recipient" class="form-control" required placeholder="İstifadəçi adı" />
-                            <span asp-validation-for="Recipient" class="text-danger"></span>
-                        </div>
-
                         <div class="mb-3">
                             <label asp-for="Name" class="form-label"></label>
                             <input asp-for="Name" class="form-control" required placeholder="Məhsul adı" />
@@ -49,12 +44,10 @@
                             <label asp-for="DepartmentName" class="form-label"></label>
                             <select asp-for="DepartmentName" class="form-select" required>
                                 <option value="" disabled selected>Seçin</option>
-                                <option value="IT">IT</option>
-                                <option value="HR">HR</option>
-                                <option value="Maliyyə">Maliyyə</option>
-                                <option value="Nəzarət">Nəzarət</option>
-                                <option value="Liman Əməliyyatları">Liman Əməliyyatları</option>
-                                <option value="Gəmiçilik">Gəmiçilik</option>
+                                @foreach (var department in Enum.GetValues(typeof(DepartmentName)))
+                                {
+                                    <option value="@department">@department</option>
+                                }
                             </select>
                             <span asp-validation-for="DepartmentName" class="text-danger"></span>
                         </div>
@@ -63,19 +56,12 @@
                             <label asp-for="UnitName" class="form-label"></label>
                             <select asp-for="UnitName" class="form-select" required>
                                 <option value="" disabled selected>Seçin</option>
-                                <option value="İnkişaf">İnkişaf</option>
-                                <option value="Dəstək">Dəstək</option>
-                                <option value="İdarəetmə">İdarəetmə</option>
-                                <option value="Gömrük">Gömrük</option>
-                                <option value="Logistika">Logistika</option>
+                                @foreach (var unit in Enum.GetValues(typeof(UnitName)))
+                                {
+                                    <option value="@unit">@unit</option>
+                                }
                             </select>
                             <span asp-validation-for="UnitName" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="DateofReceipt" class="form-label"></label>
-                            <input asp-for="DateofReceipt" type="datetime-local" class="form-control" />
-                            <span asp-validation-for="DateofReceipt" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
@@ -98,9 +84,9 @@
 
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label asp-for="Count" class="form-label"></label>
-                            <input asp-for="Count" class="form-control" required min="1" placeholder="Sayı" value="1" />
-                            <span asp-validation-for="Count" class="text-danger"></span>
+                            <label asp-for="TotalCount" class="form-label"></label>
+                            <input asp-for="TotalCount" class="form-control" required min="1" placeholder="Sayı" value="1" />
+                            <span asp-validation-for="TotalCount" class="text-danger"></span>
                         </div>
                     </div>
                 </div>

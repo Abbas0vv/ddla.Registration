@@ -34,11 +34,10 @@
                         <th>İnventar ID</th>
                         <th>İstifadəçi adı</th>
                         <th>Məhsul adı</th>
-                        <th>Şəkil</th>
+                        <th>Təsvir</th>
                         <th>Departament</th>
                         <th>Şöbə</th>
                         <th>Sayı</th>
-                        <th>Təsvir</th>
                         <th>Verilmə tarixi</th>
                         <th>Alınma tarixi</th>
                         <th>Fayl</th>
@@ -49,13 +48,31 @@
                         <th><input type="text" class="form-control form-control-sm column-search" data-column="1" placeholder="Axtar..."></th>
                         <th><input type="text" class="form-control form-control-sm column-search" data-column="2" placeholder="Axtar..."></th>
                         <th><input type="text" class="form-control form-control-sm column-search" data-column="3" placeholder="Axtar..."></th>
-                        <th></th> <!-- Şəkil -->
-                        <th><input type="text" class="form-control form-control-sm column-search" data-column="5" placeholder="Axtar..."></th>
-                        <th><input type="text" class="form-control form-control-sm column-search" data-column="6" placeholder="Axtar..."></th>
-                        <th><input type="text" class="form-control form-control-sm column-search" data-column="7" placeholder="Axtar..."></th>
                         <th></th> <!-- Təsvir -->
+                        <th>
+                            <select class="form-control form-control-sm column-search" data-column="4">
+                                <option value="">Hamısı</option>
+                                <option value="IT">IT</option>
+                                <option value="HR">HR</option>
+                                <option value="Maliyyə">Maliyyə</option>
+                                <option value="Nəzarət">Nəzarət</option>
+                                <option value="Liman Əməliyyatları">Liman Əməliyyatları</option>
+                                <option value="Gəmiçilik">Gəmiçilik</option>
+                            </select>
+                        </th>
+                        <th>
+                            <select class="form-control form-control-sm column-search" data-column="5">
+                                <option value="">Hamısı</option>
+                                <option value="İnkişaf">İnkişaf</option>
+                                <option value="Dəstək">Dəstək</option>
+                                <option value="İdarəetmə">İdarəetmə</option>
+                                <option value="Gömrük">Gömrük</option>
+                                <option value="Logistika">Logistika</option>
+                            </select>
+                        </th>
+                        <th><input type="text" class="form-control form-control-sm column-search" data-column="6" placeholder="Axtar..."></th>
+                        <th><input type="text" class="form-control form-control-sm column-search" data-column="8" placeholder="Axtar..."></th>
                         <th><input type="text" class="form-control form-control-sm column-search" data-column="9" placeholder="Axtar..."></th>
-                        <th><input type="text" class="form-control form-control-sm column-search" data-column="10" placeholder="Axtar..."></th>
                         <th></th> <!-- Fayl -->
                         <th></th> <!-- Əməliyyatlar -->
                     </tr>
@@ -71,20 +88,14 @@
                                 <td>@item.InventarId</td>
                                 <td>@item.Recipient</td>
                                 <td>@item.Name</td>
+                                <td>@item.Description</td>
                                 <td>
-                                    <img src="~/assets/images/Uploads/Products/@item.ImageUrl"
-                                         alt="Məhsul şəkli"
-                                         class="file-preview"
-                                         style="object-fit:contain;object-position:center;">
+                                    <span class="badge badge-department" style="background-color:#005b96">@item.Department.ToString()</span>
                                 </td>
                                 <td>
-                                    <span class="badge badge-department" style="background-color:#005b96">@item.Department.Name</span>
-                                </td>
-                                <td>
-                                    <span class="badge badge-department" style="background-color:#005b96">@item.Unit.Name</span>
+                                    <span class="badge badge-department" style="background-color:#005b96">@item.Unit.ToString()</span>
                                 </td>
                                 <td>@item.InUseCount</td>
-                                <td>@item.Description</td>
                                 <td>@item.DateofIssue.ToString("dd.MM.yyyy HH:mm")</td>
                                 <td>
                                     @if (item.DateofReceipt.HasValue)
@@ -102,12 +113,26 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                    @{
+                                        if (User.IsInRole("Admin"))
+                                        {
+                                            <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        }
+                                    }
                                 </td>
                             </tr>
                             counter++;
@@ -119,31 +144,35 @@
     </div>
     <script>
         // Ümumi axtarış
-        document.getElementById('globalSearch').addEventListener('keyup', function () {
-            const value = this.value.toLowerCase();
-            const rows = document.querySelectorAll("#itemsTable tr");
+             document.getElementById('globalSearch').addEventListener('keyup', function () {
+                 const value = this.value.toLowerCase();
+                 const rows = document.querySelectorAll("#itemsTable tr");
 
-            rows.forEach(row => {
-                const rowText = row.innerText.toLowerCase();
-                row.style.display = rowText.includes(value) ? "" : "none";
-            });
-        });
+                 rows.forEach(row => {
+                     const rowText = row.innerText.toLowerCase();
+                     row.style.display = rowText.includes(value) ? "" : "none";
+                 });
+             });
 
-        // Sütun üzrə axtarış
-        document.querySelectorAll('.column-search').forEach(input => {
-            input.addEventListener('keyup', function () {
-                const column = parseInt(this.dataset.column);
-                const filter = this.value.toLowerCase();
-                const rows = document.querySelectorAll("#itemsTable tr");
+             // Sütun üzrə axtarış
+             document.querySelectorAll('.column-search').forEach(input => {
+                 input.addEventListener('change', function () {
+                     const column = parseInt(this.dataset.column);
+                     const filter = this.value.toLowerCase();
+                     const rows = document.querySelectorAll("#itemsTable tr");
 
-                rows.forEach(row => {
-                    const cell = row.cells[column];
-                    if (!cell) return;
-                    const text = cell.innerText.toLowerCase();
-                    row.style.display = text.includes(filter) ? "" : "none";
-                });
-            });
-        });
+                     rows.forEach(row => {
+                         const cell = row.cells[column];
+                         if (!cell) return;
+                         const text = cell.innerText.toLowerCase();
+                         if (filter === "") {
+                             row.style.display = "";
+                         } else {
+                             row.style.display = text.includes(filter) ? "" : "none";
+                         }
+                     });
+                 });
+             });
     </script>
 
 </body>

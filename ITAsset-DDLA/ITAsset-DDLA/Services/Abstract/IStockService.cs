@@ -1,14 +1,13 @@
-﻿using ddla.ITApplication.Database.Models.DomainModels;
-using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
+﻿using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
+using ITAsset_DDLA.Database.Models.DomainModels;
 
-namespace ddla.ITApplication.Services.Abstract;
+namespace ITAsset_DDLA.Services.Abstract;
 
 public interface IStockService
 {
-    Task<List<Product>> GetAllAsync();
-    Task<List<Product>> GetSomeAsync(int value);
-    Task<Product> GetByIdAsync(int? id);
-    Task Insert(CreateStockViewModel model);
-    Task Remove(int? id);
-    Task Update(int? id, UpdateStockViewModel model);
+    Task<List<StockProduct>> GetAllAsync();
+    Task<StockProduct> GetByIdAsync(int? id);
+    Task<StockProduct> InsertAsync(CreateStockViewModel model);
+    Task RemoveAsync(int? id);
+    Task UpdateAsync(int? id, UpdateStockViewModel model);
 }

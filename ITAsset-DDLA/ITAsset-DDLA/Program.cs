@@ -2,6 +2,7 @@ using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.DomainModels.Account;
 using ddla.ITApplication.Services.Abstract;
 using ddla.ITApplication.Services.Concrete;
+using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,7 +29,7 @@ public class Program
 
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IUserService, UserService>();
-        builder.Services.AddScoped<IStockService, StockService>();
+        builder.Services.AddScoped<IStockService, StockProductService>();
 
         builder.Services.Configure<IdentityOptions>(options =>
         {

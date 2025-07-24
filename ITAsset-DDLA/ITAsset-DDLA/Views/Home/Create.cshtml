@@ -1,0 +1,45 @@
+﻿@model CreateProductViewModel
+
+<h2>Register Product</h2>
+
+<form asp-action="RegisterProduct" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="StockProductId">Product</label>
+        <select asp-for="StockProductId" asp-items="@ViewBag.StockProducts" class="form-control">
+            <option value="">-- Select Product --</option>
+        </select>
+        <span asp-validation-for="StockProductId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AvailableCount" class="control-label"></label>
+        <input asp-for="AvailableCount" class="form-control" readonly />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Count">Count to Register</label>
+        <input asp-for="Count" class="form-control" />
+        <span asp-validation-for="Count" class="text-danger"></span>
+    </div>
+
+    <!-- Other fields from your CreateProductViewModel -->
+
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#StockProductId').change(function() {
+                var stockProductId = $(this).val();
+                if (stockProductId) {
+                    $.getJSON('/Home/GetAvailableCount', { stockProductId: stockProductId }, function(data) {
+                        $('#availableCount').text(data);
+                    });
+                } else {
+                    $('#availableCount').text('0');
+                }
+            });
+        });
+    </script>
+}

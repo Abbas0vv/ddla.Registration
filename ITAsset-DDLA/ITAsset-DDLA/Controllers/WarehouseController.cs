@@ -1,5 +1,6 @@
 ﻿using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
 using ddla.ITApplication.Services.Abstract;
+using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Mvc;
 namespace ddla.ITApplication.Controllers;
 public class WarehouseController : Controller
@@ -28,7 +29,7 @@ public class WarehouseController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
-        await _stockService.Insert(model);
+        await _stockService.InsertAsync(model);
         return RedirectToAction(nameof(Index ));
     }
 
@@ -40,13 +41,10 @@ public class WarehouseController : Controller
 
         var model = new UpdateStockViewModel()
         {
-            Recipient = product.Recipient,
             Name = product.Name,
             Description = product.Description,
-            Count = product.InUseCount,
-            DepartmentName = product.Department?.Name,
-            UnitName = product.Unit?.Name,
-            DateofReceipt = product.DateofReceipt,
+            Count = product.TotalCount,
+            DateofRegistration = product.RegistrationDate,
             DocumentPath = product.FilePath,
             ImagePath = product.ImageUrl
         };
@@ -58,7 +56,7 @@ public class WarehouseController : Controller
     public async Task<IActionResult> Update(int? id, UpdateStockViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
-        await _stockService.Update(id, model);
+        await _stockService.UpdateAsync(id, model);
         return RedirectToAction(nameof(Index));
     }
 
@@ -66,7 +64,7 @@ public class WarehouseController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int? id)
     {
-        await _stockService.Remove(id);
+        await _stockService.RemoveAsync(id);
         return RedirectToAction(nameof(Index));
     }
 }
