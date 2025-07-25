@@ -22,21 +22,8 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-
         var models = await _productService.GetAllAsync();
         return View(models);
-
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetAvailableCount(int stockProductId)
-    {
-        var stockProduct = await _stockService.GetByIdAsync(stockProductId);
-        if (stockProduct == null)
-        {
-            return Json(0);
-        }
-        return Json(stockProduct.AvailableCount);
     }
 
     [HttpGet]

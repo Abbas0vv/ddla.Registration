@@ -1,7 +1,6 @@
 ﻿using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.DomainModels;
 using ddla.ITApplication.Database.Models.ViewModels.Product;
-using ddla.ITApplication.Helpers;
 using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +20,7 @@ public class ProductService : IProductService
     public async Task<List<Product>> GetAllAsync()
     {
         return await _context.Products
-            .Include(p => p.StockProduct) // Include StockProduct first
-            .Include(p => p.Department)   // Then include Department
-            .Include(p => p.Unit)         // Then include Unit
+            .Include(p => p.StockProduct)
             .OrderBy(p => p.Id)
             .ToListAsync();
     }
@@ -46,47 +43,36 @@ public class ProductService : IProductService
     }
     public async Task<Product> InsertAsync(CreateProductViewModel model)
     {
-        using var transaction = await _context.Database.BeginTransactionAsync();
-        try
+        var stockProduct = await _context.StockProducts
+            .FirstOrDefaultAsync(sp => sp.Id == model.StockProductId);
+
+        if (stockProduct == null)
+            throw new Exception("Selected stock product not found");
+
+        if (model.Count > stockProduct.AvailableCount)
+            throw new Exception($"Not enough items available. Available: {stockProduct.AvailableCount}, Requested: {model.Count}");
+
+        if (model.ImageFile != null && model.ImageFile.Length > 5 * 1024 * 1024) // 5MB
         {
-            var stockProduct = await _context.StockProducts
-                .FirstOrDefaultAsync(sp => sp.Id == model.StockProductId);
-
-            if (stockProduct == null)
-                throw new Exception("Selected stock product not found");
-
-            if (model.Count > stockProduct.AvailableCount)
-                throw new Exception($"Not enough items available. Available: {stockProduct.AvailableCount}, Requested: {model.Count}");
-
-            if (model.ImageFile != null && model.ImageFile.Length > 5 * 1024 * 1024) // 5MB
-            {
-                throw new Exception("Image file size exceeds 5MB limit");
-            }
-            var product = new Product
-            {
-                StockProductId = model.StockProductId,
-                Name = stockProduct.Name, // Now we have the stockProduct reference
-                Description = model.Description,
-                Recipient = model.Recipient,
-                InUseCount = model.Count,
-                DepartmentId = (int)model.DepartmentName,
-                UnitId = (int)model.UnitName,
-                DateofIssue = DateTime.Now,
-                ImageUrl = model.ImageFile?.CreateImageFile(_webHostEnvironment.WebRootPath, "assets/images/Uploads/Products"),
-                FilePath = model.DocumentFile?.CreateImageFile(_webHostEnvironment.WebRootPath, "assets/images/Uploads/Documents")
-            };
-
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return product;
+            throw new Exception("Image file size exceeds 5MB limit");
         }
-        catch
+        var product = new Product
         {
-            await transaction.RollbackAsync();
-            throw;
-        }
+            StockProductId = model.StockProductId,
+            Name = stockProduct.Name, // Now we have the stockProduct reference
+            Description = model.Description,
+            InventarId = model.InventarId,
+            Recipient = model.Recipient,
+            InUseCount = model.Count,
+            DateofIssue = DateTime.Now,
+            ImageUrl = model.ImageFile?.CreateImageFile(_webHostEnvironment.WebRootPath, "assets/images/Uploads/Products"),
+            FilePath = model.DocumentFile?.CreateImageFile(_webHostEnvironment.WebRootPath, "assets/images/Uploads/Documents")
+        };
+
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+        return product;
+
     }
     public async Task RemoveAsync(int? id)
     {

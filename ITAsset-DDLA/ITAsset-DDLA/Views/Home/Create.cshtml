@@ -29,17 +29,49 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function() {
-            $('#StockProductId').change(function() {
-                var stockProductId = $(this).val();
-                if (stockProductId) {
-                    $.getJSON('/Home/GetAvailableCount', { stockProductId: stockProductId }, function(data) {
-                        $('#availableCount').text(data);
+        //Inventar <video controls="controls">
+        document.addEventListener('DOMContentLoaded', function() {
+                const inventarInput = document.getElementById('InventarId');
+                const maxLength = 12;
+
+                if (inventarInput) {
+                    // Format on input change
+                    inventarInput.addEventListener('input', function() {
+                        // Remove spaces, trim, and convert to uppercase
+                        let value = this.value.replace(/\s/g, '').trim().toUpperCase();
+
+                        // Limit to maxLength characters
+                        if (value.length > maxLength) {
+                            value = value.substring(0, maxLength);
+                        }
+
+                        this.value = value;
                     });
-                } else {
-                    $('#availableCount').text('0');
+
+                    // Format on blur (when field loses focus)
+                    inventarInput.addEventListener('blur', function() {
+                        this.value = this.value.replace(/\s/g, '').trim().toUpperCase();
+                    });
+
+                    // Format on paste
+                    inventarInput.addEventListener('paste', function(e) {
+                        // Wait for paste to complete
+                        setTimeout(() => {
+                            let value = this.value.replace(/\s/g, '').trim().toUpperCase();
+                            if (value.length > maxLength) {
+                                value = value.substring(0, maxLength);
+                            }
+                            this.value = value;
+                        }, 0);
+                    });
+
+                    // Prevent spaces from being entered
+                    inventarInput.addEventListener('keydown', function(e) {
+                        if (e.key === ' ') {
+                            e.preventDefault();
+                        }
+                    });
                 }
             });
-        });
     </script>
 }

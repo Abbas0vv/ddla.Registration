@@ -15,9 +15,7 @@ public class Product
     public string Recipient { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
-    public int DepartmentId { get; set; }
     public string ImageUrl { get; set; }
-    public int UnitId { get; set; }
     public int InUseCount { get; set; }
     public string? FilePath { get; set; }
     public DepartmentName Department { get; set; }

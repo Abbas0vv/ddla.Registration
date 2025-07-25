@@ -3,7 +3,7 @@
 @model CreateStockViewModel
 
 @{
-    ViewData["Title"] = "Yeni anbar qeydiyyatı";
+    ViewData["Title"] = "Yeni məhsul qeydiyyatı";
 }
 <head>
     <link rel="stylesheet" href="~/assets/edit_add.css">
@@ -13,7 +13,7 @@
         <div class="form-container">
             <h1 class="page-title">
                 <img src="~/assets/images/ddlaLogo.png" alt="ddlaLogo" />
-                Yeni anbar qeydiyyatı
+                Yeni məhsul qeydiyyatı
             </h1>
 
             <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
@@ -34,9 +34,12 @@
                                 </label>
                                 <input asp-for="ImageFile" type="file" class="d-none" id="ImageFile" />
                             </div>
-                            <img id="imagePreview" src="#" alt="Şəkil önizləməsi" class="image-preview img-thumbnail mt-1" style="display: none;">
+                            <div id="imagePreviewContainer" class="mt-2" style="display: none;">
+                                <img id="imagePreview" src="#" alt="Şəkil önizləməsi" class="image-preview img-thumbnail" style="max-height: 150px;">
+                            </div>
                             <span asp-validation-for="ImageFile" class="text-danger"></span>
                         </div>
+
                     </div>
 
                     <div class="col-md-6">
@@ -63,10 +66,16 @@
                             </select>
                             <span asp-validation-for="UnitName" class="text-danger"></span>
                         </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TotalCount" class="form-label"></label>
+                            <input asp-for="TotalCount" class="form-control" required min="1" placeholder="Sayı" value="1" />
+                            <span asp-validation-for="TotalCount" class="text-danger"></span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row g-2">
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label asp-for="DocumentFile" class="form-label"></label>
@@ -84,9 +93,9 @@
 
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label asp-for="TotalCount" class="form-label"></label>
-                            <input asp-for="TotalCount" class="form-control" required min="1" placeholder="Sayı" value="1" />
-                            <span asp-validation-for="TotalCount" class="text-danger"></span>
+                            <label asp-for="DateofRegistration" class="form-label"></label>
+                            <input asp-for="DateofRegistration" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="DateofRegistration" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
@@ -111,16 +120,20 @@
 </div>
 
 <script>
-    document.getElementById('ImageFile').addEventListener('change', function(e) {
+    document.getElementById('ImageFile').addEventListener('change', function (e) {
         const file = e.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        const container = document.getElementById('imagePreviewContainer');
         if (file) {
             const reader = new FileReader();
-            reader.onload = function(event) {
-                const preview = document.getElementById('imagePreview');
+            reader.onload = function (event) {
                 preview.src = event.target.result;
-                preview.style.display = 'block';
+                container.style.display = 'block';
             }
             reader.readAsDataURL(file);
+        } else {
+            container.style.display = 'none';
+            preview.src = '#';
         }
     });
 </script>

@@ -1,23 +1,33 @@
 ﻿using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
 using ddla.ITApplication.Services.Abstract;
+using ITAsset_DDLA.Database.Models.ViewModels.Shared;
 using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Mvc;
 namespace ddla.ITApplication.Controllers;
 public class WarehouseController : Controller
 {
     private readonly IStockService _stockService;
+    private readonly IProductService _productService;
 
-    public WarehouseController(IStockService stockService)
+    public WarehouseController(IStockService stockService, IProductService productService)
     {
         _stockService = stockService;
+        _productService = productService;
     }
 
     public async Task<IActionResult> Index()
     {
-        var products = await _stockService.GetAllAsync();
-        return View(products);
-    }
+        var stockProducts = await _stockService.GetAllAsync();
+        var products = await _productService.GetAllAsync();
 
+        var model = new CompositeViewModel
+        {
+            StockProducts = stockProducts,
+            Products = products
+        };
+
+        return View(model);
+    }
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -43,7 +53,7 @@ public class WarehouseController : Controller
         {
             Name = product.Name,
             Description = product.Description,
-            Count = product.TotalCount,
+            TotalCount = product.TotalCount,
             DateofRegistration = product.RegistrationDate,
             DocumentPath = product.FilePath,
             ImagePath = product.ImageUrl

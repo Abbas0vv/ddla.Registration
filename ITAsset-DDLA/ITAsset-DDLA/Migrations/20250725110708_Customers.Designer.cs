@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ddla.ITApplication.Database;
 
@@ -11,9 +12,11 @@ using ddla.ITApplication.Database;
 namespace ITAsset_DDLA.Migrations
 {
     [DbContext(typeof(ddlaAppDBContext))]
-    partial class ddlaAppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250725110708_Customers")]
+    partial class Customers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,6 +66,10 @@ namespace ITAsset_DDLA.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InventarId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -310,6 +317,9 @@ namespace ITAsset_DDLA.Migrations
                     b.Property<int>("Department")
                         .HasColumnType("int");
 
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -340,6 +350,9 @@ namespace ITAsset_DDLA.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Unit")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UnitId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

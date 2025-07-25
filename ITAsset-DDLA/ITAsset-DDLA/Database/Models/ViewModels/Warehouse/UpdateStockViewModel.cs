@@ -1,13 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ITAsset_DDLA.Helpers.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace ddla.ITApplication.Database.Models.ViewModels.Warehouse;
 
 public class UpdateStockViewModel
 {
-    [Required(ErrorMessage = "Məhsulu təhvil alan mütləq olmalıdır")]
-    [Display(Name = "Məhsulu Təhvil Alan")]
-    [StringLength(100, ErrorMessage = "Məhsulu təhvil alan maksimum 100 simvol ola bilər")]
-    public string Recipient { get; set; }
+    public int Id { get; set; }
 
     [Required(ErrorMessage = "Məhsul adı mütləq doldurulmalıdır")]
     [Display(Name = "Məhsul Adı")]
@@ -20,16 +18,17 @@ public class UpdateStockViewModel
 
     [Required(ErrorMessage = "Departament seçilməlidir")]
     [Display(Name = "Departament")]
-    public string DepartmentName { get; set; }
+    public DepartmentName DepartmentName { get; set; }
 
     [Required(ErrorMessage = "Şöbə seçilməlidir")]
     [Display(Name = "Şöbə")]
-    public string UnitName { get; set; }
+    public UnitName UnitName { get; set; }
 
     [Required(ErrorMessage = "Sayı mütləq doldurulmalıdır")]
     [Display(Name = "Sayı")]
     [Range(1, int.MaxValue, ErrorMessage = "Sayı 1-dən böyük olmalıdır")]
-    public int Count { get; set; }
+    public int TotalCount { get; set; }
+
     [Display(Name = "Şəkil")]
     public IFormFile? ImageFile { get; set; }
 
@@ -38,9 +37,10 @@ public class UpdateStockViewModel
 
     [Display(Name = "Cari Sənəd")]
     public string? DocumentPath { get; set; }
+
     [Display(Name = "Cari Şəkil")]
     public string? ImagePath { get; set; }
 
-    [Display(Name = "Alınma Tarixi")]
+    [Display(Name = "Qeydiyyat Tarixi")]
     public DateTime? DateofRegistration { get; set; }
 }

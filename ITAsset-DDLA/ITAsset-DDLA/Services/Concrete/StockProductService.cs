@@ -11,7 +11,7 @@ public class StockProductService : IStockService
 {
     private readonly ddlaAppDBContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
-    private const string FOLDER_NAME = "assets/images/Uploads/StockProducts";
+    private const string FOLDER_NAME = "assets/images/Uploads/Products";
 
     public StockProductService(ddlaAppDBContext context, IWebHostEnvironment webHostEnvironment)
     {
@@ -80,14 +80,14 @@ public class StockProductService : IStockService
         if (stockProduct == null) return;
 
         // Check if we're reducing the total count below what's already in use
-        if (model.Count < stockProduct.InUseCount)
+        if (model.TotalCount < stockProduct.InUseCount)
         {
             throw new Exception($"Cannot reduce total count below currently in-use count ({stockProduct.InUseCount})");
         }
 
         stockProduct.Name = model.Name;
         stockProduct.Description = model.Description;
-        stockProduct.TotalCount = model.Count;
+        stockProduct.TotalCount = model.TotalCount;
         stockProduct.RegistrationDate = model.DateofRegistration ?? stockProduct.RegistrationDate;
 
         if (model.ImageFile is not null)

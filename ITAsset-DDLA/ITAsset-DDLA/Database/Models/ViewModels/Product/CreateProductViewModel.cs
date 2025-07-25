@@ -11,6 +11,11 @@ public class CreateProductViewModel
     [StringLength(100, ErrorMessage = "Məhsulu təhvil alan maksimum 100 simvol ola bilər")]
     public string Recipient { get; set; }
 
+    [Required(ErrorMessage = "Məhsulun INVENTAR kodu mütləq olmalıdır")]
+    [Display(Name = "Məhsulun INVENTAR kodu")]
+    [StringLength(100, ErrorMessage = "Məhsulun INVENTAR kodu maksimum 12 simvol ola bilər")]
+    public string InventarId { get; set; }
+
     [Display(Name = "Təsvir")]
     [StringLength(500, ErrorMessage = "Təsvir maksimum 500 simvol ola bilər")]
     public string? Description { get; set; }
