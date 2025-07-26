@@ -1,4 +1,4 @@
-﻿﻿@using ddla.ITApplication.Database
+﻿@using ddla.ITApplication.Database
 @using ddla.ITApplication.Helpers
 
 @model List<Product>
@@ -22,6 +22,14 @@
                 <small>Dövlət Dəniz və Liman Agentliyi</small>
             </div>
         </div>
+
+        <!-- Add this new button section -->
+        <div class="mb-3 text-end">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Yeni Təhvil-Təslim yarat
+            </a>
+        </div>
+
         <div class="mb-3">
             <input type="text" id="globalSearch" class="form-control" placeholder="Ümumi axtarış...">
         </div>

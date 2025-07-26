@@ -2,6 +2,8 @@
 using ddla.ITApplication.Database.Models.ViewModels.Product;
 using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
+using ITAsset_DDLA.Database.Models.DomainModels;
+using ITAsset_DDLA.Database.Models.ViewModels.Shared;
 using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -26,45 +28,52 @@ public class HomeController : Controller
         return View(models);
     }
 
+
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        // Get all stock products for dropdown
-        var stockProducts = await _stockService.GetAllAsync();
-        ViewBag.StockProducts = new SelectList(stockProducts, "Id", "Name");
+        var model = new DoubleProductTypeViewModel
+        {
+            CreateProductViewModel = new CreateProductViewModel(),
+            StockProducts = await _stockService.GetAllAsync() ?? new List<StockProduct>()
+        };
 
-        return View(new CreateProductViewModel());
+        return View(model);
     }
 
+
     [HttpPost]
-    public async Task<IActionResult> Create(CreateProductViewModel model)
+    public async Task<IActionResult> Create(DoubleProductTypeViewModel model)
     {
         if (!ModelState.IsValid)
         {
-            // Repopulate dropdown if validation fails
-            var stockProducts = await _stockService.GetAllAsync();
-            ViewBag.StockProducts = new SelectList(stockProducts, "Id", "Name");
+            // Debug which fields are invalid
+            var errors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .Select(x => new { x.Key, x.Value.Errors });
+
+            // Log or debug these errors
             return View(model);
         }
 
-        // Get the stock product
-        var stockProduct = await _stockService.GetByIdAsync(model.StockProductId);
+        var createModel = model.CreateProductViewModel;
+        var stockProduct = await _stockService.GetByIdAsync(createModel.StockProductId);
         if (stockProduct == null)
         {
             ModelState.AddModelError("", "Selected product not found");
+            model.StockProducts = await _stockService.GetAllAsync();
             return View(model);
         }
 
-        // Check available count
-        if (model.Count > stockProduct.AvailableCount)
+        if (createModel.Count > stockProduct.AvailableCount)
         {
-            ModelState.AddModelError("Count", $"Only {stockProduct.AvailableCount} items available");
+            ModelState.AddModelError("CreateProductViewModel.Count", $"Only {stockProduct.AvailableCount} items available");
+            model.StockProducts = await _stockService.GetAllAsync();
             return View(model);
         }
 
-        await _productService.InsertAsync(model);
+        await _productService.InsertAsync(createModel);
 
-        // Redirect to Index after successful creation
         return RedirectToAction(nameof(Index));
     }
 
