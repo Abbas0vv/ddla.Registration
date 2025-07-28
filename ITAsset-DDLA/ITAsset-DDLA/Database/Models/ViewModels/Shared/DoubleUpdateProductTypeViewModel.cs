@@ -3,8 +3,8 @@ using ITAsset_DDLA.Database.Models.DomainModels;
 
 namespace ITAsset_DDLA.Database.Models.ViewModels.Shared;
 
-public class DoubleProductTypeViewModel
+public class DoubleUpdateProductTypeViewModel
 {
-    public CreateProductViewModel CreateProductViewModel { get; set; }
-    public List<StockProduct> StockProducts { get; set; }
+    public UpdateProductViewModel UpdateProductViewModel { get; set; }
+    public StockProduct? StockProduct { get; set; }
 }

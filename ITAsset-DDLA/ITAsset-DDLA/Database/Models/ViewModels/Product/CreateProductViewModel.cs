@@ -16,10 +16,6 @@ public class CreateProductViewModel
     [StringLength(100, ErrorMessage = "Məhsulun INVENTAR kodu maksimum 12 simvol ola bilər")]
     public string InventarId { get; set; }
 
-    [Display(Name = "Təsvir")]
-    [StringLength(500, ErrorMessage = "Təsvir maksimum 500 simvol ola bilər")]
-    public string? Description { get; set; }
-
     [Required(ErrorMessage = "Departament seçilməlidir")]
     [Display(Name = "Departament")]
     public DepartmentName DepartmentName { get; set; } // Changed to enum type
@@ -33,17 +29,8 @@ public class CreateProductViewModel
     [Range(1, int.MaxValue, ErrorMessage = "Sayı 1-dən böyük olmalıdır")]
     public int Count { get; set; }
 
-    [Display(Name = "Şəkil")]
-    public IFormFile? ImageFile { get; set; }
-
     [Display(Name = "Fayl")]
     public IFormFile? DocumentFile { get; set; }
-
-    [Display(Name = "Cari Sənəd")]
-    public string? DocumentPath { get; set; }
-
-    [Display(Name = "Cari Şəkil")]
-    public string? ImagePath { get; set; }
 
     [Display(Name = "Alınma Tarixi")]
     public DateTime? DateofReceipt { get; set; }

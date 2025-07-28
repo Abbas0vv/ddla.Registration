@@ -32,7 +32,7 @@ public class HomeController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        var model = new DoubleProductTypeViewModel
+        var model = new DoubleCreateProductTypeViewModel
         {
             CreateProductViewModel = new CreateProductViewModel(),
             StockProducts = await _stockService.GetAllAsync() ?? new List<StockProduct>()
@@ -43,16 +43,10 @@ public class HomeController : Controller
 
 
     [HttpPost]
-    public async Task<IActionResult> Create(DoubleProductTypeViewModel model)
+    public async Task<IActionResult> Create(DoubleCreateProductTypeViewModel model)
     {
         if (!ModelState.IsValid)
         {
-            // Debug which fields are invalid
-            var errors = ModelState
-                .Where(x => x.Value.Errors.Count > 0)
-                .Select(x => new { x.Key, x.Value.Errors });
-
-            // Log or debug these errors
             return View(model);
         }
 
@@ -72,7 +66,7 @@ public class HomeController : Controller
             return View(model);
         }
 
-        await _productService.InsertAsync(createModel);
+        await _productService.InsertAsync(createModel, stockProduct);
 
         return RedirectToAction(nameof(Index));
     }
@@ -81,29 +75,33 @@ public class HomeController : Controller
     public async Task<IActionResult> Update(int? id)
     {
         var product = await _productService.GetByIdAsync(id);
+        var stockProduct = await _stockService.GetByIdAsync(product?.StockProductId);
         if (id is null || product is null) return NotFound();
 
-        var model = new UpdateProductViewModel()
+        var viewModel = new UpdateProductViewModel()
         {
             Recipient = product.Recipient,
-            Name = product.Name,
-            Description = product.Description,
+            InventarId = product.InventarId,
             Count = product.InUseCount,
-            DepartmentName = product.Department,
-            UnitName = product.Unit,
             DateofReceipt = product.DateofReceipt,
             DocumentPath = product.FilePath,
-            ImagePath = product.ImageUrl
+            StockProductId = stockProduct.Id
         };
 
+        var model = new DoubleUpdateProductTypeViewModel
+        {
+            UpdateProductViewModel = viewModel,
+            StockProduct = await _stockService.GetByIdAsync(product.Id)
+        };
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Update(int? id, UpdateProductViewModel model)
+    public async Task<IActionResult> Update(int? id, DoubleUpdateProductTypeViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
-        await _productService.UpdateAsync(id, model);
+        var stockProduct = await _stockService.GetByIdAsync(model.UpdateProductViewModel.StockProductId);
+        await _productService.UpdateAsync(id, model.UpdateProductViewModel, stockProduct);
         return RedirectToAction(nameof(Index));
     }
 

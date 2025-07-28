@@ -2,7 +2,7 @@
 @using ITAsset_DDLA.Database.Models.ViewModels.Shared
 @using ITAsset_DDLA.Helpers.Enums
 @using ddla.ITApplication.Database.Models.ViewModels.Product
-@model DoubleProductTypeViewModel
+@model DoubleCreateProductTypeViewModel
 
 @{
     ViewData["Title"] = "Yeni məhsul qeydiyyatı";
@@ -54,20 +54,17 @@
                             </select>
                             <span asp-validation-for="CreateProductViewModel.StockProductId" class="text-danger"></span>
                         </div>
-
                         <div class="mb-3">
-                            <label asp-for="CreateProductViewModel.ImageFile" class="form-label"></label>
+                            <label asp-for="CreateProductViewModel.DocumentFile" class="form-label"></label>
                             <div class="file-input-container">
-                                <label for="ImageFile" class="file-input-label">
-                                    <span class="file-input-text">Şəkil seçin...</span>
-                                    <span class="file-input-btn"><i class="fas fa-upload me-1"></i>Seçin</span>
+                                <label for="DocumentFile" class="file-input-label">
+                                    <span class="file-input-text">Fayl seçin...</span>
+                                    <span class="file-input-btn"><i class="fas fa-paperclip me-1"></i>Seçin</span>
                                 </label>
-                                <input asp-for="CreateProductViewModel.ImageFile" type="file" class="d-none" id="ImageFile" />
+                                <input asp-for="CreateProductViewModel.DocumentFile" type="file" class="d-none" id="DocumentFile" />
                             </div>
-                            <div id="imagePreviewContainer" class="mt-2" style="display: none;">
-                                <img id="imagePreview" src="#" alt="Şəkil önizləməsi" class="image-preview img-thumbnail" style="max-height: 150px;">
-                            </div>
-                            <span asp-validation-for="CreateProductViewModel.ImageFile" class="text-danger"></span>
+                            <small class="text-muted mt-1 d-block">İstənilən fayl tipi qəbul edilir (maksimum 5MB)</small>
+                            <span asp-validation-for="CreateProductViewModel.DocumentFile" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -111,29 +108,6 @@
                     </div>
                 </div>
 
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="CreateProductViewModel.DocumentFile" class="form-label"></label>
-                            <div class="file-input-container">
-                                <label for="DocumentFile" class="file-input-label">
-                                    <span class="file-input-text">Fayl seçin...</span>
-                                    <span class="file-input-btn"><i class="fas fa-paperclip me-1"></i>Seçin</span>
-                                </label>
-                                <input asp-for="CreateProductViewModel.DocumentFile" type="file" class="d-none" id="DocumentFile" />
-                            </div>
-                            <small class="text-muted mt-1 d-block">İstənilən fayl tipi qəbul edilir (maksimum 5MB)</small>
-                            <span asp-validation-for="CreateProductViewModel.DocumentFile" class="text-danger"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="CreateProductViewModel.Description" class="form-label"></label>
-                    <textarea asp-for="CreateProductViewModel.Description" class="form-control" rows="2" placeholder="Əlavə izahat"></textarea>
-                    <span asp-validation-for="CreateProductViewModel.Description" class="text-danger"></span>
-                </div>
-
                 <div class="d-flex justify-content-end mt-2">
                     <a asp-action="Index" class="btn btn-outline-secondary me-2" style="background-color: rgb(213 72 72); color: white;">
                         <i class="fas fa-times me-1"></i>Bağla
@@ -148,23 +122,6 @@
 </div>
 
 <script>
-    document.getElementById('ImageFile').addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        const preview = document.getElementById('imagePreview');
-        const container = document.getElementById('imagePreviewContainer');
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                preview.src = event.target.result;
-                container.style.display = 'block';
-            }
-            reader.readAsDataURL(file);
-        } else {
-            container.style.display = 'none';
-            preview.src = '#';
-        }
-    });
-
     // Update available count when product selection changes
     document.getElementById('StockProductId').addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
