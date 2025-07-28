@@ -50,7 +50,7 @@ public class WarehouseController : Controller
     public async Task<IActionResult> Update(int? id)
     {
         var product = await _stockService.GetByIdAsync(id);
-        if (id is null || product is null) return NotFound();
+        if (id is null || product is null) return RedirectToAction("NotFound", "Shared");
 
         var model = new UpdateStockViewModel()
         {

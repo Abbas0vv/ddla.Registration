@@ -19,7 +19,6 @@ public class ProductService : IProductService
         _webHostEnvironment = webHostEnvironment;
     }
 
-
     #region Methods
     public async Task<List<Product>> GetAllAsync()
     {
@@ -57,6 +56,8 @@ public class ProductService : IProductService
             InventarId = model.InventarId,
             Recipient = model.Recipient,
             InUseCount = model.Count,
+            Department = model.DepartmentName,
+            Unit = model.UnitName,
             DateofIssue = DateTime.Now,
             ImageUrl = stockProduct.ImageUrl,
             FilePath = model.DocumentFile?.CreateImageFile(_webHostEnvironment.WebRootPath, "assets/images/Uploads/Documents")

@@ -63,7 +63,7 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();  // This enables authorization
 
-
+        app.UseStatusCodePagesWithReExecute("/Shared/NotFound");
         app.MapControllerRoute(
             name: "Areas",
             pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");

@@ -74,7 +74,7 @@ public class HomeController : Controller
     {
         var product = await _productService.GetByIdAsync(id);
         var stockProduct = await _stockService.GetByIdAsync(product?.StockProductId);
-        if (id is null || product is null) return NotFound();
+        if (id is null || product is null) return RedirectToAction("NotFound", "Shared");
 
         var viewModel = new UpdateProductViewModel()
         {
