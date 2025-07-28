@@ -1,4 +1,5 @@
-﻿@using ddla.ITApplication.Database
+﻿@using ITAsset_DDLA.Helpers.Enums
+@using ddla.ITApplication.Database
 @using ddla.ITApplication.Helpers
 
 @model List<Product>
@@ -35,7 +36,7 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-striped table-bordered">
+            <table class="table table-striped table-bordered" id="productsTable">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -51,47 +52,43 @@
                         <th>Fayl</th>
                         <th>Əməliyyatlar</th>
                     </tr>
-                    <tr>
+                    <tr class="column-filters">
                         <th></th> <!-- # -->
-                        <th><input type="text" class="form-control form-control-sm column-search" data-column="1" placeholder="Axtar..."></th>
-                        <th><input type="text" class="form-control form-control-sm column-search" data-column="2" placeholder="Axtar..."></th>
-                        <th><input type="text" class="form-control form-control-sm column-search" data-column="3" placeholder="Axtar..."></th>
-                        <th></th> <!-- Təsvir -->
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="1"></th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="2"></th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="3"></th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="4"></th>
                         <th>
-                            <select class="form-control form-control-sm column-search" data-column="4">
+                            <select class="form-control form-control-sm" data-column="5">
                                 <option value="">Hamısı</option>
-                                <option value="IT">IT</option>
-                                <option value="HR">HR</option>
-                                <option value="Maliyyə">Maliyyə</option>
-                                <option value="Nəzarət">Nəzarət</option>
-                                <option value="Liman Əməliyyatları">Liman Əməliyyatları</option>
-                                <option value="Gəmiçilik">Gəmiçilik</option>
+                                @foreach (var department in Enum.GetValues(typeof(DepartmentName)))
+                                {
+                                    <option value="@department">@department</option>
+                                }
                             </select>
                         </th>
                         <th>
-                            <select class="form-control form-control-sm column-search" data-column="5">
+                            <select class="form-control form-control-sm" data-column="6">
                                 <option value="">Hamısı</option>
-                                <option value="İnkişaf">İnkişaf</option>
-                                <option value="Dəstək">Dəstək</option>
-                                <option value="İdarəetmə">İdarəetmə</option>
-                                <option value="Gömrük">Gömrük</option>
-                                <option value="Logistika">Logistika</option>
+                                @foreach (var unit in Enum.GetValues(typeof(UnitName)))
+                                {
+                                    <option value="@unit">@unit</option>
+                                }
                             </select>
                         </th>
-                        <th><input type="text" class="form-control form-control-sm column-search" data-column="6" placeholder="Axtar..."></th>
-                        <th><input type="text" class="form-control form-control-sm column-search" data-column="8" placeholder="Axtar..."></th>
-                        <th><input type="text" class="form-control form-control-sm column-search" data-column="9" placeholder="Axtar..."></th>
+                        <th><input type="number" class="form-control form-control-sm" placeholder="Axtar..." data-column="7"></th>
+                        <th><input type="text" class="form-control form-control-sm datepicker" placeholder="dd.mm.yyyy" data-column="8"></th>
+                        <th><input type="text" class="form-control form-control-sm datepicker" placeholder="dd.mm.yyyy" data-column="9"></th>
                         <th></th> <!-- Fayl -->
                         <th></th> <!-- Əməliyyatlar -->
                     </tr>
                 </thead>
-                <tbody id="itemsTable">
-                    <!-- Data will be loaded here -->
+                <tbody>
                     @{
                         int counter = 1;
                         foreach (var item in Model)
                         {
-                            <tr scope="row">
+                            <tr>
                                 <td>@counter</td>
                                 <td>@item.InventarId</td>
                                 <td>@item.Recipient</td>
@@ -104,42 +101,43 @@
                                     <span class="badge badge-department" style="background-color:#005b96">@item.Unit.ToString()</span>
                                 </td>
                                 <td>@item.InUseCount</td>
-                                <td>@item.DateofIssue.ToString("dd.MM.yyyy HH:mm")</td>
-                                <td>
+                                <td data-order="@item.DateofIssue.ToString("yyyy-MM-dd HH:mm")">@item.DateofIssue.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td data-order="@(item.DateofReceipt?.ToString("yyyy-MM-dd HH:mm") ?? "")">
                                     @if (item.DateofReceipt.HasValue)
                                     {
                                         @item.DateofReceipt.Value.ToString("dd.MM.yyyy HH:mm")
                                     }
                                     else
                                     {
-                                        <p>Təhvil alınmayıb</p>
+                                        <span>Təhvil alınmayıb</span>
                                     }
                                 </td>
                                 <td>
-                                    <a href="@item.FilePath" class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-download"></i>
-                                    </a>
+                                    @if (!string.IsNullOrEmpty(item.FilePath))
+                                    {
+                                        <a href="@item.FilePath" class="btn btn-sm btn-outline-primary" download>
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    }
                                 </td>
                                 <td>
-                                    @{
-                                        if (User.IsInRole("Admin"))
-                                        {
-                                            <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <a class="btn btn-warning">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a class="btn btn-danger">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        }
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-warning btn-sm" disabled>
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" disabled>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     }
                                 </td>
                             </tr>
@@ -150,38 +148,47 @@
             </table>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Ümumi axtarış
-             document.getElementById('globalSearch').addEventListener('keyup', function () {
-                 const value = this.value.toLowerCase();
-                 const rows = document.querySelectorAll("#itemsTable tr");
+        $(document).ready(function() {
+            // Initialize global search
+            $('#globalSearch').on('keyup', function() {
+                const searchText = $(this).val().toLowerCase();
+                $('#productsTable tbody tr').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(searchText) > -1);
+                });
+            });
 
-                 rows.forEach(row => {
-                     const rowText = row.innerText.toLowerCase();
-                     row.style.display = rowText.includes(value) ? "" : "none";
-                 });
-             });
+            // Initialize column search
+            $('.column-filters input, .column-filters select').on('keyup change', function() {
+                const columnIndex = $(this).data('column');
+                const searchValue = $(this).val().toLowerCase();
 
-             // Sütun üzrə axtarış
-             document.querySelectorAll('.column-search').forEach(input => {
-                 input.addEventListener('change', function () {
-                     const column = parseInt(this.dataset.column);
-                     const filter = this.value.toLowerCase();
-                     const rows = document.querySelectorAll("#itemsTable tr");
+                $('#productsTable tbody tr').each(function() {
+                    const cell = $(this).find('td').eq(columnIndex);
+                    if (cell.length) {
+                        const cellText = cell.text().toLowerCase();
+                        const cellData = cell.data('order') || cellText;
 
-                     rows.forEach(row => {
-                         const cell = row.cells[column];
-                         if (!cell) return;
-                         const text = cell.innerText.toLowerCase();
-                         if (filter === "") {
-                             row.style.display = "";
-                         } else {
-                             row.style.display = text.includes(filter) ? "" : "none";
-                         }
-                     });
-                 });
-             });
+                        if (searchValue === '' || cellData.toString().toLowerCase().indexOf(searchValue) > -1) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    }
+                });
+            });
+
+            // Datepicker for date columns
+            $('.datepicker').on('focus', function() {
+                $(this).attr('type', 'date');
+            }).on('blur', function() {
+                if (!$(this).val()) {
+                    $(this).attr('type', 'text');
+                }
+            });
+        });
     </script>
-
 </body>
 </html>

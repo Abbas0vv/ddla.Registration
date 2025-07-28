@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace ITAsset_DDLA.Controllers
+namespace ITAsset_DDLA.Controllers;
+[AllowAnonymous]
+public class WelcomeController : Controller
 {
-    public class WelcomeController : Controller
+    public IActionResult Index()
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        return View();
     }
 }

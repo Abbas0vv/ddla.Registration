@@ -2,8 +2,11 @@
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
 using ITAsset_DDLA.Services.Abstract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace ddla.ITApplication.Controllers;
+
+[Authorize]
 public class WarehouseController : Controller
 {
     private readonly IStockService _stockService;

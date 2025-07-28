@@ -1,15 +1,13 @@
-﻿using ddla.ITApplication.Database.Models.DomainModels;
-using ddla.ITApplication.Database.Models.ViewModels.Product;
-using ddla.ITApplication.Helpers.Extentions;
+﻿using ddla.ITApplication.Database.Models.ViewModels.Product;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
 using ITAsset_DDLA.Services.Abstract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Diagnostics;
 namespace ddla.ITApplication.Controllers;
 
+[Authorize]
 public class HomeController : Controller
 {
     private readonly IProductService _productService;

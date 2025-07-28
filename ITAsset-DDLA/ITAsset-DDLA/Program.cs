@@ -27,6 +27,13 @@ public class Program
             .AddRazorRuntimeCompilation();
         builder.Services.AddRazorPages();
 
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.LoginPath = "/Account/Login";
+            options.AccessDeniedPath = "/Account/AccessDenied";
+        });
+
+
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IStockService, StockProductService>();
@@ -53,6 +60,9 @@ public class Program
         var app = builder.Build();
 
         app.UseStaticFiles();
+        app.UseAuthentication();
+        app.UseAuthorization();  // This enables authorization
+
 
         app.MapControllerRoute(
             name: "Areas",
@@ -60,7 +70,7 @@ public class Program
 
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+            pattern: "{controller=Welcome}/{action=Index}/{id?}");
 
         app.Run();
     }
