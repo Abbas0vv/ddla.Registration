@@ -14,14 +14,6 @@ public class CreateStockViewModel
     [StringLength(500, ErrorMessage = "Təsvir maksimum 500 simvol ola bilər")]
     public string Description { get; set; }
 
-    [Required(ErrorMessage = "Departament seçilməlidir")]
-    [Display(Name = "Departament")]
-    public DepartmentName DepartmentName { get; set; }
-
-    [Required(ErrorMessage = "Şöbə seçilməlidir")]
-    [Display(Name = "Şöbə")]
-    public UnitName UnitName { get; set; }
-
     [Required(ErrorMessage = "Sayı mütləq doldurulmalıdır")]
     [Display(Name = "Sayı")]
     [Range(1, int.MaxValue, ErrorMessage = "Sayı 1-dən böyük olmalıdır")]
@@ -34,5 +26,8 @@ public class CreateStockViewModel
 
     [Display(Name = "Qeydiyyat Tarixi")]
     public DateTime? DateofRegistration { get; set; } = DateTime.Now;
+
+    public List<string> InventoryCodes { get; set; }
+
 
 }

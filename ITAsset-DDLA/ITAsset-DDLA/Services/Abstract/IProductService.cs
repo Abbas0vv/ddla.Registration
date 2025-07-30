@@ -9,7 +9,8 @@ public interface IProductService
     Task<List<Product>> GetAllAsync();
     Task<List<Product>> GetSomeAsync(int value);
     Task<Product> GetByIdAsync(int? id);
-    Task<Product> InsertAsync(CreateProductViewModel model, StockProduct stockProduct);
+    Task InsertAsync(CreateProductViewModel model, StockProduct stockProduct);
+    Task InsertMultipleAsync(CreateProductViewModel model, List<StockProduct> stockProducts);
     Task RemoveAsync(int? id);
     Task UpdateAsync(int? id, UpdateProductViewModel model, StockProduct stockProduct);
 }

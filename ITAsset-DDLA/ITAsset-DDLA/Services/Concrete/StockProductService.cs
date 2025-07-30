@@ -27,30 +27,40 @@ public class StockProductService : IStockService
             .ToListAsync();
     }
 
+    public async Task<List<StockProduct>> GetByIdsAsync(List<int> ids)
+    {
+        return await _context.StockProducts
+            .Where(sp => ids.Contains(sp.Id))
+            .Include(sp => sp.Products)
+            .ToListAsync();
+    }
+
     public async Task<StockProduct> GetByIdAsync(int? id)
     {
         return await _context.StockProducts
-            .Include(sp => sp.Products)
-            .FirstOrDefaultAsync(sp => sp.Id == id);
+          .Include(sp => sp.Products)
+          .FirstOrDefaultAsync(sp => sp.Id == id);
     }
 
-    public async Task<StockProduct> InsertAsync(CreateStockViewModel model)
+    public async Task InsertAsync(CreateStockViewModel model)
     {
-        var stockProduct = new StockProduct
+        // Create the main product record
+        foreach (var code in model.InventoryCodes)
         {
-            Name = model.Name,
-            Description = model.Description,
-            TotalCount = model.TotalCount,
-            RegistrationDate = model.DateofRegistration ?? DateTime.Now,
-            ImageUrl = model.ImageFile?.CreateImageFile(_webHostEnvironment.WebRootPath, FOLDER_NAME),
-            FilePath = model.DocumentFile?.CreateImageFile(_webHostEnvironment.WebRootPath, FOLDER_NAME)
-        };
+            var stockProduct = new StockProduct
+            {
+                Name = model.Name,
+                Description = model.Description,
+                RegistrationDate = model.DateofRegistration ?? DateTime.Now,
+                ImageUrl = model.ImageFile?.CreateImageFile(_webHostEnvironment.WebRootPath, FOLDER_NAME),
+                FilePath = model.DocumentFile?.CreateImageFile(_webHostEnvironment.WebRootPath, FOLDER_NAME),
+                InventoryCode = code.Trim()
+            };
+            _context.StockProducts.Add(stockProduct);
+        }
 
-        _context.StockProducts.Add(stockProduct);
         await _context.SaveChangesAsync();
-        return stockProduct;
     }
-
     public async Task RemoveAsync(int? id)
     {
         if (id is null) return;
@@ -87,7 +97,6 @@ public class StockProductService : IStockService
 
         stockProduct.Name = model.Name;
         stockProduct.Description = model.Description;
-        stockProduct.TotalCount = model.TotalCount;
         stockProduct.RegistrationDate = model.DateofRegistration ?? stockProduct.RegistrationDate;
 
         if (model.ImageFile is not null)

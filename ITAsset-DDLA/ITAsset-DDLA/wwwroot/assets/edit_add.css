@@ -110,7 +110,7 @@ label {
 .form-control, .form-select {
     padding: 6px 10px;
     font-size: 0.85rem;
-    height: 36px;
+    height: 38px;
 }
 
 .btn {
@@ -124,4 +124,25 @@ label {
 
 textarea.form-control {
     height: 70px !important;
+}
+.inventory-chip {
+    padding: 5px 12px;
+    background: #f0f0f0;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+    .inventory-chip.selected {
+        background: #407ed0;
+        color: white;
+    }
+
+.chip-label {
+    cursor: pointer;
+    margin: 0;
+}
+
+.form-select[multiple] {
+    min-height: 300px;
 }

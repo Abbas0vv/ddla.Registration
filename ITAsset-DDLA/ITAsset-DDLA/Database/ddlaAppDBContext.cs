@@ -13,4 +13,5 @@ public class ddlaAppDBContext : IdentityDbContext<ddlaUser>
     public DbSet<Product> Products { get; set; }
     public DbSet<StockProduct> StockProducts { get; set; }
     public DbSet<Customer> Customers { get; set; }
+    public DbSet<InventoryItem> InventoryItems { get; set; }
 }

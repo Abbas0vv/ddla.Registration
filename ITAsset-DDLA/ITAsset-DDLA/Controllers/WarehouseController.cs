@@ -42,8 +42,15 @@ public class WarehouseController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
+        // Validate that inventory codes count matches total count
+        if (model.InventoryCodes == null || model.InventoryCodes.Count != model.TotalCount)
+        {
+            ModelState.AddModelError("", "Please provide inventory codes for all items");
+            return View(model);
+        }
+
         await _stockService.InsertAsync(model);
-        return RedirectToAction(nameof(Index ));
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
@@ -56,7 +63,6 @@ public class WarehouseController : Controller
         {
             Name = product.Name,
             Description = product.Description,
-            TotalCount = product.TotalCount,
             DateofRegistration = product.RegistrationDate,
             DocumentPath = product.FilePath,
             ImagePath = product.ImageUrl

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ddla.ITApplication.Database;
 
@@ -11,9 +12,11 @@ using ddla.ITApplication.Database;
 namespace ITAsset_DDLA.Migrations
 {
     [DbContext(typeof(ddlaAppDBContext))]
-    partial class ddlaAppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250729055543_AddInventoryItemsTable")]
+    partial class AddInventoryItemsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,16 +97,15 @@ namespace ITAsset_DDLA.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("InventoryCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("TotalCount")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -381,7 +383,7 @@ namespace ITAsset_DDLA.Migrations
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.InventoryItem", b =>
                 {
                     b.HasOne("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", "StockProduct")
-                        .WithMany()
+                        .WithMany("InventoryItems")
                         .HasForeignKey("StockProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -453,6 +455,8 @@ namespace ITAsset_DDLA.Migrations
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", b =>
                 {
+                    b.Navigation("InventoryItems");
+
                     b.Navigation("Products");
                 });
 #pragma warning restore 612, 618

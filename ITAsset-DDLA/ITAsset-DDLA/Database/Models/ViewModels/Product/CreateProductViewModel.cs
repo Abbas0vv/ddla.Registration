@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using ddla.ITApplication.Database.Models.DomainModels;
+﻿using ddla.ITApplication.Database.Models.DomainModels;
+using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Helpers.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace ddla.ITApplication.Database.Models.ViewModels.Product;
 
@@ -11,10 +12,9 @@ public class CreateProductViewModel
     [StringLength(100, ErrorMessage = "Məhsulu təhvil alan maksimum 100 simvol ola bilər")]
     public string Recipient { get; set; }
 
-    [Required(ErrorMessage = "Məhsulun INVENTAR kodu mütləq olmalıdır")]
-    [Display(Name = "Məhsulun INVENTAR kodu")]
-    [StringLength(100, ErrorMessage = "Məhsulun INVENTAR kodu maksimum 12 simvol ola bilər")]
-    public string InventarId { get; set; }
+    [Display(Name = "Select Inventory Items")]
+    public List<int> SelectedInventoryItemIds { get; set; } = new();
+    public List<InventoryItem> AvailableInventoryItems { get; set; } = new();
 
     [Required(ErrorMessage = "Departament seçilməlidir")]
     [Display(Name = "Departament")]
@@ -38,7 +38,7 @@ public class CreateProductViewModel
     // Add StockProductId to link to warehouse item
     [Required(ErrorMessage = "Məhsul seçilməlidir")]
     [Display(Name = "Anbar Məhsulu")]
-    public int StockProductId { get; set; }
+    public List<int> StockProductIds { get; set; }
 
     // Add property to display available count (readonly)
     [Display(Name = "Mövcud Sayı")]

@@ -69,7 +69,7 @@ public class UserService : IUserService
 
         if (result.Succeeded)
         {
-            if (count == 0)
+            if (count == 1)
                 await _userManager.AddToRoleAsync(user, Role.Admin.ToString());
             else
                 await _userManager.AddToRoleAsync(user, Role.User.ToString());

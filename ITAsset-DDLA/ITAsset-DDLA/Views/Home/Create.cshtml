@@ -7,129 +7,247 @@
 @{
     ViewData["Title"] = "Yeni məhsul qeydiyyatı";
 }
+
 <head>
     <link rel="stylesheet" href="~/assets/edit_add.css">
+    <style>
+        .registration-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #407ed0;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .inventory-alert {
+            background: #f8f9fa;
+            border-left: 4px solid #407ed0;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .inventory-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+
+        .inventory-item {
+            padding: 8px 12px;
+            background: #f1f5f9;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+            .inventory-item.selected {
+                background: #407ed0;
+                color: white;
+            }
+
+        .count-display {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+            .count-display span {
+                font-weight: bold;
+                color: #2c3e50;
+            }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
-<div class="row justify-content-center mt-5">
-    <div class="col-lg-8 mt-3">
-        <div class="form-container">
-            <h1 class="page-title">
-                <img src="~/assets/images/ddlaLogo.png" alt="ddlaLogo" />
-                Yeni məhsul qeydiyyatı
-            </h1>
 
-            <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="CreateProductViewModel.Recipient" class="form-label"></label>
-                            <input asp-for="CreateProductViewModel.Recipient" class="form-control" required placeholder="Məhsulu təhvil alan" />
-                            <span asp-validation-for="CreateProductViewModel.Recipient" class="text-danger"></span>
-                        </div>
+<div class="container mt-4">
+    <div class="registration-card">
+        <h2 class="section-title">Yeni məhsul qeydiyyatı</h2>
 
-                        <div class="mb-3">
-                            <label asp-for="CreateProductViewModel.InventarId" class="form-label"></label>
-                            <input asp-for="CreateProductViewModel.InventarId" class="form-control" required placeholder="Məhsulun INVENTAR kodu" />
-                            <span asp-validation-for="CreateProductViewModel.InventarId" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="CreateProductViewModel.StockProductId" class="form-label"></label>
-                            <select asp-for="CreateProductViewModel.StockProductId" class="form-select" required>
-                                <option value="" disabled selected>Seçin</option>
-                                @if (Model.StockProducts != null && Model.StockProducts.Any())
-                                {
-                                    @foreach (var product in Model.StockProducts)
-                                    {
-                                        <option value="@product.Id"
-                                                data-available-count="@product.AvailableCount">
-                                            @product.Name (Mövcud: @product.AvailableCount)
-                                        </option>
-                                    }
-                                }
-                                else
-                                {
-                                    <option value="" disabled>Məhsul tapılmadı</option>
-                                }
-                            </select>
-                            <span asp-validation-for="CreateProductViewModel.StockProductId" class="text-danger"></span>
-                        </div>
-                        <div class="mb-3">
-                            <label asp-for="CreateProductViewModel.DocumentFile" class="form-label"></label>
-                            <div class="file-input-container">
-                                <label for="DocumentFile" class="file-input-label">
-                                    <span class="file-input-text">Fayl seçin...</span>
-                                    <span class="file-input-btn"><i class="fas fa-paperclip me-1"></i>Seçin</span>
-                                </label>
-                                <input asp-for="CreateProductViewModel.DocumentFile" type="file" class="d-none" id="DocumentFile" />
-                            </div>
-                            <small class="text-muted mt-1 d-block">İstənilən fayl tipi qəbul edilir (maksimum 5MB)</small>
-                            <span asp-validation-for="CreateProductViewModel.DocumentFile" class="text-danger"></span>
-                        </div>
+        <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Recipient Section -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Məhsulu təhvil alan</h5>
+                        <input asp-for="CreateProductViewModel.Recipient" class="form-control" placeholder="Ad soyad daxil edin" />
+                        <span asp-validation-for="CreateProductViewModel.Recipient" class="error-message"></span>
                     </div>
+                    <div class="mb-4">
+                        <!-- Product Selection -->
+                        <h5 class="mb-3">Məhsul</h5>
+                        <select asp-for="CreateProductViewModel.StockProductIds" class="form-select" multiple size="12" style="min-height: 300px;">
+                            @foreach (var product in Model.StockProducts)
+                            {
+                                <option value="@product.Id">@product.Name (İnventar kod: @product.InventoryCode)</option>
+                            }
+                        </select>
+                        <span asp-validation-for="CreateProductViewModel.StockProductIds" class="error-message"></span>
 
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="CreateProductViewModel.DepartmentName" class="form-label"></label>
-                            <select asp-for="CreateProductViewModel.DepartmentName" class="form-select" required>
-                                <option value="" disabled selected>Seçin</option>
-                                @foreach (var department in Enum.GetValues(typeof(DepartmentName)))
-                                {
-                                    <option value="@department">@department</option>
-                                }
-                            </select>
-                            <span asp-validation-for="CreateProductViewModel.DepartmentName" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="CreateProductViewModel.UnitName" class="form-label"></label>
-                            <select asp-for="CreateProductViewModel.UnitName" class="form-select" required>
-                                <option value="" disabled selected>Seçin</option>
-                                @foreach (var unit in Enum.GetValues(typeof(UnitName)))
-                                {
-                                    <option value="@unit">@unit</option>
-                                }
-                            </select>
-                            <span asp-validation-for="CreateProductViewModel.UnitName" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="CreateProductViewModel.Count" class="form-label"></label>
-                            <input asp-for="CreateProductViewModel.Count" class="form-control" required min="1" placeholder="Sayı" value="1" />
-                            <span asp-validation-for="CreateProductViewModel.Count" class="text-danger"></span>
-                            <small id="availableCountText" class="text-muted"></small>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="CreateProductViewModel.DateofReceipt" class="form-label"></label>
-                            <input asp-for="CreateProductViewModel.DateofReceipt" class="form-control" type="datetime-local" />
-                            <span asp-validation-for="CreateProductViewModel.DateofReceipt" class="text-danger"></span>
-                        </div>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end mt-2">
-                    <a asp-action="Index" class="btn btn-outline-secondary me-2" style="background-color: rgb(213 72 72); color: white;">
-                        <i class="fas fa-times me-1"></i>Bağla
-                    </a>
-                    <button type="submit" class="btn btn-primary" style="background-color: rgb(64, 126, 208)">
-                        <i class="fas fa-save me-1"></i>Yadda saxla
-                    </button>
+                <div class="col-md-6">
+                    <!-- Department -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Departament</h5>
+                        <select asp-for="CreateProductViewModel.DepartmentName" class="form-select">
+                            <option value="" disabled selected>Seçim edin</option>
+                            @foreach (var department in Enum.GetValues(typeof(DepartmentName)))
+                            {
+                                <option value="@department">@department</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Unit -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Şöbə</h5>
+                        <select asp-for="CreateProductViewModel.UnitName" class="form-select">
+                            <option value="" disabled selected>Seçim edin</option>
+                            @foreach (var unit in Enum.GetValues(typeof(UnitName)))
+                            {
+                                <option value="@unit">@unit</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Date -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Alınma tarixi</h5>
+                        <input asp-for="CreateProductViewModel.DateofReceipt" class="form-control" type="date" />
+                    </div>
                 </div>
-            </form>
-        </div>
+            </div>
+            <!-- File Upload -->
+            <div class="mt-4">
+                <h5 class="mb-3">Fayl</h5>
+                <div class="file-upload-container">
+                    <input asp-for="CreateProductViewModel.DocumentFile" type="file" id="fileUpload" class="d-none" />
+                    <label for="fileUpload" class="btn btn-outline-primary">
+                        <i class="fas fa-paperclip me-2"></i>Fayl seçin
+                    </label>
+                    <span id="fileName" class="ms-3">Heç bir fayl seçilməyib</span>
+                </div>
+                <small class="text-muted">İstənilən fayl tipi qəbul edilir (maksimum 5MB)</small>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-end mt-4">
+                <a asp-action="Index" class="btn btn-secondary me-2">
+                    <i class="fas fa-times me-1"></i> Bağla
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i> Yadda saxla
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
-    // Update available count when product selection changes
-    document.getElementById('StockProductId').addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const availableCount = selectedOption.getAttribute('data-available-count');
-        document.getElementById('availableCountText').textContent = `Mövcud sayı: ${availableCount}`;
+      document.addEventListener('DOMContentLoaded', function() {
+        const stockProductSelect = document.getElementById('stockProductSelect');
+        const inventoryContainer = document.getElementById('inventoryItemsContainer');
+        const countInput = document.getElementById('CreateProductViewModel_Count');
+        const selectedInventoryItems = document.getElementById('selectedInventoryItems');
 
-        // Set max value for count input
-        const countInput = document.getElementById('Count');
-        countInput.setAttribute('max', availableCount);
+        // Load inventory codes when product changes
+        stockProductSelect.addEventListener('change', function() {
+            const productId = this.value;
+
+            if (!productId) {
+                inventoryContainer.innerHTML = '<div class="text-muted">Zəhmət olmasa məhsul seçin</div>';
+                return;
+            }
+
+            // Show loading
+            inventoryContainer.innerHTML = '<div class="text-muted">Yüklənir...</div>';
+
+            // Call server to get codes
+            fetch('/YourControllerName/GetInventoryCodes?stockProductId=' + productId)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .then(codes => {
+                    if (codes.length === 0) {
+                        inventoryContainer.innerHTML = '<div class="text-muted">Bu məhsul üçün inventar kodu tapılmadı</div>';
+                        return;
+                    }
+
+                    inventoryContainer.innerHTML = '';
+                    codes.forEach(code => {
+                        const item = document.createElement('div');
+                        item.className = 'inventory-item';
+                        item.innerHTML = `
+                            <input type="checkbox" id="inv_${code.Id}" value="${code.Id}" class="d-none">
+                            <label for="inv_${code.Id}">${code.Code}</label>
+                        `;
+                        inventoryContainer.appendChild(item);
+                    });
+
+                    // Initialize selection handlers
+                    initSelectionHandlers();
+                })
+                .catch(error => {
+                    inventoryContainer.innerHTML = `<div class="text-danger">Xəta: ${error.message}</div>`;
+                });
+        });
+
+        function initSelectionHandlers() {
+            document.querySelectorAll('#inventoryItemsContainer .inventory-item label').forEach(label => {
+                label.addEventListener('click', function() {
+                    const checkbox = document.getElementById(this.htmlFor);
+                    const requiredCount = parseInt(countInput.value) || 0;
+                    const selectedCount = document.querySelectorAll('#inventoryItemsContainer input[type="checkbox"]:checked').length;
+
+                    if (!checkbox.checked && selectedCount >= requiredCount) {
+                        alert(`Maksimum ${requiredCount} inventar kodu seçə bilərsiniz`);
+                        return;
+                    }
+
+                    checkbox.checked = !checkbox.checked;
+                    this.closest('.inventory-item').classList.toggle('selected', checkbox.checked);
+                    updateSelection();
+                });
+            });
+        }
+
+        function updateSelection() {
+            const requiredCount = parseInt(countInput.value) || 0;
+            const selectedCount = document.querySelectorAll('#inventoryItemsContainer input[type="checkbox"]:checked').length;
+
+            document.getElementById('selectedCount').textContent = selectedCount;
+            document.getElementById('requiredCount').textContent = requiredCount;
+            document.getElementById('selectionError').classList.toggle('d-none', selectedCount === requiredCount);
+
+            // Update hidden select
+            selectedInventoryItems.innerHTML = '';
+            document.querySelectorAll('#inventoryItemsContainer input[type="checkbox"]:checked').forEach(checkbox => {
+                const option = document.createElement('option');
+                option.value = checkbox.value;
+                option.selected = true;
+                selectedInventoryItems.appendChild(option);
+            });
+        }
+
+        countInput.addEventListener('input', updateSelection);
     });
 </script>

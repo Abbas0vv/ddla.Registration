@@ -136,7 +136,7 @@
                                              class="file-preview"
                                              style="object-fit:contain;object-position:center;">
                                     </td> <!--Image-->
-                                    <td>@(item.TotalCount - item.Products.Sum(p => p.InUseCount))</td> <!--CountInStock-->
+                                    <td>@(item.TotalCount() - item.Products.Sum(p => p.InUseCount))</td> <!--CountInStock-->
                                     <td>@item.Products.Sum(p => p.InUseCount)</td> <!--CountInUse-->
                                     <td>@item.TotalCount</td> <!--TotalCount-->
                                     <td>
