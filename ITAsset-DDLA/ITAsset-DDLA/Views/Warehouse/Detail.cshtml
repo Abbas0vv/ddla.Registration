@@ -24,8 +24,8 @@
             </div>
 
             <div class="table-header">
-                <a asp-action="Create" class="btn btn-primary">
-                    <i class="fas fa-plus me-1"></i> Əlavə et
+                <a asp-action="Index" class="btn btn-secondary">
+                    Geri qayıt
                 </a>
                 <div class="global-search-container">
                     <div class="input-group input-group-sm w-auto">
@@ -45,7 +45,8 @@
                                 <th></th>
                                 <th><input type="text" class="form-control column-search" data-column="1" placeholder="Məhsul adı"></th>
                                 <th><input type="text" class="form-control column-search" data-column="2" placeholder="Təsvir"></th>
-                                <th></th>
+                                <th><input type="text" class="form-control column-search" data-column="2" placeholder="Inventar Kod"></th>
+                                <th><input type="text" class="form-control column-search" data-column="2" placeholder="Təhvil alan"></th>
                                 <th><input type="text" class="form-control column-search" data-column="4" placeholder="Ümumi sayı"></th>
                                 <th></th>
                             </tr>
@@ -53,8 +54,8 @@
                                 <th>#</th>
                                 <th>Məhsul adı</th>
                                 <th>Təsvir</th>
-                                <th>Şəkil</th>
-                                <th>Ümumi Sayı</th>
+                                <th>Inventar Kod</th>
+                                <th>Təhvil alan</th>
                                 <th>Əməliyyatlar</th>
                             </tr>
                         </thead>
@@ -68,19 +69,23 @@
                                         <td>@count</td>
                                         <td>@item.Name</td>
                                         <td>@item.Description</td>
-                                        <td>
-                                            <img src="~/assets/images/Uploads/Products/@item.ImageUrl" 
-                                                 alt="Məhsul şəkli"
-                                                 class="file-preview"
-                                                 style="object-fit:contain;object-position:center;">
+                                        <td>@item.InventoryCode</td>
+                                        <td>   
+                                            @{
+                                                var product = Model.Products.FirstOrDefault(p => p.InventarId == item.InventoryCode);
+                                                @(product?.Recipient ?? "Yoxdur")
+                                            }
                                         </td>
-                                        <td>@item.TotalCount()</td>
                                         <td>
-                                            <a asp-action="Detail" class="btn btn-info btn-sm me-1" title="Details">
-                                                <i class="fas fa-eye"></i>
+                                            <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning btn-sm me-1" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm" title="Delete">
+                                                <i class="fas fa-trash"></i>
                                             </a>
                                         </td>
                                     </tr>
+                                    count++;
                                 }
                         </tbody>
                     </table>

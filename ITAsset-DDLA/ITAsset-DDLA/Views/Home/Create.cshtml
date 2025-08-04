@@ -8,159 +8,92 @@
     ViewData["Title"] = "Yeni məhsul qeydiyyatı";
 }
 
-<head>
-    <link rel="stylesheet" href="~/assets/edit_add.css">
-    <style>
-        .registration-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            padding: 25px;
-            margin-bottom: 25px;
-        }
+<div class="main-content">
+    <div class="container">
+        <div class="registration-card">
+            <h2 class="section-title">Yeni məhsul qeydiyyatı</h2>
 
-        .section-title {
-            color: #2c3e50;
-            border-bottom: 2px solid #407ed0;
-            padding-bottom: 8px;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
+            <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Recipient Section -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Məhsulu təhvil alan</h5>
+                            <input asp-for="CreateProductViewModel.Recipient" class="form-control" placeholder="Ad soyad daxil edin" />
+                            <span asp-validation-for="CreateProductViewModel.Recipient" class="error-message"></span>
+                        </div>
+                        <div class="mb-4">
+                            <!-- Product Selection -->
+                            <h5 class="mb-3">Məhsul</h5>
+                            <select asp-for="CreateProductViewModel.StockProductIds" class="form-select" multiple size="12" style="min-height: 300px;">
+                                @foreach (var product in Model.StockProducts)
+                                {
+                                    <option value="@product.Id">@product.Name (İnventar kod: @product.InventoryCode)</option>
+                                }
+                            </select>
+                            <span asp-validation-for="CreateProductViewModel.StockProductIds" class="error-message"></span>
 
-        .inventory-alert {
-            background: #f8f9fa;
-            border-left: 4px solid #407ed0;
-            padding: 12px;
-            margin-bottom: 15px;
-        }
-
-        .inventory-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 10px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-        }
-
-        .inventory-item {
-            padding: 8px 12px;
-            background: #f1f5f9;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s;
-        }
-
-            .inventory-item.selected {
-                background: #407ed0;
-                color: white;
-            }
-
-        .count-display {
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-
-            .count-display span {
-                font-weight: bold;
-                color: #2c3e50;
-            }
-
-        .error-message {
-            color: #dc3545;
-            font-size: 0.85rem;
-        }
-    </style>
-</head>
-
-<div class="container mt-4">
-    <div class="registration-card">
-        <h2 class="section-title">Yeni məhsul qeydiyyatı</h2>
-
-        <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
-            <div class="row">
-                <div class="col-md-6">
-                    <!-- Recipient Section -->
-                    <div class="mb-4">
-                        <h5 class="mb-3">Məhsulu təhvil alan</h5>
-                        <input asp-for="CreateProductViewModel.Recipient" class="form-control" placeholder="Ad soyad daxil edin" />
-                        <span asp-validation-for="CreateProductViewModel.Recipient" class="error-message"></span>
+                        </div>
                     </div>
-                    <div class="mb-4">
-                        <!-- Product Selection -->
-                        <h5 class="mb-3">Məhsul</h5>
-                        <select asp-for="CreateProductViewModel.StockProductIds" class="form-select" multiple size="12" style="min-height: 300px;">
-                            @foreach (var product in Model.StockProducts)
-                            {
-                                <option value="@product.Id">@product.Name (İnventar kod: @product.InventoryCode)</option>
-                            }
-                        </select>
-                        <span asp-validation-for="CreateProductViewModel.StockProductIds" class="error-message"></span>
 
+                    <div class="col-md-6">
+                        <!-- Department -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Departament</h5>
+                            <select asp-for="CreateProductViewModel.DepartmentName" class="form-select">
+                                <option value="" disabled selected>Seçim edin</option>
+                                @foreach (var department in Enum.GetValues(typeof(DepartmentName)))
+                                {
+                                    <option value="@department">@department</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Unit -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Şöbə</h5>
+                            <select asp-for="CreateProductViewModel.UnitName" class="form-select">
+                                <option value="" disabled selected>Seçim edin</option>
+                                @foreach (var unit in Enum.GetValues(typeof(UnitName)))
+                                {
+                                    <option value="@unit">@unit</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Date -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Alınma tarixi</h5>
+                            <input asp-for="CreateProductViewModel.DateofReceipt" class="form-control" type="date" />
+                        </div>
                     </div>
                 </div>
-
-                <div class="col-md-6">
-                    <!-- Department -->
-                    <div class="mb-4">
-                        <h5 class="mb-3">Departament</h5>
-                        <select asp-for="CreateProductViewModel.DepartmentName" class="form-select">
-                            <option value="" disabled selected>Seçim edin</option>
-                            @foreach (var department in Enum.GetValues(typeof(DepartmentName)))
-                            {
-                                <option value="@department">@department</option>
-                            }
-                        </select>
+                <!-- File Upload -->
+                <div class="mt-4">
+                    <h5 class="mb-3">Fayl</h5>
+                    <div class="file-upload-container">
+                        <input asp-for="CreateProductViewModel.DocumentFile" type="file" id="fileUpload" class="d-none" />
+                        <label for="fileUpload" class="btn btn-outline-primary">
+                            <i class="fas fa-paperclip me-2"></i>Fayl seçin
+                        </label>
+                        <span id="fileName" class="ms-3">Heç bir fayl seçilməyib</span>
                     </div>
-
-                    <!-- Unit -->
-                    <div class="mb-4">
-                        <h5 class="mb-3">Şöbə</h5>
-                        <select asp-for="CreateProductViewModel.UnitName" class="form-select">
-                            <option value="" disabled selected>Seçim edin</option>
-                            @foreach (var unit in Enum.GetValues(typeof(UnitName)))
-                            {
-                                <option value="@unit">@unit</option>
-                            }
-                        </select>
-                    </div>
-
-                    <!-- Date -->
-                    <div class="mb-4">
-                        <h5 class="mb-3">Alınma tarixi</h5>
-                        <input asp-for="CreateProductViewModel.DateofReceipt" class="form-control" type="date" />
-                    </div>
+                    <small class="text-muted">İstənilən fayl tipi qəbul edilir (maksimum 5MB)</small>
                 </div>
-            </div>
-            <!-- File Upload -->
-            <div class="mt-4">
-                <h5 class="mb-3">Fayl</h5>
-                <div class="file-upload-container">
-                    <input asp-for="CreateProductViewModel.DocumentFile" type="file" id="fileUpload" class="d-none" />
-                    <label for="fileUpload" class="btn btn-outline-primary">
-                        <i class="fas fa-paperclip me-2"></i>Fayl seçin
-                    </label>
-                    <span id="fileName" class="ms-3">Heç bir fayl seçilməyib</span>
-                </div>
-                <small class="text-muted">İstənilən fayl tipi qəbul edilir (maksimum 5MB)</small>
-            </div>
 
-            <!-- Buttons -->
-            <div class="d-flex justify-content-end mt-4">
-                <a asp-action="Index" class="btn btn-secondary me-2">
-                    <i class="fas fa-times me-1"></i> Bağla
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save me-1"></i> Yadda saxla
-                </button>
-            </div>
-        </form>
+                <!-- Buttons -->
+                <div class="d-flex justify-content-end mt-4">
+                    <a asp-action="Index" class="btn btn-secondary me-2">
+                        <i class="fas fa-times me-1"></i> Bağla
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Yadda saxla
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
 <script>
       document.addEventListener('DOMContentLoaded', function() {
         const stockProductSelect = document.getElementById('stockProductSelect');

@@ -1,4 +1,5 @@
-﻿using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
+﻿using ddla.ITApplication.Database.Models.DomainModels;
+using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
 using ITAsset_DDLA.Services.Abstract;
@@ -17,7 +18,7 @@ public class WarehouseController : Controller
         _stockService = stockService;
         _productService = productService;
     }
-
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         var stockProducts = await _stockService.GetAllAsync();
@@ -30,6 +31,20 @@ public class WarehouseController : Controller
         var model = new CompositeViewModel
         {
             StockProducts = distinctStockProducts,
+            Products = products
+        };
+
+        return View(model);
+    }
+    [HttpGet]
+    public async Task<IActionResult> Detail(string name, string description)
+    {
+        var stockProducts = await _stockService.GetAllAsync();
+        var products = await _productService.GetAllAsync();
+
+        var model = new CompositeViewModel
+        {
+            StockProducts = stockProducts,
             Products = products
         };
 
