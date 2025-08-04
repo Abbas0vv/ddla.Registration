@@ -4,17 +4,7 @@
 
 @model List<Product>
 
-<!DOCTYPE html>
-<html lang="az">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDLA - IT Qeydiyyat Sistemi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="~/assets/table.css">
-</head>
-<body>
+<div class="main-content" style="margin-left:17rem!important;">
     <div class="container mt-5">
         <div class="logo-header">
             <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
@@ -148,47 +138,46 @@
             </table>
         </div>
     </div>
+</div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Initialize global search
-            $('#globalSearch').on('keyup', function() {
-                const searchText = $(this).val().toLowerCase();
-                $('#productsTable tbody tr').filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(searchText) > -1);
-                });
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize global search
+        $('#globalSearch').on('keyup', function() {
+            const searchText = $(this).val().toLowerCase();
+            $('#productsTable tbody tr').filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(searchText) > -1);
             });
+        });
 
-            // Initialize column search
-            $('.column-filters input, .column-filters select').on('keyup change', function() {
-                const columnIndex = $(this).data('column');
-                const searchValue = $(this).val().toLowerCase();
+        // Initialize column search
+        $('.column-filters input, .column-filters select').on('keyup change', function() {
+            const columnIndex = $(this).data('column');
+            const searchValue = $(this).val().toLowerCase();
 
-                $('#productsTable tbody tr').each(function() {
-                    const cell = $(this).find('td').eq(columnIndex);
-                    if (cell.length) {
-                        const cellText = cell.text().toLowerCase();
-                        const cellData = cell.data('order') || cellText;
+            $('#productsTable tbody tr').each(function() {
+                const cell = $(this).find('td').eq(columnIndex);
+                if (cell.length) {
+                    const cellText = cell.text().toLowerCase();
+                    const cellData = cell.data('order') || cellText;
 
-                        if (searchValue === '' || cellData.toString().toLowerCase().indexOf(searchValue) > -1) {
-                            $(this).show();
-                        } else {
-                            $(this).hide();
-                        }
+                    if (searchValue === '' || cellData.toString().toLowerCase().indexOf(searchValue) > -1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
                     }
-                });
-            });
-
-            // Datepicker for date columns
-            $('.datepicker').on('focus', function() {
-                $(this).attr('type', 'date');
-            }).on('blur', function() {
-                if (!$(this).val()) {
-                    $(this).attr('type', 'text');
                 }
             });
         });
-    </script>
-</body>
-</html>
+
+        // Datepicker for date columns
+        $('.datepicker').on('focus', function() {
+            $(this).attr('type', 'date');
+        }).on('blur', function() {
+            if (!$(this).val()) {
+                $(this).attr('type', 'text');
+            }
+        });
+    });
+</script>

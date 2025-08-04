@@ -31,4 +31,9 @@ public class StockProduct
     {
         return _context.StockProducts?.Count(p => p.Name == this.Name) ?? 0;
     }
+
+    public bool IsAvailable()
+    {
+        return AvailableCount > 0;
+    }
 }

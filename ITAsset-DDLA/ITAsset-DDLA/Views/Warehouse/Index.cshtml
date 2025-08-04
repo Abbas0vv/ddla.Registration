@@ -1,9 +1,6 @@
+﻿@using ITAsset_DDLA.Database.Models.ViewModels.Shared
 ﻿@using ITAsset_DDLA.Database.Models.DomainModels
-@using ITAsset_DDLA.Database.Models.ViewModels.Shared
 @model CompositeViewModel
-@{
-    Layout = null;
-}
 
 <!DOCTYPE html>
 <html lang="az">
@@ -13,73 +10,11 @@
     <title>DDLA - IT Qeydiyyat Sistemi</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="~/assets/edit_add.css">
-    <link rel="stylesheet" href="~/assets/table.css">
-    <style>
-        .user-nav {
-            position: absolute;
-            background-color: white;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-radius: 5px;
-            padding: 5px 10px;
-        }
-
-            .user-nav .btn {
-                padding: 5px 15px;
-            }
-
-        .user-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #4e73df;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-    </style>
+    <link href="~/assets/warehouseStyle.css" rel="stylesheet" />
 </head>
 <body>
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h3>IT Qeydiyyat Sistemi</h3>
-        </div>
-        <ul class="sidebar-menu">
-            <li>
-                <a asp-action="Index" asp-controller="Home">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-            </li>
-            <li class="active">
-                <a asp-action="Index" asp-controller="Warehouse">
-                    <i class="fas fa-warehouse"></i> Warehouse
-                </a>
-            </li>
-        </ul>
-    </div>
     <div class="main-content">
-        <div class="user-nav">
-            @if (User.Identity.IsAuthenticated)
-            {
-                <div class="d-flex align-items-center">
-                    <div class="user-avatar me-2">
-                        @User.Identity.Name.Substring(0, 1).ToUpper()
-                    </div>
-                    <span>@User.Identity.Name</span>
-                    <a asp-action="LogOut" asp-controller="Account" class="btn btn-outline-danger btn-sm ms-3">
-                        <i class="fas fa-sign-out-alt"></i> Çıxış
-                    </a>
-                </div>
-            }
-        </div>
-
-        <div class="container mt-5">
+        <div class="container mt-4">
             <div class="logo-header">
                 <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
                 <div class="logo-text">
@@ -87,129 +22,140 @@
                     <small>Dövlət Dəniz və Liman Agentliyi</small>
                 </div>
             </div>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <a asp-action="Create" class="btn btn-primary">Əlavə et</a>
-                <div class="input-group input-group-sm w-auto">
-                    <input type="text" id="globalSearch" class="form-control form-control-sm" placeholder="Ümumi axtarış...">
-                    <button class="btn btn-outline-secondary btn-sm" type="button" id="clearGlobalSearch">
-                        <i class="fas fa-times"></i>
-                    </button>
+
+            <div class="table-header">
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Əlavə et
+                </a>
+                <div class="global-search-container">
+                    <div class="input-group input-group-sm w-auto">
+                        <input type="text" id="globalSearch" class="form-control" placeholder="Ümumi axtarış...">
+                        <button class="btn btn-outline-secondary" type="button" id="clearGlobalSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr class="column-search-row">
-                            <th></th>
-                            <th><input type="text" class="form-control column-search" data-column="1" placeholder="Məhsul adı"></th>
-                            <th><input type="text" class="form-control column-search" data-column="2" placeholder="Təsvir"></th>
-                            <th></th>
-                            <th><input type="text" class="form-control column-search" data-column="4" placeholder="Anbar sayı"></th>
-                            <th><input type="text" class="form-control column-search" data-column="5" placeholder="İstifadədəki sayı"></th>
-                            <th><input type="text" class="form-control column-search" data-column="6" placeholder="Ümumi sayı"></th>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th>#</th>
-                            <th>Məhsul adı</th>
-                            <th>Təsvir</th>
-                            <th>Şəkil</th>
-                            <th>Anbardakı sayı</th>
-                            <th>İstifadədə olan sayı</th>
-                            <th>Ümumi sayı</th>
-                            <th>Əməliyyatlar</th>
-                        </tr>
-                    </thead> 
-                    <tbody id="itemsTable">
-                        @{
-                            int counter = 1;
-                            foreach (var item in Model.StockProducts)
-                            {
-                                <tr scope="row">
-                                    <td>@counter</td> <!--Order-->
-                                    <td>@item.Name</td> <!--NameOfProdcut-->
-                                    <td>@item.Description</td> <!--Description-->
-                                    <td>
-                                        <img src="~/assets/images/Uploads/Products/@item.ImageUrl" 
-                                             alt="Məhsul şəkli"
-                                             class="file-preview"
-                                             style="object-fit:contain;object-position:center;">
-                                    </td> <!--Image-->
-                                    <td>@(item.TotalCount() - item.Products.Sum(p => p.InUseCount))</td> <!--CountInStock-->
-                                    <td>@item.Products.Sum(p => p.InUseCount)</td> <!--CountInUse-->
-                                    <td>@item.TotalCount</td> <!--TotalCount-->
-                                    <td>
-                                        @if (User.IsInRole("Admin"))
-                                        {
-                                            <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <button class="btn btn-warning btn-sm" disabled>
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-danger btn-sm" disabled>
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        }
-                                    </td>
-                                </tr>
-                                counter++;
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr class="column-search-row">
+                                <th></th>
+                                <th><input type="text" class="form-control column-search" data-column="1" placeholder="Məhsul adı"></th>
+                                <th><input type="text" class="form-control column-search" data-column="2" placeholder="Təsvir"></th>
+                                <th></th>
+                                <th><input type="text" class="form-control column-search" data-column="4" placeholder="Ümumi sayı"></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>#</th>
+                                <th>Məhsul adı</th>
+                                <th>Təsvir</th>
+                                <th>Şəkil</th>
+                                <th>Ümumi Sayı</th>
+                                <th>Əməliyyatlar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTable">
+                            @{
+                                int count = 1;
                             }
-                        }
-                    </tbody>
-                </table>
+                            @foreach (var item in Model.StockProducts)
+                                {
+                                    <tr>
+                                        <td>@count</td>
+                                        <td>@item.Name</td>
+                                        <td>@item.Description</td>
+                                        <td>
+                                            <img src="~/assets/images/Uploads/Products/@item.ImageUrl" 
+                                                 alt="Məhsul şəkli"
+                                                 class="file-preview"
+                                                 style="object-fit:contain;object-position:center;">
+                                        </td>
+                                        <td>@item.TotalCount()</td>
+                                        <td>
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm me-1" title="Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+@*                                             
+                                            <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning btn-sm me-1" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a> *@
+                                        </td>
+                                    </tr>
+                                }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const inputs = document.querySelectorAll(".column-search");
             const table = document.getElementById("itemsTable");
-
-            // Column-based filter
-            inputs.forEach((input, index) => {
-                input.addEventListener("input", function () {
-                    const searchValues = Array.from(inputs).map(i => i.value.toLowerCase());
-
-                    Array.from(table.rows).forEach(row => {
-                        let visible = true;
-                        for (let i = 0; i < searchValues.length; i++) {
-                            const cellText = row.cells[i]?.innerText.toLowerCase() || "";
-                            if (searchValues[i] && !cellText.includes(searchValues[i])) {
-                                visible = false;
-                                break;
-                            }
-                        }
-                        row.style.display = visible ? "" : "none";
-                    });
-                });
-            });
-
-            // Global search filter
             const globalSearchInput = document.getElementById("globalSearch");
             const clearBtn = document.getElementById("clearGlobalSearch");
 
-            globalSearchInput?.addEventListener("input", function () {
-                const value = this.value.toLowerCase();
-                Array.from(table.rows).forEach(row => {
-                    const text = row.innerText.toLowerCase();
-                    row.style.display = text.includes(value) ? "" : "none";
+            // Optimized search function
+            function performSearch() {
+                const globalSearchTerm = globalSearchInput.value.trim().toLowerCase();
+                const columnFilters = {};
+
+                // Collect column filters
+                inputs.forEach(input => {
+                    const colIndex = input.getAttribute('data-column');
+                    const value = input.value.trim().toLowerCase();
+                    if (value) {
+                        columnFilters[colIndex] = value;
+                    }
                 });
+
+                // Filter rows
+                Array.from(table.rows).forEach(row => {
+                    let matchesGlobal = true;
+                    let matchesColumns = true;
+                    const rowText = row.innerText.toLowerCase();
+
+                    // Apply global search
+                    if (globalSearchTerm && !rowText.includes(globalSearchTerm)) {
+                        matchesGlobal = false;
+                    }
+
+                    // Apply column filters
+                    for (const [colIndex, searchTerm] of Object.entries(columnFilters)) {
+                        const cell = row.cells[colIndex];
+                        if (cell && !cell.innerText.toLowerCase().includes(searchTerm)) {
+                            matchesColumns = false;
+                            break;
+                        }
+                    }
+
+                    // Show/hide row based on filters
+                    row.style.display = (matchesGlobal && matchesColumns) ? "" : "none";
+                });
+            }
+
+            // Event listeners
+            inputs.forEach(input => {
+                input.addEventListener("input", performSearch);
             });
 
-            clearBtn?.addEventListener("click", function () {
+            globalSearchInput.addEventListener("input", performSearch);
+
+            clearBtn.addEventListener("click", function() {
                 globalSearchInput.value = "";
-                Array.from(table.rows).forEach(row => row.style.display = "");
+                inputs.forEach(input => input.value = "");
+                performSearch();
             });
         });
     </script>
-
 </body>
 </html>

@@ -82,7 +82,7 @@ body {
 
 /* Main content styles */
 .main-content {
-    margin-left: var(--sidebar-width);
+    margin-left: 8rem;
     flex: 1;
     padding: 20px;
 }

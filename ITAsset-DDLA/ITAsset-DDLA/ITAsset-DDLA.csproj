@@ -8,8 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Database\Repositories\Abstract\" />
-    <Folder Include="Database\Repositories\Concrete\" />
+    <Compile Remove="Database\Repositories\**" />
+    <Content Remove="Database\Repositories\**" />
+    <EmbeddedResource Remove="Database\Repositories\**" />
+    <None Remove="Database\Repositories\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\assets\images\Uploads\Documents\" />
     <Folder Include="wwwroot\assets\images\Uploads\Products\" />
     <Folder Include="wwwroot\assets\images\Uploads\ProfilePicture\" />

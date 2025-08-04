@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ddla.ITApplication.Services.Concrete;
 
-public class StockProductService : IStockService
+public class StockService : IStockService
 {
     private readonly ddlaAppDBContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private const string FOLDER_NAME = "assets/images/Uploads/Products";
 
-    public StockProductService(ddlaAppDBContext context, IWebHostEnvironment webHostEnvironment)
+    public StockService(ddlaAppDBContext context, IWebHostEnvironment webHostEnvironment)
     {
         _context = context;
         _webHostEnvironment = webHostEnvironment;

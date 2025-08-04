@@ -23,9 +23,13 @@ public class WarehouseController : Controller
         var stockProducts = await _stockService.GetAllAsync();
         var products = await _productService.GetAllAsync();
 
+        var distinctStockProducts = stockProducts
+            .DistinctBy(sp => new { sp.Name, sp.Description })
+            .ToList();
+
         var model = new CompositeViewModel
         {
-            StockProducts = stockProducts,
+            StockProducts = distinctStockProducts,
             Products = products
         };
 
