@@ -3,93 +3,19 @@
 @model CreateStockViewModel
 
 @{
-    Layout = null;
     ViewData["Title"] = "Yeni məhsul qeydiyyatı";
 }
-
-<!DOCTYPE html>
-<html lang="az">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDLA - IT Qeydiyyat Sistemi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="~/assets/edit_add.css">
-    <link rel="stylesheet" href="~/assets/table.css">
-    <style>
-        .user-nav {
-            position: absolute;
-            background-color: white;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-radius: 5px;
-            padding: 5px 10px;
-        }
-
-            .user-nav .btn {
-                padding: 5px 15px;
-            }
-
-        .user-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #4e73df;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .inventory-codes-container {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 5px;
-        }
-
-        .inventory-item {
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-        }
-    </style>
-</head>
-<body>
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h3>IT Qeydiyyat Sistemi</h3>
-        </div>
-        <ul class="sidebar-menu">
-            <li>
-                <a asp-action="Index" asp-controller="Home">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-            </li>
-            <li class="active">
-                <a asp-action="Index" asp-controller="Warehouse">
-                    <i class="fas fa-warehouse"></i> Warehouse
-                </a>
-            </li>
-        </ul>
-    </div>
-
+<div class="main-content">
     <div class="row justify-content-center">
-        <div class="col-lg-8 mt-3">
+        <div class="col-lg-10 mt-4">
             <div class="form-container">
-                <h1 class="page-title">
-                    <img src="~/assets/images/ddlaLogo.png" alt="ddlaLogo" />
-                    Yeni məhsul qeydiyyatı
-                </h1>
+                <div class="form-header">
+                    <img src="~/assets/images/ddlaLogo.png" alt="ddlaLogo" class="logo" style="height:100px;" />
+                    <h1 class="page-title">Yeni məhsul qeydiyyatı</h1>
+                </div>
 
                 <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
-                    <div class="row g-2">
+                    <div class="row g-3">
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label asp-for="Name" class="form-label"></label>
@@ -130,11 +56,11 @@
 
                     <div class="mb-3">
                         <label asp-for="Description" class="form-label"></label>
-                        <textarea asp-for="Description" class="form-control" rows="2" placeholder="Əlavə izahat"></textarea>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Əlavə izahat"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
 
-                    <div class="row g-2">
+                    <div class="row g-3">
                         <div class="col-12">
                             <div class="mb-3">
                                 <label asp-for="DocumentFile" class="form-label"></label>
@@ -151,18 +77,22 @@
                         </div>
                     </div>
 
-                    <div id="inventoryCodesContainer" class="inventory-codes-container">
-                        <h5>İnventar Kodları</h5>
-                        <div id="inventoryItems">
-                            <!-- Inventory code inputs will be added here dynamically -->
+                    <div id="inventoryCodesContainer" class="inventory-codes-container card mb-4">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">İnventar Kodları</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="inventoryItems" class="row g-2">
+                                <!-- Inventory code inputs will be added here dynamically -->
+                            </div>
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end mt-2">
-                        <a asp-action="Index" class="btn btn-outline-secondary me-2" style="background-color: rgb(213 72 72); color: white;">
+                    <div class="d-flex justify-content-end mt-4">
+                        <a asp-action="Index" class="btn btn-outline-danger me-2">
                             <i class="fas fa-times me-1"></i>Bağla
                         </a>
-                        <button type="submit" class="btn btn-primary" style="background-color: rgb(64, 126, 208)">
+                        <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save me-1"></i>Yadda saxla
                         </button>
                     </div>
@@ -170,49 +100,54 @@
             </div>
         </div>
     </div>
-    <script>
-        document.getElementById('ImageFile').addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            const preview = document.getElementById('imagePreview');
-            const container = document.getElementById('imagePreviewContainer');
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    preview.src = event.target.result;
-                    container.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            } else {
-                container.style.display = 'none';
-                preview.src = '#';
+</div>
+
+<script>
+    document.getElementById('ImageFile').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        const container = document.getElementById('imagePreviewContainer');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                preview.src = event.target.result;
+                container.style.display = 'block';
             }
-        });
-
-        // Handle inventory codes based on count
-        const totalCountInput = document.getElementById('totalCount');
-        const inventoryItemsContainer = document.getElementById('inventoryItems');
-
-        function updateInventoryInputs() {
-            const count = parseInt(totalCountInput.value) || 0;
-            inventoryItemsContainer.innerHTML = '';
-
-            for (let i = 1; i <= count; i++) {
-                const div = document.createElement('div');
-                div.className = 'inventory-item';
-                div.innerHTML = `
-                    <label for="InventoryCodes_${i-1}" class="form-label" style="color: black;">İnventar kodu #${i}</label>
-                    <input type="text" class="form-control" name="InventoryCodes[${i-1}]" id="InventoryCodes_${i-1}" required placeholder="İnventar kodu daxil edin" />
-                `;
-                inventoryItemsContainer.appendChild(div);
-            }
+            reader.readAsDataURL(file);
+        } else {
+            container.style.display = 'none';
+            preview.src = '#';
         }
+    });
 
-        // Initial update
-        updateInventoryInputs();
+    // Handle inventory codes based on count
+    const totalCountInput = document.getElementById('totalCount');
+    const inventoryItemsContainer = document.getElementById('inventoryItems');
 
-        // Update when count changes
-        totalCountInput.addEventListener('change', updateInventoryInputs);
-        totalCountInput.addEventListener('input', updateInventoryInputs);
-    </script>
-</body>
-</html>
+    function updateInventoryInputs() {
+        const count = parseInt(totalCountInput.value) || 0;
+        inventoryItemsContainer.innerHTML = '';
+
+        for (let i = 1; i <= count; i++) {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-md-6';
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'inventory-item';
+            itemDiv.innerHTML = `
+                <label for="InventoryCodes_${i-1}" class="form-label">İnventar kodu #${i}</label>
+                <input type="text" class="form-control" name="InventoryCodes[${i-1}]" id="InventoryCodes_${i-1}" required placeholder="İnventar kodu daxil edin" />
+            `;
+
+            colDiv.appendChild(itemDiv);
+            inventoryItemsContainer.appendChild(colDiv);
+        }
+    }
+
+    // Initial update
+    updateInventoryInputs();
+
+    // Update when count changes
+    totalCountInput.addEventListener('change', updateInventoryInputs);
+    totalCountInput.addEventListener('input', updateInventoryInputs);
+</script>
