@@ -1,6 +1,6 @@
-﻿using ddla.ITApplication.Database.Models.DomainModels;
-using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
+﻿using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
 using ddla.ITApplication.Services.Abstract;
+using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
 using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
@@ -21,25 +21,36 @@ public class WarehouseController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var stockProducts = await _stockService.GetAllAsync();
         var products = await _productService.GetAllAsync();
-
-        var distinctStockProducts = stockProducts
-            .DistinctBy(sp => new { sp.Name, sp.Description })
-            .ToList();
-
-        var model = new CompositeViewModel
-        {
-            StockProducts = distinctStockProducts,
-            Products = products
-        };
-
-        return View(model);
-    }
-    [HttpGet]
-    public async Task<IActionResult> Detail(string name, string description)
-    {
         var stockProducts = await _stockService.GetAllAsync();
+
+        var groupedProducts = new List<GroupedProductViewModel>();
+
+        foreach (var group in stockProducts.GroupBy(p => p.Name))
+        {
+            var firstProduct = group.FirstOrDefault();
+            var availableCount = await _productService.GetAviableProductCount();
+
+            var viewModel = new GroupedProductViewModel
+            {
+                Name = group.Key,
+                Description = firstProduct?.Description ?? string.Empty,
+                TotalCount = group.Count(),
+                ImagePath = firstProduct?.ImageUrl ?? string.Empty,
+                AvailableCount = availableCount,
+                InUseCount = group.Count() - availableCount
+            };
+
+            groupedProducts.Add(viewModel);
+        }
+
+        return View(groupedProducts);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Detail(string description)
+    {
+        var stockProducts = await _stockService.GetAllByDescriptionAsync(description);
         var products = await _productService.GetAllAsync();
 
         var model = new CompositeViewModel

@@ -90,7 +90,7 @@
                                 <td>
                                     <span class="badge badge-department" style="background-color:#005b96">@item.Unit.ToString()</span>
                                 </td>
-                                <td>@item.InUseCount</td>
+                                <td>@ViewBag.AviableCount</td>
                                 <td data-order="@item.DateofIssue.ToString("yyyy-MM-dd HH:mm")">@item.DateofIssue.ToString("dd.MM.yyyy HH:mm")</td>
                                 <td data-order="@(item.DateofReceipt?.ToString("yyyy-MM-dd HH:mm") ?? "")">
                                     @if (item.DateofReceipt.HasValue)

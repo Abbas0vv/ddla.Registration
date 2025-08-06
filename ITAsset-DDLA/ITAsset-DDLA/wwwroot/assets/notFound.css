@@ -18,7 +18,6 @@ body {
     font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: linear-gradient(135deg, #0b1f3a, #1e3c72);
     height: 100vh;
-    display: flex;
     justify-content: center;
     align-items: center;
     color: var(--light-color);

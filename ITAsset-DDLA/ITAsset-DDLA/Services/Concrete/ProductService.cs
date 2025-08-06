@@ -5,7 +5,6 @@ using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.DomainModels;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace ddla.ITApplication.Services.Concrete;
 
@@ -28,6 +27,14 @@ public class ProductService : IProductService
             .OrderBy(p => p.Id)
             .ToListAsync();
     }
+
+    public async Task<int> GetAviableProductCount()
+    {
+        return await _context.Products
+            .Where(p => p.DateofReceipt == null)
+            .CountAsync();
+    }
+
     public async Task<List<Product>> GetSomeAsync(int value)
     {
         var numberOfProducts = await _context.Products.CountAsync();
@@ -51,22 +58,21 @@ public class ProductService : IProductService
             .Where(i => model.SelectedInventoryItemIds.Contains(i.Id))
             .ToListAsync();
 
+
         // Validate we have the correct count
         if (selectedInventoryItems.Count != model.Count)
             throw new Exception("Selected inventory items count doesn't match the specified count");
 
-        if (model.Count > stockProduct.AvailableCount)
-            throw new Exception($"Not enough items available. Available: {stockProduct.AvailableCount}, Requested: {model.Count}");
+        if (model.Count > await GetAviableProductCount())
+            throw new Exception($"Not enough items available. Available: {await GetAviableProductCount()}, Requested: {model.Count}");
 
         foreach (var stockProductId in model.StockProductIds)
         {
             var product = new Product
             {
-                StockProductId = stockProductId, // Use the ID directly from the model
                 Name = stockProduct?.Name ?? string.Empty, // Null check with fallback
                 Description = stockProduct?.Description ?? string.Empty,
                 Recipient = model.Recipient.Trim(),
-                InUseCount = model.Count > 0 ? model.Count : 1, // Ensure minimum count of 1
                 Department = model.DepartmentName,
                 Unit = model.UnitName,
                 DateofIssue = model.DateofReceipt ?? DateTime.Now, // Use provided date or current
@@ -94,7 +100,8 @@ public class ProductService : IProductService
         if (selectedInventoryItems.Count != model.Count)
             throw new Exception("Seçilmiş inventar sayı ilə daxil edilən say uyğun deyil");
 
-        int totalAvailable = stockProducts.Sum(p => p.AvailableCount);
+
+        int totalAvailable = await GetAviableProductCount();
         if (model.Count > totalAvailable)
             throw new Exception($"Kifayət qədər məhsul yoxdur. Mövcud: {totalAvailable}, Tələb olunan: {model.Count}");
 
@@ -106,7 +113,7 @@ public class ProductService : IProductService
         {
             if (remainingCount == 0) break;
 
-            int useCount = Math.Min(stockProduct.AvailableCount, remainingCount);
+            int useCount = Math.Min(await GetAviableProductCount(), remainingCount);
             var usedInventoryItems = selectedInventoryItems
                 .Skip(inventoryIndex)
                 .Take(useCount)
@@ -114,11 +121,9 @@ public class ProductService : IProductService
 
             var product = new Product
             {
-                StockProductId = stockProduct.Id,
                 Name = stockProduct.Name ?? string.Empty,
                 Description = stockProduct.Description ?? string.Empty,
                 Recipient = model.Recipient.Trim(),
-                InUseCount = useCount,
                 Department = model.DepartmentName,
                 Unit = model.UnitName,
                 DateofIssue = model.DateofReceipt ?? DateTime.Now,
@@ -163,33 +168,12 @@ public class ProductService : IProductService
 
         if (product == null) return;
 
-        // Calculate available count excluding current product's count
-        var currentStockUsage = product.StockProduct.Products
-            .Where(p => p.Id != id)
-            .Sum(p => p.InUseCount);
-
-        var availableCount = product.StockProduct.TotalCount() - currentStockUsage;
-
-        if (availableCount < model.Count)
-            throw new Exception($"Not enough available items. Available: {availableCount}, Requested: {model.Count}");
-
         // Update properties
-        product.InUseCount = model.Count;
         product.Department = model.DepartmentName;
         product.Unit = model.UnitName;
         product.DateofReceipt = model.DateofReceipt;
 
         await _context.SaveChangesAsync();
-    }
-    public async Task<int> GetAvailableCountAsync(int stockProductId)
-    {
-        var stockProduct = await _context.StockProducts
-            .Include(sp => sp.Products)
-            .FirstOrDefaultAsync(sp => sp.Id == stockProductId);
-
-        if (stockProduct == null) return 0;
-
-        return stockProduct.TotalCount() - stockProduct.Products.Sum(p => p.InUseCount);
     }
     #endregion
 }

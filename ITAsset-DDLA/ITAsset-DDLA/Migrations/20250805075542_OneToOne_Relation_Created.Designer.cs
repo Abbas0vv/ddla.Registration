@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ddla.ITApplication.Database;
 
@@ -11,9 +12,11 @@ using ddla.ITApplication.Database;
 namespace ITAsset_DDLA.Migrations
 {
     [DbContext(typeof(ddlaAppDBContext))]
-    partial class ddlaAppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250805075542_OneToOne_Relation_Created")]
+    partial class OneToOne_Relation_Created
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -346,9 +349,6 @@ namespace ITAsset_DDLA.Migrations
                     b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("GroupCode")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -373,7 +373,8 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StockProductId");
+                    b.HasIndex("StockProductId")
+                        .IsUnique();
 
                     b.ToTable("Products");
                 });
@@ -443,8 +444,8 @@ namespace ITAsset_DDLA.Migrations
             modelBuilder.Entity("ddla.ITApplication.Database.Models.DomainModels.Product", b =>
                 {
                     b.HasOne("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", "StockProduct")
-                        .WithMany("Products")
-                        .HasForeignKey("StockProductId")
+                        .WithOne("Product")
+                        .HasForeignKey("ddla.ITApplication.Database.Models.DomainModels.Product", "StockProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -453,7 +454,7 @@ namespace ITAsset_DDLA.Migrations
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("Product");
                 });
 #pragma warning restore 612, 618
         }

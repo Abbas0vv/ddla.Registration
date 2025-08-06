@@ -79,7 +79,7 @@ public class HomeController : Controller
             }
         }
 
-        int totalAvailable = stockProducts.Sum(p => p.AvailableCount);
+        int totalAvailable = await _productService.GetAviableProductCount();
 
         if (createModel.Count > totalAvailable)
         {
@@ -111,17 +111,14 @@ public class HomeController : Controller
     public async Task<IActionResult> Update(int? id)
     {
         var product = await _productService.GetByIdAsync(id);
-        var stockProduct = await _stockService.GetByIdAsync(product.StockProductId);
         if (id is null || product is null) return RedirectToAction("NotFound", "Shared");
 
         var viewModel = new UpdateProductViewModel()
         {
             Recipient = product.Recipient,
             InventarId = product.InventarId,
-            Count = product.InUseCount,
             DateofReceipt = product.DateofReceipt,
             DocumentPath = product.FilePath,
-            StockProductId = stockProduct.Id
         };
 
         var model = new DoubleUpdateProductTypeViewModel

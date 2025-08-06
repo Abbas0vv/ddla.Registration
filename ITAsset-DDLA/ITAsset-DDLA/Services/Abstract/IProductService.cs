@@ -7,8 +7,10 @@ namespace ddla.ITApplication.Services.Abstract;
 public interface IProductService
 {
     Task<List<Product>> GetAllAsync();
+    Task<int> GetAviableProductCount();
     Task<List<Product>> GetSomeAsync(int value);
     Task<Product> GetByIdAsync(int? id);
+    Task<Product> GetByNameAsync(string name);
     Task InsertAsync(CreateProductViewModel model, StockProduct stockProduct);
     Task InsertMultipleAsync(CreateProductViewModel model, List<StockProduct> stockProducts);
     Task RemoveAsync(int? id);

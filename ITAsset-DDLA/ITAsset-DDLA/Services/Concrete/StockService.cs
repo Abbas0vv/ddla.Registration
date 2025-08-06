@@ -1,6 +1,7 @@
 ﻿using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
 using ddla.ITApplication.Helpers.Extentions;
+using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Services.Abstract;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +12,14 @@ public class StockService : IStockService
 {
     private readonly ddlaAppDBContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly IProductService _productService;
     private const string FOLDER_NAME = "assets/images/Uploads/Products";
 
-    public StockService(ddlaAppDBContext context, IWebHostEnvironment webHostEnvironment)
+    public StockService(ddlaAppDBContext context, IWebHostEnvironment webHostEnvironment, IProductService productService)
     {
         _context = context;
         _webHostEnvironment = webHostEnvironment;
+        _productService = productService;
     }
 
     public async Task<List<StockProduct>> GetAllAsync()
@@ -25,6 +28,35 @@ public class StockService : IStockService
             .Include(sp => sp.Products)
             .OrderBy(sp => sp.Id)
             .ToListAsync();
+    }
+
+    public async Task<int> GetTotalCount(List<StockProduct> stockProducts)
+    {
+        var productNames = stockProducts.Select(sp => sp.Name).Distinct().ToList();
+
+        var totalCount = await _context.StockProducts
+            .Where(sp => productNames.Contains(sp.Name))
+            .CountAsync();
+
+        return totalCount;
+    }
+
+    public async Task<List<StockProduct>> GetAllByDescriptionAsync(string description)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+            return new List<StockProduct>();
+
+        return await _context.StockProducts
+            .Where(sp => sp.Description.ToLower() == description.ToLower())
+            .ToListAsync();
+    }
+
+
+    public async Task<int> GetStockProductCountByNameAsync(string name)
+    {
+        return await _context.StockProducts
+            .Where(sp => sp.Name == name)
+            .CountAsync();
     }
 
     public async Task<List<StockProduct>> GetByIdsAsync(List<int> ids)
@@ -71,12 +103,6 @@ public class StockService : IStockService
 
         if (stockProduct == null) return;
 
-        // Check if any products are still using this stock
-        if (stockProduct.Products.Any())
-        {
-            throw new Exception("Cannot delete StockProduct that has registered Products");
-        }
-
         FileExtention.RemoveFile(Path.Combine(_webHostEnvironment.WebRootPath, FOLDER_NAME, stockProduct.ImageUrl));
         _context.Remove(stockProduct);
         await _context.SaveChangesAsync();
@@ -90,9 +116,10 @@ public class StockService : IStockService
         if (stockProduct == null) return;
 
         // Check if we're reducing the total count below what's already in use
-        if (model.TotalCount < stockProduct.InUseCount)
+        var InUseCount = model.TotalCount - await _productService.GetAviableProductCount();
+        if (model.TotalCount < InUseCount)
         {
-            throw new Exception($"Cannot reduce total count below currently in-use count ({stockProduct.InUseCount})");
+            throw new Exception($"Cannot reduce total count below currently in-use count ({InUseCount})");
         }
 
         stockProduct.Name = model.Name;
