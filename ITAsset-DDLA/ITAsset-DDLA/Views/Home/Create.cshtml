@@ -30,19 +30,34 @@
                             <!-- Product Type Selection -->
                             <div class="mb-3">
                                 <label class="form-label">Məhsul növü:</label>
-                                <select id="productType" class="form-select" onchange="loadProductsByType()">
-                                    <option value="">-- Növ seçin --</option>
-                                    <!-- This will be populated by JavaScript -->
+                                <select id="productType" class="form-select" onchange="filterProductsByType()">
+                                    <option value="">-- Bütün növlər --</option>
+                                    @foreach (var type in Model.StockProducts.Select(p => p.Name).Distinct())
+                                    {
+                                        <option value="@type">@type</option>
+                                    }
                                 </select>
                             </div>
 
-                            <!-- Product Selection (Multiple) -->
+                            <!-- Product Selection (Checkboxes) -->
                             <div class="mb-3">
                                 <label class="form-label">Məhsullar (Çoxlu seçim):</label>
-                                <select id="productSelection" asp-for="CreateProductViewModel.StockProductIds"
-                                        class="form-select" multiple size="5" style="min-height: 100px;">
-                                    <option value="">-- Əvvəlcə növ seçin --</option>
-                                </select>
+                                <div id="productCheckboxes" style="max-height: 300px; overflow-y: auto;">
+                                    @foreach (var product in Model.StockProducts)
+                                    {
+                                        <div class="form-check product-item" data-type="@product.Name">
+                                            <input class="form-check-input product-checkbox"
+                                                   type="checkbox"
+                                                   name="CreateProductViewModel.StockProductIds"
+                                                   value="@product.Id"
+                                                   id="product_@product.Id"
+                                                   onchange="updateSelectedProducts()" />
+                                            <label class="form-check-label" for="product_@product.Id">
+                                                @product.Name (İnventar: @product.InventoryCode)
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
                                 <span asp-validation-for="CreateProductViewModel.StockProductIds" class="error-message"></span>
                             </div>
 
@@ -50,10 +65,11 @@
                             <div id="selectedProductsContainer" class="mt-3">
                                 <h6>Seçilmiş Məhsullar:</h6>
                                 <div id="selectedProductsList" class="list-group">
-                                    <!-- Selected products will appear here -->
+                                    <div class="text-muted">Heç bir məhsul seçilməyib</div>
                                 </div>
                             </div>
                         </div>
+
 
                     </div>
 
@@ -116,115 +132,83 @@
     </div>
 </div>
 <script>
-    // Extract all products from server-side model
-    const allProducts = [
-        @foreach (var product in Model.StockProducts)
-        {
-                <text>{
-                    id: "@product.Id",
-                    name: "@product.Name",
-                    inventoryCode: "@product.InventoryCode",
-                    type: "@product.Name".split(' ')[0].toLowerCase()
-                },</text>
-        }
-    ];
+    // Track all products data
+     const allProducts = [
+         @foreach (var product in Model.StockProducts)
+         {
+                 <text>{
+                     id: "@product.Id",
+                     name: "@product.Name",
+                     inventoryCode: "@product.InventoryCode",
+                     type: "@product.Name"
+                 },</text>
+         }
+     ];
 
-    // Track all selected products
-    let selectedProducts = [];
+     // Filter products by type
+     function filterProductsByType() {
+         const selectedType = document.getElementById('productType').value;
+         const productItems = document.querySelectorAll('.product-item');
 
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get unique product types
-        const productTypes = [...new Set(allProducts.map(p => p.type))];
-        const typeSelect = document.getElementById('productType');
+         productItems.forEach(item => {
+             if (selectedType === "" || item.dataset.type === selectedType) {
+                 item.style.display = 'block';
+             } else {
+                 item.style.display = 'none';
+             }
+         });
+     }
 
-        // Populate type dropdown
-        productTypes.forEach(type => {
-            const displayType = type.charAt(0).toUpperCase() + type.slice(1);
-            typeSelect.add(new Option(displayType, type));
-        });
+     // Update selected products list
+     function updateSelectedProducts() {
+         const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+         const selectedList = document.getElementById('selectedProductsList');
 
-        // Add event listener for product selection changes
-        document.getElementById('productSelection').addEventListener('change', function(e) {
-            const selectedOptions = Array.from(this.selectedOptions).map(opt => opt.value);
+         if (checkboxes.length === 0) {
+             selectedList.innerHTML = '<div class="text-muted">Heç bir məhsul seçilməyib</div>';
+             return;
+         }
 
-            // Update our selected products array
-            selectedProducts = allProducts.filter(p => selectedOptions.includes(p.id));
+         selectedList.innerHTML = '';
 
-            // Update the display
-            showSelectedProducts();
-        });
-    });
+         checkboxes.forEach(checkbox => {
+             const productId = checkbox.value;
+             const product = allProducts.find(p => p.id === productId);
 
-    function loadProductsByType() {
-        const selectedType = document.getElementById('productType').value;
-        const productSelect = document.getElementById('productSelection');
+             if (product) {
+                 const productCard = document.createElement('div');
+                 productCard.className = 'list-group-item mb-2';
+                 productCard.innerHTML = `
+                     <div class="d-flex justify-content-between align-items-center">
+                         <div>
+                             <strong>${product.name}</strong><br>
+                             <small>İnventar kodu: ${product.inventoryCode}</small>
+                         </div>
+                         <button type="button" class="btn btn-sm btn-outline-danger"
+                                 onclick="unselectProduct('${product.id}')">
+                             <i class="fas fa-times"></i>
+                         </button>
+                     </div>
+                 `;
+                 selectedList.appendChild(productCard);
+             }
+         });
+     }
 
-        // Clear previous options
-        productSelect.innerHTML = '<option value="">-- Məhsul seçin --</option>';
+     // Unselect a product
+     function unselectProduct(productId) {
+         const checkbox = document.querySelector(`.product-checkbox[value="${productId}"]`);
+         if (checkbox) {
+             checkbox.checked = false;
+             updateSelectedProducts();
+         }
+     }
 
-        if (selectedType) {
-            // Filter products by type
-            const filteredProducts = allProducts.filter(p => p.type === selectedType);
-
-            // Add products to dropdown
-            filteredProducts.forEach(product => {
-                const option = new Option(`${product.name} (${product.inventoryCode})`, product.id);
-                // Keep selected if already in our selectedProducts array
-                if (selectedProducts.some(p => p.id === product.id)) {
-                    option.selected = true;
-                }
-                productSelect.add(option);
-            });
-        }
-    }
-
-    function showSelectedProducts() {
-        const productsList = document.getElementById('selectedProductsList');
-
-        // Clear previous list
-        productsList.innerHTML = '';
-
-        if (selectedProducts.length === 0) {
-            productsList.innerHTML = '<div class="text-muted">Heç bir məhsul seçilməyib</div>';
-            return;
-        }
-
-        // Create a card for each selected product
-        selectedProducts.forEach(product => {
-            const productCard = document.createElement('div');
-            productCard.className = 'list-group-item mb-2';
-            productCard.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>${product.name}</strong><br>
-                        <small>İnventar kodu: ${product.inventoryCode}</small>
-                    </div>
-                    <button type="button" class="btn btn-sm btn-outline-danger"
-                            onclick="removeSelectedProduct('${product.id}')">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-            productsList.appendChild(productCard);
-        });
-    }
-
-    function removeSelectedProduct(productId) {
-        // Remove from our selectedProducts array
-        selectedProducts = selectedProducts.filter(p => p.id !== productId);
-
-        // Update the select element
-        const productSelect = document.getElementById('productSelection');
-        const optionToRemove = Array.from(productSelect.options).find(opt => opt.value === productId);
-        if (optionToRemove) {
-            optionToRemove.selected = false;
-        }
-
-        // Update the display
-        showSelectedProducts();
-    }
-      document.addEventListener('DOMContentLoaded', function() {
+     // Initialize type filter
+     document.addEventListener('DOMContentLoaded', function() {
+         filterProductsByType();
+     });
+     document.addEventListener('DOMContentLoaded', function() {
         const stockProductSelect = document.getElementById('stockProductSelect');
         const inventoryContainer = document.getElementById('inventoryItemsContainer');
         const countInput = document.getElementById('CreateProductViewModel_Count');
