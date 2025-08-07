@@ -14,4 +14,5 @@ public interface IStockService
     Task InsertAsync(CreateStockViewModel model);
     Task RemoveAsync(int? id);
     Task UpdateAsync(int? id, UpdateStockViewModel model);
+    Task ToggleStatusAsync(int? id);
 }

@@ -45,7 +45,7 @@
                                 <th></th>
                                 <th><input type="text" class="form-control column-search" data-column="1" placeholder="Məhsul adı"></th>
                                 <th><input type="text" class="form-control column-search" data-column="2" placeholder="Təsvir"></th>
-                                <th></th>
+                                @* <th></th> *@
                                 <th><input type="text" class="form-control column-search" data-column="4" placeholder="Ümumi sayı"></th>
                                 <th><input type="text" class="form-control column-search" data-column="4" placeholder="İstifadədə olan"></th>
                                 <th><input type="text" class="form-control column-search" data-column="4" placeholder="Hazırda"></th>
@@ -55,7 +55,7 @@
                                 <th>#</th>
                                 <th>Məhsul adı</th>
                                 <th>Təsvir</th>
-                                <th>Şəkil</th>
+                                @* <th>Şəkil</th> *@
                                 <th>Ümumi Sayı</th>
                                 <th>Istifadədə Olan</th>
                                 <th>Hazırda</th>
@@ -72,12 +72,12 @@
                                         <td>@count</td>
                                         <td>@item.Name</td>
                                         <td>@item.Description</td>
-                                        <td>
+@*                                         <td>
                                             <img src="~/assets/images/Uploads/Products/@item.ImagePath" 
                                                  alt="Məhsul şəkli"
                                                  class="file-preview"
                                                  style="object-fit:contain;object-position:center;">
-                                        </td>
+                                        </td> *@
                                         <td>@item.TotalCount</td>
                                         <td>@item.InUseCount</td>
                                         <td>@item.AvailableCount</td>

@@ -9,15 +9,17 @@
 
   <ItemGroup>
     <Compile Remove="Database\Repositories\**" />
+    <Compile Remove="wwwroot\assets\images\Uploads\Documents\**" />
+    <Compile Remove="wwwroot\assets\images\Uploads\ProfilePicture\**" />
     <Content Remove="Database\Repositories\**" />
+    <Content Remove="wwwroot\assets\images\Uploads\Documents\**" />
+    <Content Remove="wwwroot\assets\images\Uploads\ProfilePicture\**" />
     <EmbeddedResource Remove="Database\Repositories\**" />
+    <EmbeddedResource Remove="wwwroot\assets\images\Uploads\Documents\**" />
+    <EmbeddedResource Remove="wwwroot\assets\images\Uploads\ProfilePicture\**" />
     <None Remove="Database\Repositories\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\assets\images\Uploads\Documents\" />
-    <Folder Include="wwwroot\assets\images\Uploads\Products\" />
-    <Folder Include="wwwroot\assets\images\Uploads\ProfilePicture\" />
+    <None Remove="wwwroot\assets\images\Uploads\Documents\**" />
+    <None Remove="wwwroot\assets\images\Uploads\ProfilePicture\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +31,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\images\Uploads\Products\" />
   </ItemGroup>
 
 </Project>

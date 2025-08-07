@@ -136,4 +136,15 @@ public class StockService : IStockService
 
         await _context.SaveChangesAsync();
     }
+
+    public async Task ToggleStatusAsync(int? id)
+    {
+        StockProduct product = await GetByIdAsync(id);
+
+        if (product is null)
+            return;
+
+        product.IsActive = !product.IsActive;
+        await _context.SaveChangesAsync();
+    }
 }
