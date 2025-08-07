@@ -7,5 +7,5 @@ namespace ITAsset_DDLA.Database.Models.ViewModels.Shared;
 public class DoubleCreateProductTypeViewModel
 {
     public CreateProductViewModel CreateProductViewModel { get; set; }
-    public List<StockProduct> StockProducts { get; set; }
+    public List<StockProduct>? StockProducts { get; set; }
 }

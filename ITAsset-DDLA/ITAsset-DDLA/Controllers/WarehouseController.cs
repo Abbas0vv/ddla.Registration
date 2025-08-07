@@ -21,30 +21,23 @@ public class WarehouseController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var products = await _productService.GetAllAsync();
         var stockProducts = await _stockService.GetAllAsync();
 
-        var groupedProducts = new List<GroupedProductViewModel>();
-
-        foreach (var group in stockProducts.GroupBy(p => p.Name))
-        {
-            var firstProduct = group.FirstOrDefault();
-            var availableCount = await _productService.GetAviableProductCount();
-
-            var viewModel = new GroupedProductViewModel
+        var grouped = stockProducts
+            .GroupBy(sp => sp.Description)
+            .Select(group => new GroupedProductViewModel
             {
-                Name = group.Key,
-                Description = firstProduct?.Description ?? string.Empty,
+                Name = group.First().Name,
+                Description = group.Key,
+                ProductCodePrefix = group.First().InventoryCode.Split('-')[0], // istəyə görə düzəlt
                 TotalCount = group.Count(),
-                ImagePath = firstProduct?.ImageUrl ?? string.Empty,
-                AvailableCount = availableCount,
-                InUseCount = group.Count() - availableCount
-            };
+                InUseCount = group.Count(sp => !sp.IsActive),
+                AvailableCount = group.Count(sp => sp.IsActive),
+                ImagePath = group.First().ImageUrl
+            })
+            .ToList();
 
-            groupedProducts.Add(viewModel);
-        }
-
-        return View(groupedProducts);
+        return View(grouped);
     }
 
     [HttpGet]

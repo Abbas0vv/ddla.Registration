@@ -36,7 +36,6 @@
                         <th>Təsvir</th>
                         <th>Departament</th>
                         <th>Şöbə</th>
-                        <th>Sayı</th>
                         <th>Verilmə tarixi</th>
                         <th>Alınma tarixi</th>
                         <th>Fayl</th>
@@ -66,9 +65,8 @@
                                 }
                             </select>
                         </th>
-                        <th><input type="number" class="form-control form-control-sm" placeholder="Axtar..." data-column="7"></th>
+                        <th><input type="text" class="form-control form-control-sm datepicker" placeholder="dd.mm.yyyy" data-column="7"></th>
                         <th><input type="text" class="form-control form-control-sm datepicker" placeholder="dd.mm.yyyy" data-column="8"></th>
-                        <th><input type="text" class="form-control form-control-sm datepicker" placeholder="dd.mm.yyyy" data-column="9"></th>
                         <th></th> <!-- Fayl -->
                         <th></th> <!-- Əməliyyatlar -->
                     </tr>
@@ -90,7 +88,6 @@
                                 <td>
                                     <span class="badge badge-department" style="background-color:#005b96">@item.Unit.ToString()</span>
                                 </td>
-                                <td>@ViewBag.AviableCount</td>
                                 <td data-order="@item.DateofIssue.ToString("yyyy-MM-dd HH:mm")">@item.DateofIssue.ToString("dd.MM.yyyy HH:mm")</td>
                                 <td data-order="@(item.DateofReceipt?.ToString("yyyy-MM-dd HH:mm") ?? "")">
                                     @if (item.DateofReceipt.HasValue)
@@ -108,6 +105,12 @@
                                         <a href="@item.FilePath" class="btn btn-sm btn-outline-primary" download>
                                             <i class="fas fa-download"></i>
                                         </a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-outline-primary" disabled>
+                                            <i class="fas fa-download"></i>
+                                        </button>
                                     }
                                 </td>
                                 <td>

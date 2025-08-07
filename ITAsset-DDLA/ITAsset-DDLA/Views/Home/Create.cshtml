@@ -43,7 +43,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Məhsullar (Çoxlu seçim):</label>
                                 <div id="productCheckboxes" style="max-height: 100px; overflow-y: auto;">
-                                    @foreach (var product in Model.StockProducts)
+                                    @foreach (var product in Model.StockProducts.Where(p => p.IsActive))
                                     {
                                         <div class="form-check product-item" data-type="@product.Name">
                                             <input class="form-check-input product-checkbox"

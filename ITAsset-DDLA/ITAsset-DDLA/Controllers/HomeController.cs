@@ -6,7 +6,6 @@ using ITAsset_DDLA.Database.Models.ViewModels.Shared;
 using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 namespace ddla.ITApplication.Controllers;
 
@@ -17,13 +16,19 @@ public class HomeController : Controller
     private readonly IStockService _stockService;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly ddlaAppDBContext _context;
-    public HomeController(IProductService productService, IWebHostEnvironment webHostEnvironment, IStockService stockService, ddlaAppDBContext context)
+
+    public HomeController(
+        IProductService productService,
+        IWebHostEnvironment webHostEnvironment,
+        IStockService stockService,
+        ddlaAppDBContext context)
     {
         _productService = productService;
         _webHostEnvironment = webHostEnvironment;
         _stockService = stockService;
         _context = context;
     }
+
 
     public async Task<IActionResult> Index()
     {
@@ -47,66 +52,16 @@ public class HomeController : Controller
     public async Task<IActionResult> Create(DoubleCreateProductTypeViewModel model)
     {
         if (!ModelState.IsValid)
-            return View(model);
-
-        var createModel = model.CreateProductViewModel;
-
-        List<StockProduct> stockProducts;
-
-        if (createModel.StockProductIds.Count == 1)
         {
-            // Tək məhsul
-            var stockProduct = await _stockService.GetByIdAsync(createModel.StockProductIds.First());
-            if (stockProduct == null)
-            {
-                ModelState.AddModelError("", "Seçilmiş məhsul tapılmadı");
-                model.StockProducts = await _stockService.GetAllAsync();
-                return View(model);
-            }
-
-            stockProducts = new List<StockProduct> { stockProduct };
-        }
-        else
-        {
-            // Çox məhsul
-            stockProducts = await _stockService.GetByIdsAsync(createModel.StockProductIds);
-
-            if (stockProducts == null || stockProducts.Count != createModel.StockProductIds.Count)
-            {
-                ModelState.AddModelError("", "Bəzi seçilmiş məhsullar tapılmadı");
-                model.StockProducts = await _stockService.GetAllAsync();
-                return View(model);
-            }
-        }
-
-        int totalAvailable = await _productService.GetAviableProductCount();
-
-        if (createModel.Count > totalAvailable)
-        {
-            ModelState.AddModelError("CreateProductViewModel.Count", $"Yalnız {totalAvailable} ədəd məhsul mövcuddur");
-            model.StockProducts = await _stockService.GetAllAsync();
+            model.StockProducts = await _context.StockProducts.ToListAsync();
             return View(model);
         }
 
-        await _productService.InsertMultipleAsync(createModel, stockProducts);
+
+        await _productService.InsertMultipleAsync(model);
 
         return RedirectToAction(nameof(Index));
     }
-
-    [HttpPost]
-    public IActionResult GetInventoryCodes(int stockProductId)
-    {
-        var codes = _context.InventoryItems
-            .Where(i => i.StockProductId == stockProductId && i.IsAvailable)
-            .Select(i => new
-            {
-                Id = i.Id,
-                Code = i.InventoryCode
-            }).ToList();
-
-        return Json(codes);
-    }
-
     [HttpGet]
     public async Task<IActionResult> Update(int? id)
     {

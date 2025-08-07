@@ -12,10 +12,13 @@ public class StockService : IStockService
 {
     private readonly ddlaAppDBContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly IProductService _productService;
+    private readonly Lazy<IProductService> _productService;
     private const string FOLDER_NAME = "assets/images/Uploads/Products";
 
-    public StockService(ddlaAppDBContext context, IWebHostEnvironment webHostEnvironment, IProductService productService)
+    public StockService(
+        ddlaAppDBContext context,
+        IWebHostEnvironment webHostEnvironment,
+        Lazy<IProductService> productService)
     {
         _context = context;
         _webHostEnvironment = webHostEnvironment;
@@ -116,7 +119,7 @@ public class StockService : IStockService
         if (stockProduct == null) return;
 
         // Check if we're reducing the total count below what's already in use
-        var InUseCount = model.TotalCount - await _productService.GetAviableProductCount();
+        var InUseCount = model.TotalCount - await _productService.Value.GetAviableProductCount();
         if (model.TotalCount < InUseCount)
         {
             throw new Exception($"Cannot reduce total count below currently in-use count ({InUseCount})");

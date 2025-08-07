@@ -4,6 +4,8 @@ using ddla.ITApplication.Database.Models.ViewModels.Product;
 using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.DomainModels;
+using ITAsset_DDLA.Database.Models.ViewModels.Shared;
+using ITAsset_DDLA.Services.Abstract;
 using Microsoft.EntityFrameworkCore;
 
 namespace ddla.ITApplication.Services.Concrete;
@@ -12,11 +14,16 @@ public class ProductService : IProductService
 {
     private readonly ddlaAppDBContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly IStockService _stockService;
     private const string FOLDER_NAME = "assets/images/Uploads/Products";
-    public ProductService(ddlaAppDBContext context, IWebHostEnvironment webHostEnvironment)
+    public ProductService(
+        ddlaAppDBContext context, 
+        IWebHostEnvironment webHostEnvironment, 
+        IStockService stockService)
     {
         _context = context;
         _webHostEnvironment = webHostEnvironment;
+        _stockService = stockService;
     }
 
     #region Methods
@@ -49,96 +56,51 @@ public class ProductService : IProductService
     {
         return await _context.Products.FirstOrDefaultAsync(s => s.Name == name);
     }
-    public async Task InsertAsync(CreateProductViewModel model, StockProduct stockProduct)
+    public async Task InsertMultipleAsync(DoubleCreateProductTypeViewModel model)
     {
-        if (stockProduct == null)
-            throw new Exception("Selected stock product not found");
-
-        var selectedInventoryItems = await _context.InventoryItems
-            .Where(i => model.SelectedInventoryItemIds.Contains(i.Id))
-            .ToListAsync();
-
-
-        // Validate we have the correct count
-        if (selectedInventoryItems.Count != model.Count)
-            throw new Exception("Selected inventory items count doesn't match the specified count");
-
-        if (model.Count > await GetAviableProductCount())
-            throw new Exception($"Not enough items available. Available: {await GetAviableProductCount()}, Requested: {model.Count}");
-
-        foreach (var stockProductId in model.StockProductIds)
+        // Validate input
+        if (model == null || model.CreateProductViewModel.StockProductIds == null || !model.CreateProductViewModel.StockProductIds.Any())
         {
-            var product = new Product
-            {
-                Name = stockProduct?.Name ?? string.Empty, // Null check with fallback
-                Description = stockProduct?.Description ?? string.Empty,
-                Recipient = model.Recipient.Trim(),
-                Department = model.DepartmentName,
-                Unit = model.UnitName,
-                DateofIssue = model.DateofReceipt ?? DateTime.Now, // Use provided date or current
-                ImageUrl = stockProduct?.ImageUrl ?? string.Empty,
-                FilePath = model.DocumentFile != null ?
-                    model.DocumentFile.CreateImageFile(_webHostEnvironment.WebRootPath, "assets/images/Uploads/Documents") :
-                    null
-            };
-
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
+            throw new ArgumentException("Invalid input data - model or product IDs cannot be null/empty");
         }
-    }
-    public async Task InsertMultipleAsync(CreateProductViewModel model, List<StockProduct> stockProducts)
-    {
-        if (stockProducts == null || stockProducts.Count == 0)
-            throw new Exception("Heç bir stock məhsul tapılmadı");
 
-        var selectedInventoryItems = await _context.InventoryItems
-            .Where(i => model.SelectedInventoryItemIds.Contains(i.Id))
-            .ToListAsync();
-
-        // Check selected inventory item count
-        if (selectedInventoryItems.Count != model.Count)
-            throw new Exception("Seçilmiş inventar sayı ilə daxil edilən say uyğun deyil");
-
-
-        int totalAvailable = await GetAviableProductCount();
-        if (model.Count > totalAvailable)
-            throw new Exception($"Kifayət qədər məhsul yoxdur. Mövcud: {totalAvailable}, Tələb olunan: {model.Count}");
-
-        // Bölüşdürmək üçün göstəricilər
-        int remainingCount = model.Count;
-        int inventoryIndex = 0;
-
+        // Get the selected stock products
+        var stockProducts = await _stockService.GetByIdsAsync(model.CreateProductViewModel.StockProductIds);
         foreach (var stockProduct in stockProducts)
         {
-            if (remainingCount == 0) break;
-
-            int useCount = Math.Min(await GetAviableProductCount(), remainingCount);
-            var usedInventoryItems = selectedInventoryItems
-                .Skip(inventoryIndex)
-                .Take(useCount)
-                .ToList();
-
-            var product = new Product
-            {
-                Name = stockProduct.Name ?? string.Empty,
-                Description = stockProduct.Description ?? string.Empty,
-                Recipient = model.Recipient.Trim(),
-                Department = model.DepartmentName,
-                Unit = model.UnitName,
-                DateofIssue = model.DateofReceipt ?? DateTime.Now,
-                ImageUrl = stockProduct.ImageUrl ?? string.Empty,
-                FilePath = model.DocumentFile != null ?
-                    model.DocumentFile.CreateImageFile(_webHostEnvironment.WebRootPath, "assets/images/Uploads/Documents") :
-                    null,
-            };
-
-            _context.Products.Add(product);
-
-            remainingCount -= useCount;
-            inventoryIndex += useCount;
+            stockProduct.IsActive = false; // Deactivate stock products
+        }
+        // Verify we found all requested products
+        if (stockProducts.Count != model.CreateProductViewModel.StockProductIds.Count)
+        {
+            var missingIds = model.CreateProductViewModel.StockProductIds.Except(stockProducts.Select(sp => sp.Id)).ToList();
+            throw new KeyNotFoundException($"Could not find all requested stock products. Missing IDs: {string.Join(",", missingIds)}");
         }
 
+        // Process documents if they exist
+        string filePath = null;
+
+        if (model.CreateProductViewModel.DocumentFile != null)
+            filePath = FileExtention.CreateFile(model.CreateProductViewModel.DocumentFile,
+                    _webHostEnvironment.WebRootPath, FOLDER_NAME);
+
+        // Create products
+        var products = stockProducts.Select(stockItem => new Product
+        {
+            InventarId = stockItem.InventoryCode,
+            Recipient = model.CreateProductViewModel.Recipient,
+            Name = stockItem.Name,
+            Description = stockItem.Description,
+            ImageUrl = stockItem.ImageUrl,
+            FilePath = filePath,
+            Department = model.CreateProductViewModel.DepartmentName,
+            Unit = model.CreateProductViewModel.UnitName,
+            DateofReceipt = model.CreateProductViewModel.DateofReceipt,
+            StockProductId = stockItem.Id
+        }).ToList();
+
+        // Add all products at once
+        await _context.Products.AddRangeAsync(products);
         await _context.SaveChangesAsync();
     }
 
