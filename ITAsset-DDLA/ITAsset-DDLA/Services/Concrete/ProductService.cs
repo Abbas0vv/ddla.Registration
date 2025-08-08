@@ -34,14 +34,12 @@ public class ProductService : IProductService
             .OrderBy(p => p.Id)
             .ToListAsync();
     }
-
     public async Task<int> GetAviableProductCount()
     {
         return await _context.Products
             .Where(p => p.DateofReceipt == null)
             .CountAsync();
     }
-
     public async Task<List<Product>> GetSomeAsync(int value)
     {
         var numberOfProducts = await _context.Products.CountAsync();
@@ -55,6 +53,12 @@ public class ProductService : IProductService
     public async Task<Product> GetByNameAsync(string name)
     {
         return await _context.Products.FirstOrDefaultAsync(s => s.Name == name);
+    }
+    public async Task<Product> GetProductByStockIdAsync(int? stockId)
+    {
+        return await _context.Products
+            .Include(p => p.StockProduct)
+            .FirstOrDefaultAsync(s => s.StockProductId == stockId);
     }
     public async Task InsertMultipleAsync(DoubleCreateProductTypeViewModel model)
     {
@@ -103,7 +107,6 @@ public class ProductService : IProductService
         await _context.Products.AddRangeAsync(products);
         await _context.SaveChangesAsync();
     }
-
     public async Task RemoveAsync(int? id)
     {
         if (id is null) return;
@@ -112,28 +115,39 @@ public class ProductService : IProductService
             .Include(p => p.StockProduct)
             .FirstOrDefaultAsync(p => p.Id == id);
 
-        if (product == null) return;
+        if (product is null) return;
+
+        var stockProduct = await _stockService.GetByIdAsync(product.StockProductId);
+        stockProduct.IsActive = true; // Reactivate stock product
 
         // No need to manually update StockProduct because it's computed
         FileExtention.RemoveFile(Path.Combine(_webHostEnvironment.WebRootPath, FOLDER_NAME, product.ImageUrl));
         _context.Remove(product);
         await _context.SaveChangesAsync();
     }
-    public async Task UpdateAsync(int? id, UpdateProductViewModel model, StockProduct stockProduct)
+    public async Task UpdateAsync(DoubleUpdateProductTypeViewModel model)
     {
-        if (id is null) return;
+        var existingProduct = await GetProductByStockIdAsync(model.UpdateProductViewModel.StockProductId);
+        if (existingProduct == null)
+            throw new KeyNotFoundException($"Product not found");
 
-        var product = await _context.Products
-            .Include(p => p.StockProduct)
-            .ThenInclude(sp => sp.Products)
-            .FirstOrDefaultAsync(p => p.Id == id);
+        // Process documents if they exist
+        string filePath = existingProduct.FilePath;
+        if (model.UpdateProductViewModel.DocumentFile != null)
+        {
+            // Delete old file if exists
+            if (!string.IsNullOrEmpty(filePath))
+                FileExtention.RemoveFile(Path.Combine(filePath, _webHostEnvironment.WebRootPath, FOLDER_NAME));
+            filePath = FileExtention.CreateFile(model.UpdateProductViewModel.DocumentFile,
+                    _webHostEnvironment.WebRootPath, FOLDER_NAME);
+        }
 
-        if (product == null) return;
-
-        // Update properties
-        product.Department = model.DepartmentName;
-        product.Unit = model.UnitName;
-        product.DateofReceipt = model.DateofReceipt;
+        // Update product
+        existingProduct.Recipient = model.UpdateProductViewModel.Recipient;
+        existingProduct.Department = model.UpdateProductViewModel.DepartmentName;
+        existingProduct.Unit = model.UpdateProductViewModel.UnitName;
+        existingProduct.DateofReceipt = model.UpdateProductViewModel.DateofReceipt;
+        existingProduct.FilePath = filePath;
 
         await _context.SaveChangesAsync();
     }

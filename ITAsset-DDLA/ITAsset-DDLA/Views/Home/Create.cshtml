@@ -10,8 +10,15 @@
 
 <div class="main-content">
     <div class="container">
+        <div class="logo-header">
+            <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+            <div class="logo-text">
+                <h1>Yeni məhsul qeydiyyatı</h1>
+                <small>Dövlət Dəniz və Liman Agentliyi</small>
+            </div>
+        </div>
+
         <div class="registration-card">
-            <h2 class="section-title">Yeni məhsul qeydiyyatı</h2>
 
             <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
                 <div class="row">
@@ -136,12 +143,12 @@
      const allProducts = [
          @foreach (var product in Model.StockProducts)
          {
-                 <text>{
-                     id: "@product.Id",
-                     name: "@product.Name",
-                     inventoryCode: "@product.InventoryCode",
-                     type: "@product.Name"
-                 },</text>
+                     <text>{
+                         id: "@product.Id",
+                         name: "@product.Name",
+                         inventoryCode: "@product.InventoryCode",
+                         type: "@product.Name"
+                     },</text>
          }
      ];
 

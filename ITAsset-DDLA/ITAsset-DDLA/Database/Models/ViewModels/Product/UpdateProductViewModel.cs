@@ -11,40 +11,21 @@ public class UpdateProductViewModel
     [StringLength(100, ErrorMessage = "Məhsulu təhvil alan maksimum 100 simvol ola bilər")]
     public string Recipient { get; set; }
 
-    [Required(ErrorMessage = "Məhsulun INVENTAR kodu mütləq olmalıdır")]
-    [Display(Name = "Məhsulun INVENTAR kodu")]
-    [StringLength(100, ErrorMessage = "Məhsulun INVENTAR kodu maksimum 12 simvol ola bilər")]
-    public string InventarId { get; set; }
-
     [Required(ErrorMessage = "Departament seçilməlidir")]
     [Display(Name = "Departament")]
-    public DepartmentName DepartmentName { get; set; } // Changed to enum type
+    public DepartmentName DepartmentName { get; set; }
 
     [Required(ErrorMessage = "Şöbə seçilməlidir")]
     [Display(Name = "Şöbə")]
-    public UnitName UnitName { get; set; } // Changed to enum type
-
-    [Required(ErrorMessage = "Sayı mütləq doldurulmalıdır")]
-    [Display(Name = "Sayı")]
-    [Range(1, int.MaxValue, ErrorMessage = "Sayı 1-dən böyük olmalıdır")]
-    public int Count { get; set; }
+    public UnitName UnitName { get; set; }
 
     [Display(Name = "Fayl")]
     public IFormFile? DocumentFile { get; set; }
 
-    [Display(Name = "Cari Sənəd")]
-    public string? DocumentPath { get; set; }
-
     [Display(Name = "Alınma Tarixi")]
     public DateTime? DateofReceipt { get; set; }
 
-    // Add StockProductId to link to warehouse item
     [Required(ErrorMessage = "Məhsul seçilməlidir")]
-    [Display(Name = "Anbar Məhsulu")]
+    [Display(Name = "Məhsul")]
     public int StockProductId { get; set; }
-
-    // Add property to display available count (readonly)
-    [Display(Name = "Mövcud Sayı")]
-    public int AvailableCount { get; set; }
-
 }

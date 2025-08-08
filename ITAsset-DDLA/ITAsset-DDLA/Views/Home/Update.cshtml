@@ -7,90 +7,108 @@
 @{
     ViewData["Title"] = "Məhsul redaktəsi";
 }
-<head>
-    <link rel="stylesheet" href="~/assets/edit_add.css">
-</head>
-<div class="row justify-content-center mt-5">
-    <div class="col-lg-8 mt-3">
-        <div class="form-container">
-            <h1 class="page-title">
-                <img src="~/assets/images/ddlaLogo.png" alt="ddlaLogo" />
-                Məhsul redaktəsi
-            </h1>
+
+<div class="main-content">
+    <div class="container">
+        <div class="logo-header">
+            <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+            <div class="logo-text">
+                <h1>Məhsul redaktəsi</h1>
+                <small>Dövlət Dəniz və Liman Agentliyi</small>
+            </div>
+        </div>
+        <div class="registration-card">
 
             <form method="post" asp-action="Update" enctype="multipart/form-data" id="updateForm">
-                <div class="row g-2">
+                <input type="hidden" asp-for="UpdateProductViewModel.DocumentFile" />
+                <input type="hidden" asp-for="UpdateProductViewModel.StockProductId" />
+
+                <div class="row">
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="UpdateProductViewModel.Recipient" class="form-label"></label>
-                            <input asp-for="UpdateProductViewModel.Recipient" class="form-control" required placeholder="Məhsulu təhvil alan" />
-                            <span asp-validation-for="UpdateProductViewModel.Recipient" class="text-danger"></span>
+                        <!-- Recipient Section -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Məhsulu təhvil alan</h5>
+                            <input asp-for="UpdateProductViewModel.Recipient" class="form-control" placeholder="Ad soyad daxil edin" />
+                            <span asp-validation-for="UpdateProductViewModel.Recipient" class="error-message"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="UpdateProductViewModel.InventarId" class="form-label"></label>
-                            <input asp-for="UpdateProductViewModel.InventarId" class="form-control" required placeholder="Məhsulun INVENTAR kodu" />
-                            <span asp-validation-for="UpdateProductViewModel.InventarId" class="text-danger"></span>
-                        </div>
-                        <div class="mb-3">
-                            <label asp-for="UpdateProductViewModel.DocumentFile" class="form-label"></label>
-                            <div class="file-input-container">
-                                <label for="DocumentFile" class="file-input-label">
-                                    <span class="file-input-text">Fayl seçin...</span>
-                                    <span class="file-input-btn"><i class="fas fa-paperclip me-1"></i>Seçin</span>
-                                </label>
-                                <input asp-for="UpdateProductViewModel.DocumentFile" type="file" class="d-none" id="DocumentFile" />
+                        <!-- Product Display (Read-only) -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Məhsul</h5>
+                            <div class="product-display">
+                                <div class="selected-product">
+                                    <strong>@Model.StockProduct.Name</strong><br>
+                                    <small>İnventar kodu: @Model.StockProduct.InventoryCode</small>
+                                </div>
                             </div>
-                            <small class="text-muted mt-1 d-block">İstənilən fayl tipi qəbul edilir (maksimum 5MB)</small>
-                            <span asp-validation-for="UpdateProductViewModel.DocumentFile" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="UpdateProductViewModel.DepartmentName" class="form-label"></label>
-                            <select asp-for="UpdateProductViewModel.DepartmentName" class="form-select" required>
-                                <option value="" disabled selected>Seçin</option>
+                        <!-- Department -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Departament</h5>
+                            <select asp-for="UpdateProductViewModel.DepartmentName" class="form-select">
+                                <option value="" disabled selected>Seçim edin</option>
                                 @foreach (var department in Enum.GetValues(typeof(DepartmentName)))
                                 {
                                     <option value="@department">@department</option>
                                 }
                             </select>
-                            <span asp-validation-for="UpdateProductViewModel.DepartmentName" class="text-danger"></span>
+                            <span asp-validation-for="UpdateProductViewModel.DepartmentName" class="error-message"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="UpdateProductViewModel.UnitName" class="form-label"></label>
-                            <select asp-for="UpdateProductViewModel.UnitName" class="form-select" required>
-                                <option value="" disabled selected>Seçin</option>
+                        <!-- Unit -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Şöbə</h5>
+                            <select asp-for="UpdateProductViewModel.UnitName" class="form-select">
+                                <option value="" disabled selected>Seçim edin</option>
                                 @foreach (var unit in Enum.GetValues(typeof(UnitName)))
                                 {
                                     <option value="@unit">@unit</option>
                                 }
                             </select>
-                            <span asp-validation-for="UpdateProductViewModel.UnitName" class="text-danger"></span>
+                            <span asp-validation-for="UpdateProductViewModel.UnitName" class="error-message"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="UpdateProductViewModel.Count" class="form-label"></label>
-                            <input asp-for="UpdateProductViewModel.Count" class="form-control" required min="1" placeholder="Sayı"/>
-                            <span asp-validation-for="UpdateProductViewModel.Count" class="text-danger"></span>
-                            <small id="availableCountText" class="text-muted"></small>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="UpdateProductViewModel.DateofReceipt" class="form-label"></label>
-                            <input asp-for="UpdateProductViewModel.DateofReceipt" class="form-control" type="datetime-local" />
-                            <span asp-validation-for="UpdateProductViewModel.DateofReceipt" class="text-danger"></span>
+                        <!-- Date -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Alınma tarixi</h5>
+                            <input asp-for="UpdateProductViewModel.DateofReceipt" class="form-control" type="date" />
+                            <span asp-validation-for="UpdateProductViewModel.DateofReceipt" class="error-message"></span>
                         </div>
                     </div>
                 </div>
-                <div class="d-flex justify-content-end mt-2">
-                    <a asp-action="Index" class="btn btn-outline-secondary me-2" style="background-color: rgb(213 72 72); color: white;">
-                        <i class="fas fa-times me-1"></i>Bağla
+
+                <!-- File Upload -->
+                <div class="mt-4">
+                    <h5 class="mb-3">Fayl</h5>
+                    <div class="file-upload-container">
+                        <input asp-for="UpdateProductViewModel.DocumentFile" type="file" id="fileUpload" class="d-none" />
+                        <label for="fileUpload" class="btn btn-outline-primary">
+                            <i class="fas fa-paperclip me-2"></i>Fayl seçin
+                        </label>
+                        <span id="fileName" class="ms-3">
+                            @if (!string.IsNullOrEmpty(Model.StockProduct.FilePath))
+                            {
+                                <a href="@Model.StockProduct.FilePath" target="_blank">Cari fayl</a>
+                            }
+                            else
+                            {
+                                <text>Heç bir fayl seçilməyib</text>
+                            }
+                        </span>
+                    </div>
+                    <small class="text-muted">İstənilən fayl tipi qəbul edilir (maksimum 5MB)</small>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-end mt-4">
+                    <a asp-action="Index" class="btn btn-secondary me-2">
+                        <i class="fas fa-times me-1"></i> Bağla
                     </a>
-                    <button type="submit" class="btn btn-primary" style="background-color: rgb(64, 126, 208)">
-                        <i class="fas fa-save me-1"></i>Yadda saxla
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Yadda saxla
                     </button>
                 </div>
             </form>
@@ -99,14 +117,11 @@
 </div>
 
 <script>
-    // Update available count when product selection changes
-    document.getElementById('StockProductId').addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const availableCount = selectedOption.getAttribute('data-available-count');
-        document.getElementById('availableCountText').textContent = `Mövcud sayı: ${availableCount}`;
-
-        // Set max value for count input
-        const countInput = document.getElementById('Count');
-        countInput.setAttribute('max', availableCount);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update file name display when file is selected
+        document.getElementById('fileUpload').addEventListener('change', function(e) {
+            const fileName = e.target.files.length > 0 ? e.target.files[0].name : '@(Model.StockProduct.FilePath != null ? "Cari fayl" : "Heç bir fayl seçilməyib")';
+            document.getElementById('fileName').textContent = fileName;
+        });
     });
 </script>

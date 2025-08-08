@@ -13,6 +13,6 @@ public interface IProductService
     Task<Product> GetByIdAsync(int? id);
     Task<Product> GetByNameAsync(string name);
     Task InsertMultipleAsync(DoubleCreateProductTypeViewModel model);
+    Task UpdateAsync(DoubleUpdateProductTypeViewModel model);
     Task RemoveAsync(int? id);
-    Task UpdateAsync(int? id, UpdateProductViewModel model, StockProduct stockProduct);
 }

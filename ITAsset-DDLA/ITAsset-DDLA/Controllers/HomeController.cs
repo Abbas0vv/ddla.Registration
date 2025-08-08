@@ -1,5 +1,6 @@
 ﻿using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.ViewModels.Product;
+using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
@@ -66,33 +67,46 @@ public class HomeController : Controller
     public async Task<IActionResult> Update(int? id)
     {
         var product = await _productService.GetByIdAsync(id);
-        if (id is null || product is null) return RedirectToAction("NotFound", "Shared");
-
-        var viewModel = new UpdateProductViewModel()
+        if (product == null)
         {
-            Recipient = product.Recipient,
-            InventarId = product.InventarId,
-            DateofReceipt = product.DateofReceipt,
-            DocumentPath = product.FilePath,
-        };
+            return NotFound();
+        }
+
+        var stockProduct = await _stockService.GetByIdAsync(product.StockProductId);
 
         var model = new DoubleUpdateProductTypeViewModel
         {
-            UpdateProductViewModel = viewModel,
-            StockProduct = await _stockService.GetByIdAsync(product.Id)
+            UpdateProductViewModel = new UpdateProductViewModel
+            {
+                Recipient = product.Recipient,
+                DepartmentName = product.Department,
+                UnitName = product.Unit,
+                DateofReceipt = product.DateofReceipt,
+                StockProductId = product.StockProductId
+            },
+            StockProduct = stockProduct
         };
+
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Update(int? id, DoubleUpdateProductTypeViewModel model)
+    public async Task<IActionResult> Update(DoubleUpdateProductTypeViewModel model)
     {
-        if (!ModelState.IsValid) return View(model);
-        var stockProduct = await _stockService.GetByIdAsync(model.UpdateProductViewModel.StockProductId);
-        await _productService.UpdateAsync(id, model.UpdateProductViewModel, stockProduct);
-        return RedirectToAction(nameof(Index));
-    }
+        if (!ModelState.IsValid)
+            return View(model);
 
+        try
+        {
+            await _productService.UpdateAsync(model);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", "Xəta baş verdi: " + ex.Message);
+            return View(model);
+        }
+    }
 
     [HttpGet]
     public async Task<IActionResult> Delete(int? id)
