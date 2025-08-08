@@ -5,6 +5,7 @@ using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
 using ITAsset_DDLA.Services.Abstract;
+using ITAsset_DDLA.Services.Concrete;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Authorization;
@@ -19,19 +20,19 @@ public class HomeController : Controller
 {
     private readonly IProductService _productService;
     private readonly IStockService _stockService;
-    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly LdapService _ldapService;
     private readonly ddlaAppDBContext _context;
 
     public HomeController(
         IProductService productService,
-        IWebHostEnvironment webHostEnvironment,
         IStockService stockService,
-        ddlaAppDBContext context)
+        ddlaAppDBContext context,
+        LdapService ldapService)
     {
         _productService = productService;
-        _webHostEnvironment = webHostEnvironment;
         _stockService = stockService;
         _context = context;
+        _ldapService = ldapService;
     }
 
 
@@ -44,6 +45,9 @@ public class HomeController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
+        var ldapUsers = _ldapService.GetLdapUsers();
+        ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).ToList();
+
         var model = new DoubleCreateProductTypeViewModel
         {
             CreateProductViewModel = new CreateProductViewModel(),
@@ -70,6 +74,9 @@ public class HomeController : Controller
     [HttpGet]
     public async Task<IActionResult> Update(int? id)
     {
+        var ldapUsers = _ldapService.GetLdapUsers();
+        ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).ToList();
+
         var product = await _productService.GetByIdAsync(id);
         if (product == null)
         {

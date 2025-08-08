@@ -2,8 +2,10 @@ using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.DomainModels.Account;
 using ddla.ITApplication.Services.Abstract;
 using ddla.ITApplication.Services.Concrete;
+using ITAsset_DDLA.Database.Models.DomainModels.Account.LDAP;
 using ITAsset_DDLA.Helpers;
 using ITAsset_DDLA.Services.Abstract;
+using ITAsset_DDLA.Services.Concrete;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,11 +36,15 @@ public class Program
             options.AccessDeniedPath = "/Account/AccessDenied";
         });
 
+        var ldapSettings = builder.Configuration.GetSection("LdapSettings").Get<LdapSettings>();
 
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IStockService, StockService>();
         builder.Services.AddScoped(typeof(Lazy<>), typeof(LazyService<>));
+        builder.Services.AddScoped<LdapService>(provider =>
+            new LdapService(ldapSettings.LdapPath, ldapSettings.LdapUser, ldapSettings.LdapPassword));
+
 
         builder.Services.Configure<IdentityOptions>(options =>
         {

@@ -1,4 +1,4 @@
-﻿namespace ITAsset_DDLA.Database.Models.DomainModels.Account;
+﻿namespace ITAsset_DDLA.Database.Models.DomainModels.Account.LDAP;
 
 public class LdapUserModel
 {

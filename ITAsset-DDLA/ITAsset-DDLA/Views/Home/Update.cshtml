@@ -28,10 +28,15 @@
                         <!-- Recipient Section -->
                         <div class="mb-4">
                             <h5 class="mb-3">Məhsulu təhvil alan</h5>
-                            <input asp-for="UpdateProductViewModel.Recipient" class="form-control" placeholder="Ad soyad daxil edin" />
+                            <select asp-for="UpdateProductViewModel.Recipient" class="form-select">
+                                <option value="" disabled selected>Seçim edin</option>
+                                @foreach (var user in ViewBag.LdapUsers as List<string>)
+                                {
+                                    <option value="@user">@user</option>
+                                }
+                            </select>
                             <span asp-validation-for="UpdateProductViewModel.Recipient" class="error-message"></span>
                         </div>
-
                         <!-- Product Display (Read-only) -->
                         <div class="mb-4">
                             <h5 class="mb-3">Məhsul</h5>

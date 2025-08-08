@@ -1,4 +1,4 @@
-﻿using ITAsset_DDLA.Database.Models.DomainModels.Account;
+﻿using ITAsset_DDLA.Database.Models.DomainModels.Account.LDAP;
 using System.DirectoryServices;
 
 namespace ITAsset_DDLA.Services.Concrete;
