@@ -106,15 +106,9 @@
                                             <i class="fas fa-download"></i>
                                         </a>
                                     }
-                                    else if (item.DateofReceipt.HasValue)
-                                    {
-                                        <a asp-action="GenerateHandoverPdf" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                    }
                                     else
                                     {
-                                        <a class="btn btn-sm btn-outline-secondary" style="pointer-events: none; opacity: 0.5;" disabled>
+                                        <a asp-action="GenerateHandoverPdf" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-download"></i>
                                         </a>
                                     }

@@ -229,12 +229,12 @@ public class HomeController : Controller
             {
                 Padding = 6
             });
-            table.AddCell(new PdfPCell(new Phrase(" ", regularFont)) 
+            table.AddCell(new PdfPCell(new Phrase(" ", regularFont))
             {
                 HorizontalAlignment = Element.ALIGN_CENTER,
                 Padding = 6
             });
-            table.AddCell(new PdfPCell(new Phrase(" ", regularFont)) 
+            table.AddCell(new PdfPCell(new Phrase(" ", regularFont))
             {
                 Padding = 6
             });
@@ -255,7 +255,7 @@ public class HomeController : Controller
         signatureTable.HorizontalAlignment = Element.ALIGN_RIGHT;
         signatureTable.WidthPercentage = 40;
 
-        PdfPCell headerCell = new PdfPCell(new Phrase("Təhvil aldı:", boldFont))
+        PdfPCell headerCell = new PdfPCell(new Phrase("Təhvil alan əməkdaş:", boldFont))
         {
             HorizontalAlignment = Element.ALIGN_CENTER,
             VerticalAlignment = Element.ALIGN_MIDDLE,
@@ -272,7 +272,12 @@ public class HomeController : Controller
         {
             Padding = 6
         });
-        signatureTable.AddCell(new PdfPCell(new Phrase($"Tarix: {DateTime.Now:dd.MM.yyyy}", regularFont))
+        signatureTable.AddCell(new PdfPCell(new Phrase($"Verilmə Tarixi: {product.DateofIssue:dd.MM.yyyy}", regularFont))
+        {
+            Padding = 6
+        });
+        signatureTable.AddCell(new PdfPCell(new Phrase(
+            $"Alınma Tarixi: {(product.DateofReceipt?.ToString("dd.MM.yyyy") ?? "____________________")}", regularFont))
         {
             Padding = 6
         });
