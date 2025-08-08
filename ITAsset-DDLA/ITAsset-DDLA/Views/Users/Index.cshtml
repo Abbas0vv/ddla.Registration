@@ -1,0 +1,366 @@
+﻿@using ITAsset_DDLA.Database.Models.DomainModels.Account
+@model List<LdapUserModel>
+
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" id="globalSearch" class="form-control" placeholder="Bütün sütunlarda axtarış...">
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="btn-group">
+                            <button class="btn btn-outline-secondary sort-btn" data-sort="name">
+                                <i class="mdi mdi-sort-alphabetical-ascending"></i> Ada görə
+                            </button>
+                            <button class="btn btn-outline-secondary sort-btn" data-sort="unit">
+                                <i class="mdi mdi-sort-alphabetical-ascending"></i> Şöbəyə görə
+                            </button>
+                            <button class="btn btn-outline-secondary sort-btn" data-sort="phone">
+                                <i class="mdi mdi-sort-numeric-ascending"></i> Telefona görə
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-centered mb-0" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span>Şəkil</span>
+                                </th>
+                                <th>
+                                    <span>Tam ad</span>
+                                </th>
+                                <th>
+                                    <span>E-poçt</span>
+                                </th>
+                                <th>
+                                    <span>Telefon</span>
+                                </th>
+                                <th>
+                                    <span>Şöbə</span>
+                                </th>
+                                <th>
+                                    <span>Vəzifə</span>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th><input type="text" class="form-control form-control-sm column-search" data-column="1" placeholder="Axtar..."></th>
+                                <th><input type="text" class="form-control form-control-sm column-search" data-column="2" placeholder="Axtar..."></th>
+                                <th><input type="text" class="form-control form-control-sm column-search" data-column="3" placeholder="Axtar..."></th>
+                                <th><input type="text" class="form-control form-control-sm column-search" data-column="4" placeholder="Axtar..."></th>
+                                <th><input type="text" class="form-control form-control-sm column-search" data-column="5" placeholder="Axtar..."></th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="avatar-sm rounded-circle img-thumbnail d-flex align-items-center justify-content-center bg-secondary text-white">
+                                            @user.FullName?.Substring(0, 1).ToUpper()
+                                        </div>
+                                    </td>
+                                    <td>@user.FullName</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <a href="mailto:@user.Email">@user.Email</a>
+                                            <i class="mdi mdi-content-copy copy-icon ms-2" style="cursor:pointer; color:#4da6ff;" title="E-poçtu kopyala" data-email="@user.Email"></i>
+                                        </div>
+                                    </td>
+                                    <td>@user.InternalPhone</td>
+                                    <td>@user.Shobe</td>
+                                    <td>@user.Vazifa</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="mt-3 text-muted" id="searchResultsInfo">
+                        Ümumi @Model.Count nəticə göstərilir
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Initialize tooltips
+        $('[title]').tooltip();
+
+        // Email copy functionality
+        $(document).on('click', '.copy-icon', function(e) {
+            e.stopPropagation();
+            const email = $(this).data('email');
+            navigator.clipboard.writeText(email).then(function() {
+                // Show tooltip instead of alert for better UX
+                $(e.target).attr('title', 'Kopyalandı!').tooltip('show');
+                setTimeout(() => {
+                    $(e.target).attr('title', 'E-poçtu kopyala').tooltip('hide');
+                }, 2000);
+            });
+        });
+
+        // Search input clear functionality
+        $('.search-input-container').each(function() {
+            const container = $(this);
+            const input = container.find('.column-search');
+            const clearIcon = container.find('.clear-icon');
+            const searchIcon = container.find('.search-icon');
+
+            input.on('input', function() {
+                if ($(this).val().length > 0) {
+                    clearIcon.show();
+                    searchIcon.hide();
+                } else {
+                    clearIcon.hide();
+                    searchIcon.show();
+                    filterTable();
+                }
+            });
+
+            clearIcon.on('click', function() {
+                input.val('');
+                clearIcon.hide();
+                searchIcon.show();
+                filterTable();
+            });
+        });
+
+        // Global search functionality
+        $('#searchBtn').click(filterTable);
+        $('#globalSearch').keyup(function(e) {
+            if (e.key === 'Enter') {
+                filterTable();
+            } else {
+                // Live search as user types
+                filterTable();
+            }
+        });
+
+         // Column search functionality
+    $('.column-search').on('input', function() {
+        const columnIndex = $(this).closest('th').index();
+        const searchText = $(this).val().toLowerCase().trim();
+
+        $('#usersTable tbody tr').each(function() {
+            const cellText = $(this).find('td').eq(columnIndex).text().toLowerCase();
+            $(this).toggle(cellText.includes(searchText));
+        });
+
+        // Update search results info
+        const visibleRows = $('#usersTable tbody tr:visible').length;
+        const totalRows = $('#usersTable tbody tr').length;
+        updateSearchResultsInfo(visibleRows, totalRows);
+    });
+
+    function updateSearchResultsInfo(visible, total) {
+        let infoText = '';
+        if (visible === total) {
+            infoText = `Ümumi ${total} nəticə göstərilir`;
+        } else {
+            infoText = `${visible} nəticə tapıldı (ümumi ${total} nəticədən)`;
+        }
+        $('#searchResultsInfo').text(infoText);
+    }
+
+
+        // Sort buttons
+        $('.sort-btn').click(function() {
+            const sortBy = $(this).data('sort');
+            sortTable(sortBy);
+            // Update active button state
+            $('.sort-btn').removeClass('active');
+            $(this).addClass('active');
+        });
+
+        function filterTable() {
+            const globalSearch = $('#globalSearch').val().toLowerCase().trim();
+            const columnFilters = [];
+            let hasActiveFilters = false;
+
+            $('.column-search').each(function() {
+                const val = $(this).val().toLowerCase().trim();
+                columnFilters.push(val);
+                if (val.length > 0) hasActiveFilters = true;
+            });
+
+            let visibleRows = 0;
+            const totalRows = $('#usersTable tbody tr').length;
+
+            $('#usersTable tbody tr').each(function() {
+                let showRow = true;
+                const cells = $(this).find('td');
+
+                // Apply column filters if any are active
+    if (hasActiveFilters) {
+        $('.column-search').each(function() {
+            const colIndex = $(this).data('column');
+            const filterVal = $(this).val().toLowerCase();
+            if (filterVal !== '') {
+                const cellText = cells.eq(colIndex).text().toLowerCase();
+                if (cellText.indexOf(filterVal) === -1) {
+                    showRow = false;
+                    return false; // break
+                }
+            }
+        });
+    }
+
+
+                // Apply global search if needed
+                if (showRow && globalSearch !== '') {
+                    let found = false;
+                    cells.each(function() {
+                        if ($(this).text().toLowerCase().indexOf(globalSearch) !== -1) {
+                            found = true;
+                            return false; // break out of loop
+                        }
+                    });
+                    showRow = found;
+                }
+
+                $(this).toggle(showRow);
+                if (showRow) visibleRows++;
+            });
+
+            // Update search results info
+            updateSearchResultsInfo(visibleRows, totalRows);
+        }
+
+        function updateSearchResultsInfo(visible, total) {
+            let infoText = '';
+            if (visible === total) {
+                infoText = `Ümumi ${total} nəticə göstərilir`;
+            } else {
+                infoText = `${visible} nəticə tapıldı (ümumi ${total} nəticədən)`;
+            }
+            $('#searchResultsInfo').text(infoText);
+        }
+
+        function sortTable(sortBy) {
+            const rows = $('#usersTable tbody tr').get();
+
+            rows.sort(function(a, b) {
+                const aVal = getSortValue(a, sortBy);
+                const bVal = getSortValue(b, sortBy);
+
+                // Handle empty values
+                if (!aVal && !bVal) return 0;
+                if (!aVal) return 1;
+                if (!bVal) return -1;
+
+                // Numeric sorting for phone numbers
+                if (sortBy === 'phone') {
+                    const aNum = aVal.replace(/\D/g, '');
+                    const bNum = bVal.replace(/\D/g, '');
+                    return aNum.localeCompare(bNum, undefined, { numeric: true });
+                }
+
+                // Case-insensitive string comparison for other columns
+                return aVal.localeCompare(bVal, 'az', { sensitivity: 'base' });
+            });
+
+            $.each(rows, function(index, row) {
+                $('#usersTable tbody').append(row);
+            });
+
+            // Update visible count after sorting
+            const visibleRows = $('#usersTable tbody tr:visible').length;
+            const totalRows = $('#usersTable tbody tr').length;
+            updateSearchResultsInfo(visibleRows, totalRows);
+        }
+
+        function getSortValue(row, sortBy) {
+            const cells = $(row).find('td');
+
+            switch(sortBy) {
+                case 'name':
+                    return $(cells[1]).text().trim().toLowerCase();
+                case 'unit':
+                    return $(cells[4]).text().trim().toLowerCase();
+                case 'phone':
+                    return $(cells[3]).text().trim();
+                default:
+                    return '';
+            }
+        }
+    });
+</script>
+
+<style>
+    .avatar-sm {
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
+    }
+
+    .search-input-container {
+        position: relative;
+        width: 120px;
+    }
+
+        .search-input-container .form-control {
+            padding-left: 25px;
+            padding-right: 25px;
+        }
+
+    .search-icon, .clear-icon {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+    }
+
+    .search-icon {
+        left: 8px;
+        color: #6c757d;
+    }
+
+    .clear-icon {
+        right: 8px;
+        color: #6c757d;
+        display: none;
+    }
+
+        .clear-icon:hover {
+            color: #dc3545;
+        }
+
+    .sort-btn.active {
+        background-color: #4da6ff;
+        color: white;
+    }
+
+    .table th {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .copy-icon {
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+
+        .copy-icon:hover {
+            opacity: 1;
+        }
+
+    #searchResultsInfo {
+        font-size: 0.85rem;
+    }
+
+    /* Highlight matching text in search results */
+    .highlight {
+        background-color: #fff3cd;
+        font-weight: bold;
+    }
+</style>

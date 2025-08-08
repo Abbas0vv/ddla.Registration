@@ -80,28 +80,6 @@
                     </div>
                 </div>
 
-                <!-- File Upload -->
-                <div class="mt-4">
-                    <h5 class="mb-3">Fayl</h5>
-                    <div class="file-upload-container">
-                        <input asp-for="UpdateProductViewModel.DocumentFile" type="file" id="fileUpload" class="d-none" />
-                        <label for="fileUpload" class="btn btn-outline-primary">
-                            <i class="fas fa-paperclip me-2"></i>Fayl seçin
-                        </label>
-                        <span id="fileName" class="ms-3">
-                            @if (!string.IsNullOrEmpty(Model.StockProduct.FilePath))
-                            {
-                                <a href="@Model.StockProduct.FilePath" target="_blank">Cari fayl</a>
-                            }
-                            else
-                            {
-                                <text>Heç bir fayl seçilməyib</text>
-                            }
-                        </span>
-                    </div>
-                    <small class="text-muted">İstənilən fayl tipi qəbul edilir (maksimum 5MB)</small>
-                </div>
-
                 <!-- Buttons -->
                 <div class="d-flex justify-content-end mt-4">
                     <a asp-action="Index" class="btn btn-secondary me-2">
