@@ -1,4 +1,10 @@
 ﻿@using ITAsset_DDLA.Helpers
+@using Microsoft.AspNetCore.Identity
+@using ddla.ITApplication.Database.Models.DomainModels.Account
+@inject UserManager<ddlaUser> UserManager
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
 <!DOCTYPE html>
 <html lang="az">
 <head>
@@ -15,6 +21,45 @@
     <link rel="stylesheet" href="~/assets/table.css">
     <link rel="stylesheet" href="~/assets/sidebar.css">
     <link rel="stylesheet" href="~/assets/warehouseStyle.css">
+    <style>
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #005b96;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+
+        .profile-picture {
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .user-name {
+            color: white;
+            font-weight: 500;
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+        }
+    </style>
 </head>
 <body>
     <div class="sidebar">
@@ -47,8 +92,8 @@
                     <i class="fas fa-file-alt"></i> <span>Hesabatlar</span>
                 </a>
             </li>
-            <li class="@Html.IsActive("Settings", "Index")">
-                <a asp-action="Index" asp-controller="Settings">
+            <li class="@Html.IsActive("Settings", "UpdateProfile")">
+                <a asp-action="UpdateProfile" asp-controller="Settings">
                     <i class="fas fa-cog"></i> <span>Parametrlər</span>
                 </a>
             </li>
@@ -56,14 +101,21 @@
 
         <!-- Sidebar altında istifadəçi məlumatları və çıxış -->
         <div class="sidebar-footer">
-            @if (User.Identity.IsAuthenticated)
+            @if (User.Identity.IsAuthenticated && user != null)
             {
                 <div style="padding:1rem;">
                     <div class="user-info">
-                        <div class="user-avatar">
-                            @User.Identity.Name.Substring(0, 1).ToUpper()
+                        <div class="user-avatar" title="@User.Identity.Name">
+                            @if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
+                            {
+                                <img src="~/assets/images/Uploads/ProfilePictures/@Url.Content(user.ProfilePictureUrl)" alt="Profile Picture" class="profile-picture" loading="lazy" />
+                            }
+                            else
+                            {
+                                @User.Identity.Name.Substring(0, 1).ToUpper()
+                            }
                         </div>
-                        <span class="user-name">@User.Identity.Name</span>
+                        <span class="user-name" title="@User.Identity.Name">@User.Identity.Name</span>
                     </div>
                     <a asp-action="LogOut" asp-controller="Account" class="btn btn-outline-light btn-sm w-100 mt-2">
                         <i class="fas fa-sign-out-alt"></i> Çıxış

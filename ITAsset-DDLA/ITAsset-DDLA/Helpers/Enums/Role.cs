@@ -2,6 +2,7 @@
 
 public enum Role
 {
-    Admin,
-    User
+    SuperAdmin, //Direktor
+    Admin, //Müdir
+    User 
 }
