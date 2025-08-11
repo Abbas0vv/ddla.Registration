@@ -17,15 +17,15 @@
         <h1>Hesaba daxil ol</h1>
         <form asp-action="Login" method="post">
             <div class="form-group">
-                <input asp-for="Email" class="form-control mt-3" placeholder="Email ünvanı" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <input asp-for="EmailOrName" class="form-control mt-3" placeholder="Email ünvanı" />
+                <span asp-validation-for="EmailOrName" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <input asp-for="Password" class="form-control mt-2" placeholder="Şifrə" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
             <button type="submit" class="button login-btn">Daxil ol</button>
         </form>
     </div>
