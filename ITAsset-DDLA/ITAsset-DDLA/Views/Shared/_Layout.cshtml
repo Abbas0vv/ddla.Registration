@@ -4,6 +4,7 @@
 @inject UserManager<ddlaUser> UserManager
 @{
     var user = await UserManager.GetUserAsync(User);
+    var isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
 }
 <!DOCTYPE html>
 <html lang="az">
@@ -87,16 +88,24 @@
                     <i class="fas fa-users"></i> <span>İstifadəçilər</span>
                 </a>
             </li>
-            <li class="@Html.IsActive("Reports", "Index")">
-                <a asp-action="Index" asp-controller="Reports">
-                    <i class="fas fa-file-alt"></i> <span>Loglar</span>
-                </a>
-            </li>
             <li class="@Html.IsActive("Settings", "UpdateProfile")">
                 <a asp-action="UpdateProfile" asp-controller="Settings">
                     <i class="fas fa-cog"></i> <span>Parametrlər</span>
                 </a>
             </li>
+            @if (isAdmin)
+            {
+                <li class="@Html.IsActive("Admin", "Index")">
+                    <a asp-action="Index" asp-controller="Admin">
+                        <i class="fas fa-cogs"></i> <span>İdarəetmə</span>
+                    </a>
+                </li>
+                <li class="@Html.IsActive("Reports", "Index")">
+                    <a asp-action="Index" asp-controller="Reports">
+                        <i class="fas fa-file-alt"></i> <span>Loglar</span>
+                    </a>
+                </li>
+            }
         </ul>
 
         <!-- Sidebar altında istifadəçi məlumatları və çıxış -->
