@@ -10,15 +10,19 @@
   <ItemGroup>
     <Compile Remove="Database\Repositories\**" />
     <Compile Remove="wwwroot\assets\images\Uploads\Documents\**" />
+    <Compile Remove="wwwroot\assets\images\Uploads\Products\**" />
     <Compile Remove="wwwroot\assets\images\Uploads\ProfilePicture\**" />
     <Content Remove="Database\Repositories\**" />
     <Content Remove="wwwroot\assets\images\Uploads\Documents\**" />
+    <Content Remove="wwwroot\assets\images\Uploads\Products\**" />
     <Content Remove="wwwroot\assets\images\Uploads\ProfilePicture\**" />
     <EmbeddedResource Remove="Database\Repositories\**" />
     <EmbeddedResource Remove="wwwroot\assets\images\Uploads\Documents\**" />
+    <EmbeddedResource Remove="wwwroot\assets\images\Uploads\Products\**" />
     <EmbeddedResource Remove="wwwroot\assets\images\Uploads\ProfilePicture\**" />
     <None Remove="Database\Repositories\**" />
     <None Remove="wwwroot\assets\images\Uploads\Documents\**" />
+    <None Remove="wwwroot\assets\images\Uploads\Products\**" />
     <None Remove="wwwroot\assets\images\Uploads\ProfilePicture\**" />
   </ItemGroup>
 
@@ -34,11 +38,6 @@
     </PackageReference>
     <PackageReference Include="QuestPDF" Version="2025.7.0" />
     <PackageReference Include="System.DirectoryServices" Version="9.0.8" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\assets\images\Uploads\ProfilePictures\" />
-    <Folder Include="wwwroot\assets\images\Uploads\Products\" />
   </ItemGroup>
 
 </Project>

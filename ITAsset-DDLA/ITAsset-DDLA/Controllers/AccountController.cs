@@ -12,19 +12,19 @@ public class AccountController : Controller
         _userService = userService;
     }
 
-    //[HttpGet]
-    //public async Task<IActionResult> Register()
-    //{
-    //    return View();
-    //}
+    [HttpGet]
+    public async Task<IActionResult> Register()
+    {
+        return View();
+    }
 
-    //[HttpPost]
-    //public async Task<IActionResult> Register(RegisterViewModel model)
-    //{
-    //    if (!ModelState.IsValid) return View(model);
-    //    await _userService.Register(model);
-    //    return RedirectToAction("Index", "Home");
-    //}
+    [HttpPost]
+    public async Task<IActionResult> Register(RegisterViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+        await _userService.Register(model);
+        return RedirectToAction("Index", "Home");
+    }
 
 
     [HttpGet]

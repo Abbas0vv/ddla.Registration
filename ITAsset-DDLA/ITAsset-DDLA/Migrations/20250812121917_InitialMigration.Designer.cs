@@ -12,8 +12,8 @@ using ddla.ITApplication.Database;
 namespace ITAsset_DDLA.Migrations
 {
     [DbContext(typeof(ddlaAppDBContext))]
-    [Migration("20250729055543_AddInventoryItemsTable")]
-    partial class AddInventoryItemsTable
+    [Migration("20250812121917_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,7 +50,7 @@ namespace ITAsset_DDLA.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.InventoryItem", b =>
+            modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.Permission", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,24 +58,16 @@ namespace ITAsset_DDLA.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("InventoryCode")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("StockProductId")
+                    b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StockProductId");
-
-                    b.ToTable("InventoryItems");
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", b =>
@@ -97,6 +89,13 @@ namespace ITAsset_DDLA.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("InventoryCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -104,12 +103,33 @@ namespace ITAsset_DDLA.Migrations
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TotalCount")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("StockProducts");
+                });
+
+            modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.UserPermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPermissions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -349,11 +369,7 @@ namespace ITAsset_DDLA.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("InUseCount")
-                        .HasColumnType("int");
 
                     b.Property<string>("InventarId")
                         .IsRequired()
@@ -380,15 +396,23 @@ namespace ITAsset_DDLA.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.InventoryItem", b =>
+            modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.UserPermission", b =>
                 {
-                    b.HasOne("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", "StockProduct")
-                        .WithMany("InventoryItems")
-                        .HasForeignKey("StockProductId")
+                    b.HasOne("ITAsset_DDLA.Database.Models.DomainModels.Permission", "Permission")
+                        .WithMany()
+                        .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("StockProduct");
+                    b.HasOne("ddla.ITApplication.Database.Models.DomainModels.Account.ddlaUser", "User")
+                        .WithMany("UserPermissions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -455,9 +479,12 @@ namespace ITAsset_DDLA.Migrations
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", b =>
                 {
-                    b.Navigation("InventoryItems");
-
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("ddla.ITApplication.Database.Models.DomainModels.Account.ddlaUser", b =>
+                {
+                    b.Navigation("UserPermissions");
                 });
 #pragma warning restore 612, 618
         }

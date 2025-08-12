@@ -19,14 +19,14 @@
         <h2 class="error-title">Səhifə Tapılmadı</h2>
         <p class="error-message">
             Üzr istəyirik, axtardığınız səhifə mövcud deyil və ya silinib. <br>
-            Əsas səhifəyə qayıtmaq üçün aşağıdakı düyməni istifadə edə bilərsiniz.
+            Əvvəlki səhifəyə qayıtmaq üçün aşağıdakı düyməni istifadə edə bilərsiniz.
         </p>
         <div class="error-actions">
-            <a asp-action="Index" asp-controller="Home" class="btn btn-home">
-                <i class="fas fa-home"></i>
-                <span>Əsas Səhifə</span>
+            <a href="javascript:history.back()" class="btn btn-home">
+                <i class="fas fa-arrow-left"></i>
+                <span>Geri Qayıt</span>
             </a>
-            <a href="mailto:support@ddla.az" class="btn btn-secondary">
+            <a href="mailto:itd@ddla.az" class="btn btn-secondary">
                 <i class="fas fa-envelope"></i>
                 <span>Dəstək</span>
             </a>

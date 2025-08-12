@@ -47,6 +47,26 @@ namespace ITAsset_DDLA.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+                });
+
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", b =>
                 {
                     b.Property<int>("Id")
@@ -83,6 +103,30 @@ namespace ITAsset_DDLA.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("StockProducts");
+                });
+
+            modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.UserPermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPermissions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -349,6 +393,25 @@ namespace ITAsset_DDLA.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.UserPermission", b =>
+                {
+                    b.HasOne("ITAsset_DDLA.Database.Models.DomainModels.Permission", "Permission")
+                        .WithMany()
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ddla.ITApplication.Database.Models.DomainModels.Account.ddlaUser", "User")
+                        .WithMany("UserPermissions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -414,6 +477,11 @@ namespace ITAsset_DDLA.Migrations
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("ddla.ITApplication.Database.Models.DomainModels.Account.ddlaUser", b =>
+                {
+                    b.Navigation("UserPermissions");
                 });
 #pragma warning restore 612, 618
         }
