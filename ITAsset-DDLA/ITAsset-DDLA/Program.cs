@@ -6,6 +6,7 @@ using ITAsset_DDLA.Database.Models.DomainModels.Account.LDAP;
 using ITAsset_DDLA.Helpers;
 using ITAsset_DDLA.Services.Abstract;
 using ITAsset_DDLA.Services.Concrete;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,14 @@ public class Program
         builder.Services.AddDbContext<ddlaAppDBContext>(options =>
             options.UseSqlServer(connectionString));
 
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
+
+
         builder.Services.AddIdentity<ddlaUser, IdentityRole>()
             .AddEntityFrameworkStores<ddlaAppDBContext>();
 
@@ -30,17 +39,12 @@ public class Program
             .AddRazorRuntimeCompilation();
         builder.Services.AddRazorPages();
 
-        builder.Services.ConfigureApplicationCookie(options =>
-        {
-            options.LoginPath = "/Account/Login";
-            options.AccessDeniedPath = "/Account/AccessDenied";
-        });
-
         var ldapSettings = builder.Configuration.GetSection("LdapSettings").Get<LdapSettings>();
 
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IStockService, StockService>();
+        builder.Services.AddScoped<IUserClaimsPrincipalFactory<ddlaUser>, CustomUserClaimsPrincipalFactory>();
         builder.Services.AddScoped(typeof(Lazy<>), typeof(LazyService<>));
         builder.Services.AddScoped<LdapService>(provider =>
             new LdapService(ldapSettings.LdapPath, ldapSettings.LdapUser, ldapSettings.LdapPassword));

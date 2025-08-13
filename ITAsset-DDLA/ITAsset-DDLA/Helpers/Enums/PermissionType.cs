@@ -10,16 +10,11 @@ public enum PermissionType
 
     // Inventory Permissions
     InventoryƏlavəEt,
-    InventoryRedatəEt,
+    InventoryRedaktəEt,
     InventorySil,
     InventoryGörüntülə,
 
     // Equipment Permissions
     EquipmentRedatəEt,
-    EquipmentSil,
-    EquipmentGörüntülə,
-
-    // Admin Permissions
-    AdminAccess,
-    Adminİstifadəçiİdarəetmə
+    EquipmentGörüntülə
 }

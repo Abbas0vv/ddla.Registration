@@ -1,9 +1,10 @@
 ﻿using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.ViewModels.Product;
-using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
+using ITAsset_DDLA.Helpers.Attributes;
+using ITAsset_DDLA.Helpers.Enums;
 using ITAsset_DDLA.Services.Abstract;
 using ITAsset_DDLA.Services.Concrete;
 using iTextSharp.text;
@@ -11,8 +12,6 @@ using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
-using static System.Net.Mime.MediaTypeNames;
 namespace ddla.ITApplication.Controllers;
 
 [Authorize]
@@ -35,7 +34,6 @@ public class HomeController : Controller
         _ldapService = ldapService;
     }
 
-
     public async Task<IActionResult> Index()
     {
         var models = await _productService.GetAllAsync();
@@ -56,7 +54,6 @@ public class HomeController : Controller
         return View(model);
     }
 
-
     [HttpPost]
     public async Task<IActionResult> Create(DoubleCreateProductTypeViewModel model)
     {
@@ -71,6 +68,7 @@ public class HomeController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
     [HttpGet]
     public async Task<IActionResult> Update(int? id)
     {
@@ -118,6 +116,7 @@ public class HomeController : Controller
             return View(model);
         }
     }
+
 
     [HttpGet]
     public async Task<IActionResult> Delete(int? id)

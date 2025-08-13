@@ -62,14 +62,17 @@ public class UserService : IUserService
             });
         }
     }
-
     public async Task<bool> Login(LoginViewModel model)
     {
         var user = await _userManager.FindByEmailAsync(model.EmailOrName)
             ?? await _userManager.FindByNameAsync(model.EmailOrName);
+
         if (user is not null)
         {
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, true, lockoutOnFailure: false);
+            var roles = await _userManager.GetRolesAsync(user);
+            Console.WriteLine("User Roles: " + string.Join(", ", roles));
+
+            var result = await _signInManager.PasswordSignInAsync(user, model.Password, true, false);
             return result.Succeeded;
         }
         return false;

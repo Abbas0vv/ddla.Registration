@@ -1,6 +1,5 @@
 ﻿using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
 using ddla.ITApplication.Services.Abstract;
-using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
 using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
@@ -18,6 +17,7 @@ public class WarehouseController : Controller
         _stockService = stockService;
         _productService = productService;
     }
+
     [HttpGet]
     public async Task<IActionResult> Index()
     {
@@ -54,6 +54,7 @@ public class WarehouseController : Controller
 
         return View(model);
     }
+
     [HttpGet]
     public async Task<IActionResult> Create()
     {

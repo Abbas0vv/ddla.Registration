@@ -22,7 +22,6 @@
                         <th class="text-center">Əməliyyat İcazələri</th>
                         <th class="text-center">Anbar İcazələri</th>
                         <th class="text-center">Avadanlıq İcazələri</th>
-                        <th class="text-center">Admin İcazələri</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -52,7 +51,7 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex flex-wrap justify-content-center gap-1">
-                                    @foreach (var perm in new[] { PermissionType.InventoryƏlavəEt, PermissionType.InventoryRedatəEt, PermissionType.InventorySil, PermissionType.InventoryGörüntülə })
+                                    @foreach (var perm in new[] { PermissionType.InventoryƏlavəEt, PermissionType.InventoryRedaktəEt, PermissionType.InventorySil, PermissionType.InventoryGörüntülə })
                                     {
                                         <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
                                             @(perm.ToString().Replace("Inventory", ""))
@@ -62,20 +61,10 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex flex-wrap justify-content-center gap-1">
-                                    @foreach (var perm in new[] { PermissionType.EquipmentRedatəEt, PermissionType.EquipmentSil, PermissionType.EquipmentGörüntülə })
+                                    @foreach (var perm in new[] { PermissionType.EquipmentRedatəEt, PermissionType.EquipmentGörüntülə })
                                     {
                                         <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
                                             @(perm.ToString().Replace("Equipment", ""))
-                                        </span>
-                                    }
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="d-flex flex-wrap justify-content-center gap-1">
-                                    @foreach (var perm in new[] { PermissionType.AdminAccess, PermissionType.Adminİstifadəçiİdarəetmə })
-                                    {
-                                        <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
-                                            @(perm.ToString().Replace("Admin", ""))
                                         </span>
                                     }
                                 </div>

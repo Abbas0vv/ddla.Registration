@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITAsset_DDLA.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class PermissionController : Controller
 {
     private readonly IUserService _userService;
@@ -79,12 +79,6 @@ public class PermissionController : Controller
         {
             GroupName = "Avadanlıq İcazələri",
             Permissions = GetPermissionItems(user, "Equipment")
-        },
-        new PermissionGroup
-        {
-            GroupName = "Admin İcazələri",
-            Permissions = GetPermissionItems(user, p =>
-                p.StartsWith("Admin") || p.StartsWith("UserManagement"))
         }
     };
 

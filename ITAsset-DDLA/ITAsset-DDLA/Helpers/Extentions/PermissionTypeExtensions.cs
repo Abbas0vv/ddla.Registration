@@ -16,19 +16,13 @@ public static class PermissionTypeExtensions
 
             // Inventory Permissions
             PermissionType.InventoryƏlavəEt => "Anbar əlavə et",
-            PermissionType.InventoryRedatəEt => "Anbar redaktə et",
+            PermissionType.InventoryRedaktəEt => "Anbar redaktə et",
             PermissionType.InventorySil => "Anbar sil",
             PermissionType.InventoryGörüntülə => "Anbarı görüntülə",
 
             // Equipment Permissions
             PermissionType.EquipmentRedatəEt => "Avadanlıq redaktə et",
-            PermissionType.EquipmentSil => "Avadanlıq sil",
             PermissionType.EquipmentGörüntülə => "Avadanlığı görüntülə",
-
-            // Admin Permissions
-            PermissionType.AdminAccess => "Admin panelinə giriş",
-            PermissionType.Adminİstifadəçiİdarəetmə => "İstifadəçi idarəetmə",
-
             _ => permissionType.ToString()
         };
     }

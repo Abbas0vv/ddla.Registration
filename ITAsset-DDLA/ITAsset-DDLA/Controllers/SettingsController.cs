@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ddla.ITApplication.Controllers
 {
-    [Authorize]
     public class SettingsController : Controller
     {
         private readonly UserManager<ddlaUser> _userManager;
@@ -49,6 +48,15 @@ namespace ddla.ITApplication.Controllers
 
             return View(model);
         }
+
+        public async Task<IActionResult> MyRoles()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Content($"User: {user.UserName} | Roles: {string.Join(", ", roles)}");
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateProfile(UpdateProfileViewModel model)
