@@ -9,5 +9,5 @@ public class ddlaUser : IdentityUser
     public string LastName { get; set; }
     public string? ProfilePictureUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public List<UserPermission> UserPermissions { get; set; }
+    public List<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
 }

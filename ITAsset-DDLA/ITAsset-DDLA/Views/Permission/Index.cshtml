@@ -72,14 +72,10 @@
                             <td class="user-info">
                                 <div class="d-flex align-items-center">
                                     <div class="user-avatar me-2">
-                                        @if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
-                                        {
-                                            <img src="~/assets/images/Uploads/ProfilePictures/@Url.Content(user.ProfilePictureUrl)" alt="Profile Picture" class="profile-picture" loading="lazy" />
-                                        }
-                                        else
-                                        {
-                                            @User.Identity.Name.Substring(0, 1).ToUpper()
-                                        }
+                                        <img src="~/assets/images/Uploads/ProfilePictures/@(string.IsNullOrEmpty(user.ProfilePictureUrl) ? "default.jpg" : user.ProfilePictureUrl)"
+                                             alt="Profile Picture"
+                                             class="profile-picture"
+                                             loading="lazy" />
                                     </div>
                                     <div>
                                         <strong>@user.FullName</strong>
