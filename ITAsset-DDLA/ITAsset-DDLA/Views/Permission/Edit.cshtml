@@ -1,251 +1,124 @@
 ﻿@using ITAsset_DDLA.Database.Models.ViewModels.Admin
-
 @model EditPermissionsViewModel
+
 @{
     ViewData["Title"] = "İcazələri Redaktə Et";
 }
-
 <div class="main-content">
-    <div class="container mt-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h4>İstifadəçi İcazələrini Redaktə Et</h4>
+    <div class="container py-4">
+        <div class="card border-0 shadow rounded-3">
+            <div class="card-body text-center border-bottom pb-4 bg-light">
+                <img src="~/assets/images/Uploads/ProfilePictures/@(string.IsNullOrEmpty(Model?.ProfilePictureUrl) ? "default.jpg" : Model.ProfilePictureUrl)"
+                     alt="Profile Picture"
+                     class="rounded-circle mb-2 border"
+                     style="width:90px; height:90px; object-fit:cover;">
+                <h4 class="mb-0">@Model?.FullName</h4>
+                <small class="text-muted">@Model?.Username</small>
             </div>
-            <div class="card-body">
-                @if (Model == null)
-                {
-                    <div class="alert alert-danger">İstifadəçi məlumatları yüklənərkən xəta baş verdi</div>
-                }
-                else
-                {
-                    <div class="row mb-4">
-                        <div class="col-md-2">
-                            <img src="~/assets/images/Uploads/ProfilePictures/@(string.IsNullOrEmpty(Model.ProfilePictureUrl) ? "default.jpg" : Model.ProfilePictureUrl)"
-                                 alt="Profile Picture"
-                                 class="profile-picture"
-                                 style="height:135px;"
-                                 loading="lazy" />
+
+            @if (Model == null)
+            {
+                <div class="alert alert-danger m-3">İstifadəçi məlumatları yüklənərkən xəta baş verdi</div>
+            }
+            else
+            {
+                <form asp-action="Edit" method="post" id="permissionsForm" class="p-4">
+                    <input type="hidden" asp-for="UserId" />
+
+                    @{
+                        int permissionIndex = 0;
+                    }
+
+                    @foreach (var group in Model.PermissionGroups)
+                    {
+                        <div class="mb-4 border rounded-3 overflow-hidden">
+                            <div class="bg-secondary text-white p-2 fw-semibold">
+                                @group.GroupName
+                            </div>
+                            <div class="row p-3">
+                                @foreach (var permission in group.Permissions)
+                                {
+                                    <div class="col-md-6 mb-3">
+                                        <div class="d-flex align-items-center border rounded p-2 transition-bg @(permission.HasPermission ? "bg-yes" : "bg-no")">
+                                            <input type="hidden"
+                                                   name="Permissions[@permissionIndex].Type"
+                                                   value="@permission.Type" />
+                                            <div class="form-check form-switch m-0">
+                                                <input class="form-check-input permission-checkbox"
+                                                       type="checkbox"
+                                                       name="Permissions[@permissionIndex].IsSelected"
+                                                       id="permission-@permission.Type"
+                                                       value="true"
+                                                       @(permission.HasPermission ? "checked" : "")>
+                                            </div>
+                                            <label class="ms-2 mb-0" for="permission-@permission.Type">
+                                                @permission.Description
+                                            </label>
+                                        </div>
+                                    </div>
+                                    permissionIndex++;
+                                }
+                            </div>
                         </div>
-                        <div class="col-md-10">
-                            <h3>@Model.FullName</h3>
-                            <p class="text-muted">@Model.Username</p>
-                        </div>
+                    }
+
+                    <div class="text-end">
+                        <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-arrow-left"></i> Geri Qayıt
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Yadda Saxla
+                        </button>
                     </div>
-
-                    <form asp-action="Edit" method="post" id="permissionsForm">
-                        <input type="hidden" asp-for="UserId" />
-
-                        @{
-                            int permissionIndex = 0;
-                        }
-
-                        <!-- Operation Permissions -->
-                        <div class="permission-group mb-4">
-                            <h5 class="group-title">Əməliyyat İcazələri</h5>
-                            <div class="row">
-                                @foreach (var permission in Model.PermissionGroups
-                                                            .FirstOrDefault(g => g.GroupName == "Əməliyyat İcazələri")?.Permissions ?? new List<PermissionItem>())
-                                {
-                                    <div class="col-md-6 mb-3">
-                                        <div class="permission-card @(permission.HasPermission ? "has-permission" : "no-permission")">
-                                            <div class="form-check form-switch">
-                                                <input type="hidden"
-                                                       name="Permissions[@permissionIndex].Type"
-                                                       value="@permission.Type" />
-                                                <input class="form-check-input permission-checkbox"
-                                                       type="checkbox"
-                                                       name="Permissions[@permissionIndex].IsSelected"
-                                                       id="permission-@permission.Type"
-                                                       value="true"
-                                                       @(permission.HasPermission ? "checked" : "")>
-                                                <label class="form-check-label" for="permission-@permission.Type">
-                                                    @permission.Description
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    permissionIndex++;
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Inventory Permissions -->
-                        <div class="permission-group mb-4">
-                            <h5 class="group-title">Anbar İcazələri</h5>
-                            <div class="row">
-                                @foreach (var permission in Model.PermissionGroups
-                                                            .FirstOrDefault(g => g.GroupName == "Anbar İcazələri")?.Permissions ?? new List<PermissionItem>())
-                                {
-                                    <div class="col-md-6 mb-3">
-                                        <div class="permission-card @(permission.HasPermission ? "has-permission" : "no-permission")">
-                                            <div class="form-check form-switch">
-                                                <input type="hidden"
-                                                       name="Permissions[@permissionIndex].Type"
-                                                       value="@permission.Type" />
-                                                <input class="form-check-input permission-checkbox"
-                                                       type="checkbox"
-                                                       name="Permissions[@permissionIndex].IsSelected"
-                                                       id="permission-@permission.Type"
-                                                       value="true"
-                                                       @(permission.HasPermission ? "checked" : "")>
-                                                <label class="form-check-label" for="permission-@permission.Type">
-                                                    @permission.Description
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    permissionIndex++;
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Equipment Permissions -->
-                        <div class="permission-group mb-4">
-                            <h5 class="group-title">Avadanlıq İcazələri</h5>
-                            <div class="row">
-                                @foreach (var permission in Model.PermissionGroups
-                                                            .FirstOrDefault(g => g.GroupName == "Avadanlıq İcazələri")?.Permissions ?? new List<PermissionItem>())
-                                {
-                                    <div class="col-md-6 mb-3">
-                                        <div class="permission-card @(permission.HasPermission ? "has-permission" : "no-permission")">
-                                            <div class="form-check form-switch">
-                                                <input type="hidden"
-                                                       name="Permissions[@permissionIndex].Type"
-                                                       value="@permission.Type" />
-                                                <input class="form-check-input permission-checkbox"
-                                                       type="checkbox"
-                                                       name="Permissions[@permissionIndex].IsSelected"
-                                                       id="permission-@permission.Type"
-                                                       value="true"
-                                                       @(permission.HasPermission ? "checked" : "")>
-                                                <label class="form-check-label" for="permission-@permission.Type">
-                                                    @permission.Description
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    permissionIndex++;
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Admin Permissions -->
-                        <div class="permission-group mb-4">
-                            <h5 class="group-title">Admin İcazələri</h5>
-                            <div class="row">
-                                @foreach (var permission in Model.PermissionGroups
-                                                            .FirstOrDefault(g => g.GroupName == "Admin İcazələri")?.Permissions ?? new List<PermissionItem>())
-                                {
-                                    <div class="col-md-6 mb-3">
-                                        <div class="permission-card @(permission.HasPermission ? "has-permission" : "no-permission")">
-                                            <div class="form-check form-switch">
-                                                <input type="hidden"
-                                                       name="Permissions[@permissionIndex].Type"
-                                                       value="@permission.Type" />
-                                                <input class="form-check-input permission-checkbox"
-                                                       type="checkbox"
-                                                       name="Permissions[@permissionIndex].IsSelected"
-                                                       id="permission-@permission.Type"
-                                                       value="true"
-                                                       @(permission.HasPermission ? "checked" : "")>
-                                                <label class="form-check-label" for="permission-@permission.Type">
-                                                    @permission.Description
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    permissionIndex++;
-                                }
-                            </div>
-                        </div>
-
-                        <div class="form-group mt-4">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Yadda Saxla
-                            </button>
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Geri Qayıt
-                            </a>
-                        </div>
-                    </form>
-                }
-            </div>
+                </form>
+            }
         </div>
     </div>
 </div>
 
 <style>
-    .permission-group {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid #dee2e6;
+    .bg-yes {
+        background-color: #e3f6e5 !important; /* yumşaq yaşıl */
     }
 
-    .group-title {
-        color: #0d6efd;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid #dee2e6;
+    .bg-no {
+        background-color: #fde8e8 !important; /* yumşaq qırmızı */
     }
 
-    .permission-card {
-        padding: 0.75rem;
-        border-radius: 0.25rem;
-        transition: all 0.3s ease;
-        margin-bottom: 0.5rem;
+    .transition-bg {
+        transition: background-color 0.3s ease;
     }
 
-    .has-permission {
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
+    .form-check-input {
+        cursor: pointer;
     }
 
-    .no-permission {
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-    }
+        .form-check-input:checked {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+        }
 
-    .form-switch .form-check-input {
-        width: 3em;
-        height: 1.5em;
-        margin-right: 0.5em;
-    }
-
-    .img-thumbnail {
-        max-width: 100px;
-        max-height: 100px;
+    .card {
+        background-color: #fff;
     }
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Toggle permission card colors when checkboxes change
-        const checkboxes = document.querySelectorAll('.permission-checkbox');
-
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const card = this.closest('.permission-card');
-                if (this.checked) {
-                    card.classList.remove('no-permission');
-                    card.classList.add('has-permission');
-                } else {
-                    card.classList.remove('has-permission');
-                    card.classList.add('no-permission');
-                }
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.permission-checkbox').forEach(cb => {
+            cb.addEventListener('change', function () {
+                const parent = this.closest('.d-flex');
+                parent.classList.toggle('bg-yes', this.checked);
+                parent.classList.toggle('bg-no', !this.checked);
             });
         });
 
-        // Form submission handling
         const form = document.getElementById('permissionsForm');
         if (form) {
-            form.addEventListener('submit', function(e) {
-                const submitButton = this.querySelector('button[type="submit"]');
-                if (submitButton) {
-                    submitButton.disabled = true;
-                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yadda saxlanılır...';
-                }
+            form.addEventListener('submit', function () {
+                const btn = this.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yadda saxlanılır...';
             });
         }
     });

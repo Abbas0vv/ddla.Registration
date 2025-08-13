@@ -9,26 +9,25 @@ public static class PermissionTypeExtensions
         return permissionType switch
         {
             // Operation Permissions
-            PermissionType.OperationCreate => "Yeni əməliyyat yarat",
-            PermissionType.OperationEdit => "Əməliyyat redaktə et",
-            PermissionType.OperationDelete => "Əməliyyat sil",
-            PermissionType.OperationView => "Əməliyyatları görüntülə",
+            PermissionType.OperationƏlavəEt => "Yeni əməliyyat yarat",
+            PermissionType.OperationRedatəEt => "Əməliyyat redaktə et",
+            PermissionType.OperationSil => "Əməliyyat sil",
+            PermissionType.OperationGörüntülə => "Əməliyyatları görüntülə",
 
             // Inventory Permissions
-            PermissionType.InventoryCreate => "Anbar əlavə et",
-            PermissionType.InventoryEdit => "Anbar redaktə et",
-            PermissionType.InventoryDelete => "Anbar sil",
-            PermissionType.InventoryView => "Anbarı görüntülə",
+            PermissionType.InventoryƏlavəEt => "Anbar əlavə et",
+            PermissionType.InventoryRedatəEt => "Anbar redaktə et",
+            PermissionType.InventorySil => "Anbar sil",
+            PermissionType.InventoryGörüntülə => "Anbarı görüntülə",
 
             // Equipment Permissions
-            PermissionType.EquipmentCreate => "Avadanlıq əlavə et",
-            PermissionType.EquipmentEdit => "Avadanlıq redaktə et",
-            PermissionType.EquipmentDelete => "Avadanlıq sil",
-            PermissionType.EquipmentView => "Avadanlığı görüntülə",
+            PermissionType.EquipmentRedatəEt => "Avadanlıq redaktə et",
+            PermissionType.EquipmentSil => "Avadanlıq sil",
+            PermissionType.EquipmentGörüntülə => "Avadanlığı görüntülə",
 
             // Admin Permissions
             PermissionType.AdminAccess => "Admin panelinə giriş",
-            PermissionType.UserManagement => "İstifadəçi idarəetmə",
+            PermissionType.Adminİstifadəçiİdarəetmə => "İstifadəçi idarəetmə",
 
             _ => permissionType.ToString()
         };

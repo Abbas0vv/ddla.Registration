@@ -7,135 +7,82 @@
 }
 
 <div class="main-content">
-    <div class="container mt-5">
-        <div class="logo-header">
-            <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
-            <div class="logo-text">
-                <h1>İcazə İdarəetmə Paneli</h1>
-                <small>Dövlət Dəniz və Liman Agentliyi</small>
-            </div>
+    <div class="container py-4">
+        <div class="text-center mb-4">
+            <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" style="height:60px;">
+            <h2 class="mt-2">İcazə İdarəetmə Paneli</h2>
+            <p class="text-muted">Dövlət Dəniz və Liman Agentliyi</p>
         </div>
 
-        <div class="table-responsive mt-4">
-            <table class="table table-bordered permission-table">
-                <thead>
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-hover align-middle">
+                <thead class="table-light sticky-top">
                     <tr>
-                        <th rowspan="2">İstifadəçilər</th>
-                        <th colspan="3" class="text-center">İcazə Növləri</th>
-                    </tr>
-                    <tr>
-                        <th class="text-center bg-light">Əməliyyat İcazələri</th>
-                        <th class="text-center bg-light">Anbar İcazələri</th>
-                        <th class="text-center bg-light">Avadanlıq İcazələri</th>
-                    </tr>
-                    <tr class="permission-headers">
+                        <th>İstifadəçi</th>
+                        <th class="text-center">Əməliyyat İcazələri</th>
+                        <th class="text-center">Anbar İcazələri</th>
+                        <th class="text-center">Avadanlıq İcazələri</th>
+                        <th class="text-center">Admin İcazələri</th>
                         <th></th>
-                        <th>
-                            <div class="d-flex flex-column">
-                                <div class="permission-category">Əməliyyat İcazələri</div>
-                                <div class="d-flex flex-wrap">
-                                    <span class="permission-tag">Yeni əməliyyat yarat</span>
-                                    <span class="permission-tag">Əməliyyat redaktə et</span>
-                                    <span class="permission-tag">Əməliyyat sil</span>
-                                    <span class="permission-tag">Əməliyyatları görüntülə</span>
-                                </div>
-                            </div>
-                        </th>
-                        <th>
-                            <div class="d-flex flex-column">
-                                <div class="permission-category">Anbar İcazələri</div>
-                                <div class="d-flex flex-wrap">
-                                    <span class="permission-tag">Anbar əlavə et</span>
-                                    <span class="permission-tag">Anbar redaktə et</span>
-                                    <span class="permission-tag">Anbar sil</span>
-                                    <span class="permission-tag">Anbarı görüntülə</span>
-                                </div>
-                            </div>
-                        </th>
-                        <th>
-                            <div class="d-flex flex-column">
-                                <div class="permission-category">Avadanlıq İcazələri</div>
-                                <div class="d-flex flex-wrap">
-                                    <span class="permission-tag">Avadanlıq əlavə et</span>
-                                    <span class="permission-tag">Avadanlıq redaktə et</span>
-                                    <span class="permission-tag">Avadanlıq sil</span>
-                                    <span class="permission-tag">Avadanlığı görüntülə</span>
-                                </div>
-                            </div>
-                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var user in Model)
                     {
                         <tr>
-                            <td class="user-info">
+                            <td>
                                 <div class="d-flex align-items-center">
-                                    <div class="user-avatar me-2">
-                                        <img src="~/assets/images/Uploads/ProfilePictures/@(string.IsNullOrEmpty(user.ProfilePictureUrl) ? "default.jpg" : user.ProfilePictureUrl)"
-                                             alt="Profile Picture"
-                                             class="profile-picture"
-                                             loading="lazy" />
-                                    </div>
+                                    <img src="~/assets/images/Uploads/ProfilePictures/@(string.IsNullOrEmpty(user.ProfilePictureUrl) ? "default.jpg" : user.ProfilePictureUrl)"
+                                         class="rounded-circle me-3" style="width:45px; height:45px; object-fit:cover;">
                                     <div>
                                         <strong>@user.FullName</strong>
                                         <div class="text-muted small">@user.Username</div>
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <div class="d-flex flex-wrap permission-cells">
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.OperationCreate) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.OperationCreate) ? "fa-check" : "fa-times")"></i>
-                                    </div>
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.OperationEdit) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.OperationEdit) ? "fa-check" : "fa-times")"></i>
-                                    </div>
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.OperationDelete) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.OperationDelete) ? "fa-check" : "fa-times")"></i>
-                                    </div>
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.OperationView) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.OperationView) ? "fa-check" : "fa-times")"></i>
-                                    </div>
+                            <td class="text-center">
+                                <div class="d-flex flex-wrap justify-content-center gap-1">
+                                    @foreach (var perm in new[] { PermissionType.OperationƏlavəEt, PermissionType.OperationRedatəEt, PermissionType.OperationSil, PermissionType.OperationGörüntülə })
+                                    {
+                                        <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
+                                            @(perm.ToString().Replace("Operation", ""))
+                                        </span>
+                                    }
                                 </div>
                             </td>
-                            <td>
-                                <div class="d-flex flex-wrap permission-cells">
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.InventoryCreate) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.InventoryCreate) ? "fa-check" : "fa-times")"></i>
-                                    </div>
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.InventoryEdit) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.InventoryEdit) ? "fa-check" : "fa-times")"></i>
-                                    </div>
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.InventoryDelete) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.InventoryDelete) ? "fa-check" : "fa-times")"></i>
-                                    </div>
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.InventoryView) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.InventoryView) ? "fa-check" : "fa-times")"></i>
-                                    </div>
+                            <td class="text-center">
+                                <div class="d-flex flex-wrap justify-content-center gap-1">
+                                    @foreach (var perm in new[] { PermissionType.InventoryƏlavəEt, PermissionType.InventoryRedatəEt, PermissionType.InventorySil, PermissionType.InventoryGörüntülə })
+                                    {
+                                        <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
+                                            @(perm.ToString().Replace("Inventory", ""))
+                                        </span>
+                                    }
                                 </div>
                             </td>
-                            <td>
-                                <div class="d-flex flex-wrap permission-cells">
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.EquipmentCreate) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.EquipmentCreate) ? "fa-check" : "fa-times")"></i>
-                                    </div>
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.EquipmentEdit) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.EquipmentEdit) ? "fa-check" : "fa-times")"></i>
-                                    </div>
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.EquipmentDelete) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.EquipmentDelete) ? "fa-check" : "fa-times")"></i>
-                                    </div>
-                                    <div class="permission-cell @(user.HasPermission(PermissionType.EquipmentView) ? "has-permission" : "no-permission")">
-                                        <i class="fas @(user.HasPermission(PermissionType.EquipmentView) ? "fa-check" : "fa-times")"></i>
-                                    </div>
+                            <td class="text-center">
+                                <div class="d-flex flex-wrap justify-content-center gap-1">
+                                    @foreach (var perm in new[] { PermissionType.EquipmentRedatəEt, PermissionType.EquipmentSil, PermissionType.EquipmentGörüntülə })
+                                    {
+                                        <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
+                                            @(perm.ToString().Replace("Equipment", ""))
+                                        </span>
+                                    }
                                 </div>
                             </td>
-                        </tr>
-                        <tr class="action-row">
-                            <td colspan="4" class="text-end">
-                                <a asp-action="Edit" asp-route-userId="@user.Id" class="btn btn-sm btn-warning">
-                                    <i class="fas fa-edit me-1"></i> İcazələri redaktə et
+                            <td class="text-center">
+                                <div class="d-flex flex-wrap justify-content-center gap-1">
+                                    @foreach (var perm in new[] { PermissionType.AdminAccess, PermissionType.Adminİstifadəçiİdarəetmə })
+                                    {
+                                        <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
+                                            @(perm.ToString().Replace("Admin", ""))
+                                        </span>
+                                    }
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Edit" asp-route-userId="@user.Id" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i> Redaktə
                                 </a>
                             </td>
                         </tr>
@@ -147,63 +94,15 @@
 </div>
 
 <style>
-    .permission-table {
-        font-size: 0.9rem;
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.4em 0.6em;
+        white-space: nowrap; /* Badge-ləri sətirdə qırma */
     }
 
-    .permission-headers th {
-        vertical-align: bottom;
-        background-color: #f8f9fa;
-    }
-
-    .permission-category {
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        text-align: center;
-    }
-
-    .permission-tag {
-        background-color: #e9ecef;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        margin: 0.1rem;
-        font-size: 0.8rem;
-    }
-
-    .user-info {
-        min-width: 200px;
-    }
-
-    .permission-cells {
-        gap: 0.5rem;
-        justify-content: center;
-    }
-
-    .permission-cell {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-    }
-
-    .has-permission {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .no-permission {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-
-    .action-row td {
-        padding: 0.3rem;
-        background-color: #f8f9fa;
-    }
-
-    .user-avatar {
-        color: #6c757d;
+    thead.sticky-top {
+        position: sticky;
+        top: 0;
+        z-index: 1020;
     }
 </style>
