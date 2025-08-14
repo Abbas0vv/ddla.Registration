@@ -1,0 +1,40 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Qadağandır | DDLA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="~/assets/notFound.css">
+</head>
+<body style="display:flex;">
+    <div class="error-container">
+        <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="error-logo">
+        <div class="error-code" style="color: #ef233c;">403</div>
+        <h2 class="error-title">Giriş Qadağandır</h2>
+        <p class="error-message">
+            Üzr istəyirik, bu səhifəyə giriş hüququnuz yoxdur. <br>
+            Əgər bunun səhv olduğunu düşünürsünüzsə, dəstək komandamızla əlaqə saxlayın.
+        </p>
+        <div class="error-actions">
+            <a href="javascript:history.back()" class="btn btn-home">
+                <i class="fas fa-arrow-left"></i>
+                <span>Geri Qayıt</span>
+            </a>
+            <a href="mailto:itd@ddla.az" class="btn btn-secondary">
+                <i class="fas fa-envelope"></i>
+                <span>Dəstək</span>
+            </a>
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-home"></i>
+                <span>Ana Səhifə</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

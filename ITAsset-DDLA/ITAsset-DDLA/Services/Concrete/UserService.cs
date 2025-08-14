@@ -2,7 +2,6 @@
 using ddla.ITApplication.Database.Models.DomainModels.Account;
 using ddla.ITApplication.Database.Models.ViewModels.Account;
 using ddla.ITApplication.Helpers.Enums;
-using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.ViewModels.Admin;
 using Microsoft.AspNetCore.Identity;
@@ -82,6 +81,32 @@ public class UserService : IUserService
     public async Task LogOut()
     {
         await _signInManager.SignOutAsync();
+    }
+
+    public async Task<List<string>> GetUserPermissionsAsync(ddlaUser user)
+    {
+        if (string.IsNullOrEmpty(user.Id))
+        {
+            throw new ArgumentException("User ID cannot be null or empty", nameof(user.Id));
+        }
+
+        var permissions = await _context.UserPermissions
+            .Include(up => up.Permission)
+            .Where(up => up.UserId == user.Id)
+            .Select(up => up.Permission.Type.ToString())
+            .ToListAsync();
+
+        if (permissions.Count == 0)
+        {
+            Console.WriteLine("No permissions found for user: " + user.UserName);
+        }
+        else
+        {
+            Console.WriteLine("Permissions for " + user.UserName + ": " + string.Join(",", permissions));
+        }
+
+
+        return permissions;
     }
 
     //public async Task Register(RegisterViewModel model)

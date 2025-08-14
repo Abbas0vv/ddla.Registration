@@ -3,18 +3,18 @@
 public enum PermissionType
 {
     // Operation Permissions
-    OperationƏlavəEt,
-    OperationRedatəEt,
-    OperationSil,
-    OperationGörüntülə,
+    OperationAdd,
+    OperationEdit,
+    OperationDelete,
+    OperationView,
 
     // Inventory Permissions
-    InventoryƏlavəEt,
-    InventoryRedaktəEt,
-    InventorySil,
-    InventoryGörüntülə,
+    InventoryAdd,
+    InventoryEdit,
+    InventoryDelete,
+    InventoryView,
 
     // Equipment Permissions
-    EquipmentRedatəEt,
-    EquipmentGörüntülə
+    EquipmentEdit,
+    EquipmentView
 }

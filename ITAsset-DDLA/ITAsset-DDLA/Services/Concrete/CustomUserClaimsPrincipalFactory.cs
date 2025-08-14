@@ -5,56 +5,60 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
-namespace ITAsset_DDLA.Services.Concrete;
-
-public class CustomUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ddlaUser>
+namespace ITAsset_DDLA.Services.Concrete
 {
-    private readonly ddlaAppDBContext _context;
-    private readonly UserManager<ddlaUser> _userManager;
-
-    public CustomUserClaimsPrincipalFactory(
-        UserManager<ddlaUser> userManager,
-        IOptions<IdentityOptions> optionsAccessor,
-        ddlaAppDBContext context)
-        : base(userManager, optionsAccessor)
+    public class CustomUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ddlaUser>
     {
-        _context = context;
-        _userManager = userManager;
-    }
+        private readonly ddlaAppDBContext _context;
+        private readonly UserManager<ddlaUser> _userManager;
 
-    protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ddlaUser user)
-    {
-        var identity = await base.GenerateClaimsAsync(user);
-
-        // Load user permissions
-        var permissions = await _context.UserPermissions
-            .Include(up => up.Permission)
-            .Where(up => up.UserId == user.Id)
-            .Select(up => up.Permission.Type.ToString())
-            .ToListAsync();
-
-        if (permissions.Any())
+        public CustomUserClaimsPrincipalFactory(
+            UserManager<ddlaUser> userManager,
+            IOptions<IdentityOptions> optionsAccessor,
+            ddlaAppDBContext context)
+            : base(userManager, optionsAccessor)
         {
-            identity.AddClaim(new Claim("Permissions", string.Join(",", permissions)));
+            _context = context;
+            _userManager = userManager;
         }
 
-        var roles = await _userManager.GetRolesAsync(user);
-        var claims = new List<Claim>
+        protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ddlaUser user)
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
-            new Claim("FirstName", user.FirstName ?? string.Empty),
-            new Claim("LastName", user.LastName ?? string.Empty),
-            new Claim("ProfilePictureUrl", user.ProfilePictureUrl ?? string.Empty),
-            new Claim("CreatedAt", user.CreatedAt.ToString("o"))
-        };
+            // Base identity
+            var identity = await base.GenerateClaimsAsync(user);
 
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
+            // Add custom user info claims
+            identity.AddClaim(new Claim("FirstName", user.FirstName ?? string.Empty));
+            identity.AddClaim(new Claim("LastName", user.LastName ?? string.Empty));
+            identity.AddClaim(new Claim("ProfilePictureUrl", user.ProfilePictureUrl ?? string.Empty));
+            identity.AddClaim(new Claim("CreatedAt", user.CreatedAt.ToString("o")));
+
+            // Add roles as claims
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                if (!identity.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == role))
+                {
+                    identity.AddClaim(new Claim(ClaimTypes.Role, role));
+                }
+            }
+
+            // Add permissions as claims
+            var permissions = await _context.UserPermissions
+                .Include(up => up.Permission)
+                .Where(up => up.UserId == user.Id)
+                .Select(up => up.Permission.Type.ToString())
+                .ToListAsync();
+
+            foreach (var permission in permissions.Distinct())
+            {
+                if (!identity.HasClaim(c => c.Type == "Permission" && c.Value == permission))
+                {
+                    identity.AddClaim(new Claim("Permission", permission));
+                }
+            }
+
+            return identity;
         }
-
-        identity.AddClaims(claims);
-        return identity;
     }
 }

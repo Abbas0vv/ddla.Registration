@@ -9,20 +9,20 @@ public static class PermissionTypeExtensions
         return permissionType switch
         {
             // Operation Permissions
-            PermissionType.OperationƏlavəEt => "Yeni əməliyyat yarat",
-            PermissionType.OperationRedatəEt => "Əməliyyat redaktə et",
-            PermissionType.OperationSil => "Əməliyyat sil",
-            PermissionType.OperationGörüntülə => "Əməliyyatları görüntülə",
+            PermissionType.OperationAdd => "Yeni əməliyyat yarat",
+            PermissionType.OperationEdit => "Əməliyyat redaktə et",
+            PermissionType.OperationDelete => "Əməliyyat sil",
+            PermissionType.OperationView => "Əməliyyatları görüntülə",
 
             // Inventory Permissions
-            PermissionType.InventoryƏlavəEt => "Anbar əlavə et",
-            PermissionType.InventoryRedaktəEt => "Anbar redaktə et",
-            PermissionType.InventorySil => "Anbar sil",
-            PermissionType.InventoryGörüntülə => "Anbarı görüntülə",
+            PermissionType.InventoryAdd => "Anbara əlavə et",
+            PermissionType.InventoryEdit => "Anbar redaktə et",
+            PermissionType.InventoryDelete => "Anbar sil",
+            PermissionType.InventoryView => "Anbarı görüntülə",
 
             // Equipment Permissions
-            PermissionType.EquipmentRedatəEt => "Avadanlıq redaktə et",
-            PermissionType.EquipmentGörüntülə => "Avadanlığı görüntülə",
+            PermissionType.EquipmentEdit => "Avadanlıq redaktə et",
+            PermissionType.EquipmentView => "Avadanlığı görüntülə",
             _ => permissionType.ToString()
         };
     }

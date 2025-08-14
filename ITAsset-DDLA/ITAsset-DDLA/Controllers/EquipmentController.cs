@@ -1,10 +1,14 @@
-﻿using ITAsset_DDLA.Services.Abstract;
+﻿using ITAsset_DDLA.Database.Models.DomainModels;
+using ITAsset_DDLA.Helpers.Attributes;
+using ITAsset_DDLA.Helpers.Enums;
+using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ddla.ITApplication.Controllers
 {
     [Authorize]
+    [Permission(PermissionType.EquipmentView)]
     public class EquipmentController : Controller
     {
         private readonly IStockService _stockService;

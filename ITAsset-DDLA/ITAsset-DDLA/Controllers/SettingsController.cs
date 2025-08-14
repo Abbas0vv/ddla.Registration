@@ -53,10 +53,16 @@ namespace ddla.ITApplication.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var roles = await _userManager.GetRolesAsync(user);
+            var permissions = await _userService.GetUserPermissionsAsync(user);
 
-            return Content($"User: {user.UserName} | Roles: {string.Join(", ", roles)}");
+            // Debugging: Check permissions
+            foreach (var permission in permissions)
+            {
+                Console.WriteLine(permission); // Or use a logger to check permissions
+            }
+
+            return Content($"User: {user.UserName} | Roles: {string.Join(", ", roles)} | Permissions: {string.Join(", ", permissions)}");
         }
-
 
         [HttpPost]
         public async Task<IActionResult> UpdateProfile(UpdateProfileViewModel model)

@@ -75,7 +75,19 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.UseStatusCodePagesWithReExecute("/Shared/NotFound");
+        app.UseExceptionHandler("/Error");
+        app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
+        app.Use(async (context, next) =>
+        {
+            await next();
+
+            if (context.Response.StatusCode == 403 && !context.Response.HasStarted)
+            {
+                context.Request.Path = "/Error/403";
+                await next();
+            }
+        });
         app.MapControllerRoute(
             name: "Areas",
             pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");

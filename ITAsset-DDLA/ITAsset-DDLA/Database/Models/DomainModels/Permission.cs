@@ -1,5 +1,4 @@
 ﻿using ITAsset_DDLA.Helpers.Enums;
-
 namespace ITAsset_DDLA.Database.Models.DomainModels;
 
 public class Permission

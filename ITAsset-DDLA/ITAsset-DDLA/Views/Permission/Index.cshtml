@@ -41,30 +41,30 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex flex-wrap justify-content-center gap-1">
-                                    @foreach (var perm in new[] { PermissionType.OperationƏlavəEt, PermissionType.OperationRedatəEt, PermissionType.OperationSil, PermissionType.OperationGörüntülə })
+                                    @foreach (var perm in new[] { PermissionType.OperationAdd, PermissionType.OperationEdit, PermissionType.OperationDelete, PermissionType.OperationView })
                                     {
                                         <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
-                                            @(perm.ToString().Replace("Operation", ""))
+                                            @perm.ToString().Replace("Operation", "")
                                         </span>
                                     }
                                 </div>
                             </td>
                             <td class="text-center">
                                 <div class="d-flex flex-wrap justify-content-center gap-1">
-                                    @foreach (var perm in new[] { PermissionType.InventoryƏlavəEt, PermissionType.InventoryRedaktəEt, PermissionType.InventorySil, PermissionType.InventoryGörüntülə })
+                                    @foreach (var perm in new[] { PermissionType.InventoryAdd, PermissionType.InventoryEdit, PermissionType.InventoryDelete, PermissionType.InventoryView })
                                     {
                                         <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
-                                            @(perm.ToString().Replace("Inventory", ""))
+                                            @perm.ToString().Replace("Inventory", "")
                                         </span>
                                     }
                                 </div>
                             </td>
                             <td class="text-center">
                                 <div class="d-flex flex-wrap justify-content-center gap-1">
-                                    @foreach (var perm in new[] { PermissionType.EquipmentRedatəEt, PermissionType.EquipmentGörüntülə })
+                                    @foreach (var perm in new[] { PermissionType.EquipmentEdit, PermissionType.EquipmentView })
                                     {
                                         <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
-                                            @(perm.ToString().Replace("Equipment", ""))
+                                            @perm.ToString().Replace("Equipment", "")
                                         </span>
                                     }
                                 </div>

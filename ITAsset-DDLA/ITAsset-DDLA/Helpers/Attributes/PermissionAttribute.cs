@@ -17,35 +17,21 @@ namespace ITAsset_DDLA.Helpers.Attributes
         {
             var user = context.HttpContext.User;
 
-            // Əgər istifadəçi login olmayıbsa
             if (!user.Identity.IsAuthenticated)
             {
-                context.Result = new ForbidResult();
+                context.Result = new ChallengeResult(); // login olmayanları yönləndir
                 return;
             }
 
-            // Claim-ləri götür
-            var permissionsClaim = user.Claims.FirstOrDefault(c => c.Type == "Permissions")?.Value;
+            var permissions = user.Claims
+                .Where(c => c.Type == "Permission")
+                .Select(c => c.Value);
 
-            if (string.IsNullOrEmpty(permissionsClaim))
+            if (!permissions.Any(p => string.Equals(p, _permission.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
-                context.Result = new ForbidResult();
-                return;
-            }
-
-            // Claim-ləri ayır və trim et
-            var permissions = permissionsClaim
-                .Split(',', System.StringSplitOptions.RemoveEmptyEntries)
-                .Select(p => p.Trim());
-
-            // İcazəni yoxla (böyük/kiçik hərf fərqinə tolerant)
-            bool hasPermission = permissions.Any(p =>
-                string.Equals(p, _permission.ToString(), System.StringComparison.OrdinalIgnoreCase));
-
-            if (!hasPermission)
-            {
-                context.Result = new ForbidResult();
+                context.Result = new ForbidResult(); // login olub, amma icazəsi yoxdursa
             }
         }
+
     }
 }

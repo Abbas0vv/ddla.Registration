@@ -107,21 +107,6 @@ public class PermissionController : Controller
             })
             .ToList();
     }
-
-    private List<PermissionItem> GetPermissionItems(ddlaUser user, Func<string, bool> predicate)
-    {
-        return Enum.GetValues(typeof(PermissionType))
-            .Cast<PermissionType>()
-            .Where(p => predicate(p.ToString()))
-            .Select(p => new PermissionItem
-            {
-                Type = p,
-                Description = p.GetDisplayName(),
-                HasPermission = user.UserPermissions.Any(up => up.Permission.Type == p)
-            })
-            .ToList();
-    }
-
     [HttpPost]
     public async Task<IActionResult> Edit(UpdatePermissionsViewModel model)
     {
