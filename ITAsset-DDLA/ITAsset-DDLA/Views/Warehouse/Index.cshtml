@@ -82,7 +82,7 @@
                                         <td>@item.InUseCount</td>
                                         <td>@item.AvailableCount</td>
                                         <td>
-                                            <a asp-action="Detail" asp-route-description="@item.Description" class="btn btn-info btn-sm me-1" title="Details">
+                                            <a asp-action="Detail" asp-route-name="@item.Name" class="btn btn-info btn-sm me-1" title="Details">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                         </td>
@@ -93,7 +93,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -101,6 +101,8 @@
             const table = document.getElementById("itemsTable");
             const globalSearchInput = document.getElementById("globalSearch");
             const clearBtn = document.getElementById("clearGlobalSearch");
+
+            
 
             // Optimized search function
             function performSearch() {

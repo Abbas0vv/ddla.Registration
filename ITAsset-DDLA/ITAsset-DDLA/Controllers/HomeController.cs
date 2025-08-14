@@ -62,7 +62,14 @@ public class HomeController : Controller
     {
         if (!ModelState.IsValid)
         {
-            model.StockProducts = await _context.StockProducts.ToListAsync();
+            var ldapUsers = _ldapService.GetLdapUsers();
+            ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).ToList();
+
+            model = new DoubleCreateProductTypeViewModel
+            {
+                CreateProductViewModel = new CreateProductViewModel(),
+                StockProducts = await _context.StockProducts.ToListAsync()
+            };
             return View(model);
         }
 

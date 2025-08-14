@@ -33,7 +33,7 @@
                                     <option value="@user">@user</option>
                                 }
                             </select>
-                            <span asp-validation-for="CreateProductViewModel.Recipient" class="error-message"></span>
+                            <span asp-validation-for="CreateProductViewModel.Recipient" class="error-message" style="color: red;"></span>
                         </div>
                         <!-- Product Selection -->
                         <div class="mb-4">
@@ -77,7 +77,7 @@
                             <div id="selectedProductsContainer" class="mt-3">
                                 <h6>Seçilmiş Məhsullar:</h6>
                                 <div id="selectedProductsList" class="list-group">
-                                    <div class="text-muted">Heç bir məhsul seçilməyib</div>
+                                    <div class="text-muted" style="color: red!important;">Heç bir məhsul seçilməyib</div>
                                 </div>
                             </div>
                         </div>
