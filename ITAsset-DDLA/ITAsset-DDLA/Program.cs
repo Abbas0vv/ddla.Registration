@@ -1,4 +1,4 @@
-using ddla.ITApplication.Database;
+﻿using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.DomainModels.Account;
 using ddla.ITApplication.Services.Abstract;
 using ddla.ITApplication.Services.Concrete;
@@ -50,6 +50,12 @@ public class Program
             new LdapService(ldapSettings.LdapPath, ldapSettings.LdapUser, ldapSettings.LdapPassword));
 
 
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.AccessDeniedPath = "/Error/403";
+        });
+
+
         builder.Services.Configure<IdentityOptions>(options =>
         {
             // Password settings.
@@ -72,11 +78,10 @@ public class Program
         var app = builder.Build();
 
         app.UseStaticFiles();
+        app.UseStatusCodePagesWithReExecute("/Error/{0}");
+        app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
-
-        app.UseExceptionHandler("/Error");
-        app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
         app.Use(async (context, next) =>
         {

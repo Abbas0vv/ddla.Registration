@@ -18,14 +18,17 @@ public class PermissionController : Controller
     private readonly IUserService _userService;
     private readonly UserManager<ddlaUser> _userManager;
     private readonly ddlaAppDBContext _context;
+    private readonly SignInManager<ddlaUser> _signInManager;
 
     public PermissionController(
-        IUserService userService, 
-        UserManager<ddlaUser> userManager, 
+        IUserService userService,
+        UserManager<ddlaUser> userManager,
+        SignInManager<ddlaUser> signInManager,
         ddlaAppDBContext context)
     {
         _userService = userService;
         _userManager = userManager;
+        _signInManager = signInManager;
         _context = context;
     }
 
@@ -165,6 +168,9 @@ public class PermissionController : Controller
         try
         {
             await _context.SaveChangesAsync();
+            var updatedUser = await _userManager.FindByIdAsync(user.Id);
+            await _signInManager.RefreshSignInAsync(updatedUser);
+
             TempData["SuccessMessage"] = "İcazələr uğurla yeniləndi!";
         }
         catch (Exception ex)
