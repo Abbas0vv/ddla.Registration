@@ -73,7 +73,7 @@ public class Program
 
         app.UseStaticFiles();
         app.UseAuthentication();
-        app.UseAuthorization();  // This enables authorization
+        app.UseAuthorization();
 
         app.UseStatusCodePagesWithReExecute("/Shared/NotFound");
         app.MapControllerRoute(

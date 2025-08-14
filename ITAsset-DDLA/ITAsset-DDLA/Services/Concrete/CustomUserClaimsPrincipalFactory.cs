@@ -10,6 +10,7 @@ namespace ITAsset_DDLA.Services.Concrete;
 public class CustomUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ddlaUser>
 {
     private readonly ddlaAppDBContext _context;
+    private readonly UserManager<ddlaUser> _userManager;
 
     public CustomUserClaimsPrincipalFactory(
         UserManager<ddlaUser> userManager,
@@ -18,6 +19,7 @@ public class CustomUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ddlaU
         : base(userManager, optionsAccessor)
     {
         _context = context;
+        _userManager = userManager;
     }
 
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ddlaUser user)
@@ -36,6 +38,23 @@ public class CustomUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ddlaU
             identity.AddClaim(new Claim("Permissions", string.Join(",", permissions)));
         }
 
+        var roles = await _userManager.GetRolesAsync(user);
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+            new Claim("FirstName", user.FirstName ?? string.Empty),
+            new Claim("LastName", user.LastName ?? string.Empty),
+            new Claim("ProfilePictureUrl", user.ProfilePictureUrl ?? string.Empty),
+            new Claim("CreatedAt", user.CreatedAt.ToString("o"))
+        };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        identity.AddClaims(claims);
         return identity;
     }
 }

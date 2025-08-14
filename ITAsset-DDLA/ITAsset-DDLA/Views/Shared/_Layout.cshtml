@@ -4,9 +4,7 @@
 @inject UserManager<ddlaUser> UserManager
 @{
     var user = await UserManager.GetUserAsync(User);
-    var roles = await UserManager.GetRolesAsync(user);
-    var isAdmin = roles.Contains("Admin") || roles.Contains("SuperAdmin");
-
+    var isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
 }
 <!DOCTYPE html>
 <html lang="az">
