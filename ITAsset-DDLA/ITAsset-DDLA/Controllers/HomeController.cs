@@ -34,12 +34,15 @@ public class HomeController : Controller
         _ldapService = ldapService;
     }
 
+    [Permission(PermissionType.OperationView)]
     public async Task<IActionResult> Index()
     {
         var models = await _productService.GetAllAsync();
         return View(models);
     }
 
+
+    [Permission(PermissionType.OperationAdd)]
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -69,6 +72,7 @@ public class HomeController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Permission(PermissionType.OperationEdit)]
     [HttpGet]
     public async Task<IActionResult> Update(int? id)
     {
@@ -117,7 +121,7 @@ public class HomeController : Controller
         }
     }
 
-
+    [Permission(PermissionType.OperationDelete)]
     [HttpGet]
     public async Task<IActionResult> Delete(int? id)
     {

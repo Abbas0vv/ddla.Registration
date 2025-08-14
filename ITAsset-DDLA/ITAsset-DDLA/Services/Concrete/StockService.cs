@@ -44,13 +44,13 @@ public class StockService : IStockService
         return totalCount;
     }
 
-    public async Task<List<StockProduct>> GetAllByDescriptionAsync(string description)
+    public async Task<List<StockProduct>> GetAllByNameAsync(string name)
     {
-        if (string.IsNullOrWhiteSpace(description))
+        if (string.IsNullOrWhiteSpace(name))
             return new List<StockProduct>();
 
         return await _context.StockProducts
-            .Where(sp => sp.Description.ToLower() == description.ToLower())
+            .Where(sp => sp.Name.ToLower() == name.ToLower())
             .ToListAsync();
     }
 

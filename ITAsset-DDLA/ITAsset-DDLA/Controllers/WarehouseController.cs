@@ -1,6 +1,8 @@
 ﻿using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
+using ITAsset_DDLA.Helpers.Attributes;
+using ITAsset_DDLA.Helpers.Enums;
 using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +20,7 @@ public class WarehouseController : Controller
         _productService = productService;
     }
 
+    [Permission(PermissionType.InventoryView)]
     [HttpGet]
     public async Task<IActionResult> Index()
     {
@@ -40,10 +43,11 @@ public class WarehouseController : Controller
         return View(grouped);
     }
 
+    [Permission(PermissionType.InventoryView)]
     [HttpGet]
-    public async Task<IActionResult> Detail(string description)
+    public async Task<IActionResult> Detail(string name)
     {
-        var stockProducts = await _stockService.GetAllByDescriptionAsync(description);
+        var stockProducts = await _stockService.GetAllByNameAsync(name);
         var products = await _productService.GetAllAsync();
 
         var model = new CompositeViewModel
@@ -54,7 +58,8 @@ public class WarehouseController : Controller
 
         return View(model);
     }
-
+    
+    [Permission(PermissionType.InventoryAdd)]
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -77,6 +82,7 @@ public class WarehouseController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Permission(PermissionType.InventoryEdit)]
     [HttpGet]
     public async Task<IActionResult> Update(int? id)
     {
@@ -103,7 +109,7 @@ public class WarehouseController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
+    [Permission(PermissionType.InventoryDelete)]
     [HttpGet]
     public async Task<IActionResult> Delete(int? id)
     {

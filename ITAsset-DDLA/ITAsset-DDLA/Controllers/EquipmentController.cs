@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ddla.ITApplication.Controllers
 {
     [Authorize]
-    [Permission(PermissionType.EquipmentView)]
     public class EquipmentController : Controller
     {
         private readonly IStockService _stockService;
@@ -18,12 +17,14 @@ namespace ddla.ITApplication.Controllers
             _stockService = stockService;
         }
 
+        [Permission(PermissionType.EquipmentView)]
         public async Task<IActionResult> Index()
         {
             var products = await _stockService.GetAllAsync();
             return View(products);
         }
 
+        [Permission(PermissionType.EquipmentEdit)]
         public async Task<IActionResult> ToggleStatus(int? id)
         {
             await _stockService.ToggleStatusAsync(id);

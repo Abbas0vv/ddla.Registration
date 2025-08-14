@@ -8,7 +8,7 @@ public interface IStockService
     Task<List<StockProduct>> GetAllAsync();
     Task<int> GetTotalCount(List<StockProduct> stockProducts);
     Task<int> GetStockProductCountByNameAsync(string name);
-    Task<List<StockProduct>> GetAllByDescriptionAsync(string description);
+    Task<List<StockProduct>> GetAllByNameAsync(string name);
     Task<List<StockProduct>> GetByIdsAsync(List<int> ids);
     Task<StockProduct> GetByIdAsync(int? id);
     Task InsertAsync(CreateStockViewModel model);
