@@ -86,21 +86,12 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <a asp-action="ToggleStatus" asp-route-id="@item.Id"
-                                           class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")">
-                                            <i class="fas @(item.IsActive ? "fa-times" : "fa-check")"></i>
-                                            @(item.IsActive ? "Deaktiv et" : "Aktiv et")
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <button class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")" disabled>
+                                    <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")">
                                             <i class="fas @(item.IsActive ? "fa-times" : "fa-check")"></i>
                                             @(item.IsActive ? "Deaktiv et" : "Aktiv et")
                                         </button>
-                                    }
+                                    </form>
                                 </td>
                             </tr>
                             counter++;

@@ -1,26 +1,86 @@
 ﻿@using ITAsset_DDLA.Database.Models.DomainModels
 @model List<ActivityLog>
 
-<h2>Fəaliyyət jurnalı</h2>
-
 <div class="main-content">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>İstifadəçi</th>
-                <th>Əməliyyat</th>
-                <th>Tarix</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="activity-log-container">
+        <h2 class="activity-log-title">Fəaliyyət Jurnalı</h2>
+
+        <div class="activity-log-list">
             @foreach (var log in Model)
             {
-                <tr>
-                    <td>@log.UserFullName</td>
-                    <td>@log.Action</td>
-                    <td>@log.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
-                </tr>
+                <div class="activity-log-item">
+                    <div class="activity-log-content">
+                        <span class="log-user-name">@log.UserFullName</span>
+                        <span class="action">@log.Action</span>
+                    </div>
+                    <div class="activity-log-time">
+                        @log.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+        </div>
+    </div>
 </div>
+
+<style>
+    .activity-log-container {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .activity-log-title {
+        color: #0056b3;
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 24px;
+        border-bottom: 2px solid #0056b3;
+        padding-bottom: 10px;
+    }
+
+    .activity-log-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .activity-log-item {
+        background-color: #f8f9fa;
+        border-left: 4px solid #0056b3;
+        border-radius: 4px;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+    }
+
+        .activity-log-item:hover {
+            background-color: #e9f0f7;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+    .activity-log-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .log-user-name {
+        font-weight: 600;
+        color: #0056b3;
+        margin-bottom: 5px;
+    }
+
+    .action {
+        color: #495057;
+    }
+
+    .activity-log-time {
+        color: #6c757d;
+        font-size: 14px;
+        white-space: nowrap;
+        margin-left: 15px;
+    }
+</style>

@@ -96,6 +96,7 @@ namespace ddla.ITApplication.Controllers
                 await _signInManager.SignOutAsync();
                 await _signInManager.SignInAsync(user, isPersistent: true);
 
+                await _activityLogger.LogAsync(User.Identity.Name, "profilini redaktə etdi");
                 TempData["SuccessMessage"] = "Profil məlumatları uğurla yeniləndi";
                 return RedirectToAction("UpdateProfile");
             }
@@ -105,7 +106,6 @@ namespace ddla.ITApplication.Controllers
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 
-            await _activityLogger.LogAsync(User.Identity.Name, "profilini redaktə etdi");
             return View("UpdateProfile", model);
         }
         [HttpPost]
@@ -116,12 +116,12 @@ namespace ddla.ITApplication.Controllers
             if (model.ProfilePicture != null)
             {
                 user.ProfilePictureUrl = model.ProfilePicture?.CreateImageFile(_webHostEnvironment.WebRootPath, FOLDER_NAME);
+                await _activityLogger.LogAsync(User.Identity.Name, "profil şəklini redaktə etdi");
                 await _userManager.UpdateAsync(user);
 
                 TempData["SuccessMessage"] = "Profil şəkli uğurla yeniləndi";
             }
 
-            await _activityLogger.LogAsync(User.Identity.Name, "profil şəklini redaktə etdi");
             return RedirectToAction("UpdateProfile");
         }
 
@@ -145,6 +145,7 @@ namespace ddla.ITApplication.Controllers
             if (result.Succeeded)
             {
                 TempData["Success"] = "Şifrə uğurla dəyişdirildi";
+                await _activityLogger.LogAsync(User.Identity.Name, "şifrəsini dəyişdi");
                 return RedirectToAction("UpdateProfile");
             }
 
@@ -153,7 +154,6 @@ namespace ddla.ITApplication.Controllers
                 ModelState.AddModelError("", error.Description);
             }
 
-            await _activityLogger.LogAsync(User.Identity.Name, "şifrəsini dəyişdi");
             return View(model);
         }
     }
