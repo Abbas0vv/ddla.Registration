@@ -1,0 +1,42 @@
+﻿@using ITAsset_DDLA.Database.Models.ViewModels.Shared
+@using ITAsset_DDLA.Helpers.Enums
+@using ddla.ITApplication.Database
+@using ddla.ITApplication.Helpers
+
+@model DoubleCreateProductTypeViewModel
+
+<div class="main-content">
+    <div class="container mt-5">
+        <div class="logo-header">
+            <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+            <div class="logo-text">
+                <h1>Blank Yaratmaq</h1>
+                <small>Dövlət Dəniz və Liman Agentliyi</small>
+            </div>
+        </div>
+
+        <form asp-action="CreateBlank" method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h4>İstifadəçi seçin</h4>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label asp-for="CreateProductViewModel.Recipient">İstifadəçi</label>
+                        <select asp-for="CreateProductViewModel.Recipient" class="form-control" required>
+                            <option value="">Seçin...</option>
+                            @foreach (var user in ViewBag.LdapUsers)
+                            {
+                                <option value="@user">@user</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button type="submit" class="btn btn-primary">Blank Yarat</button>
+                    <a asp-action="Index" class="btn btn-secondary">Ləğv et</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

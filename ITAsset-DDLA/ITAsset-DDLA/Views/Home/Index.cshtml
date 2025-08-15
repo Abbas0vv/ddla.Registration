@@ -14,10 +14,13 @@
             </div>
         </div>
 
-        <!-- Add this new button section -->
+        <!-- Add this new button section - Replace the existing button section with this -->
         <div class="mb-3 text-end">
             <a asp-action="Create" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Yeni Təhvil-Təslim yarat
+            </a>
+            <a asp-action="CreateBlank" class="btn btn-success ml-2">
+                <i class="fas fa-file-alt"></i> Yeni Blank yarat
             </a>
         </div>
 
@@ -30,6 +33,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>İmzalanıb</th>
                         <th>İnventar ID</th>
                         <th>İstifadəçi adı</th>
                         <th>Məhsul adı</th>
@@ -43,12 +47,19 @@
                     </tr>
                     <tr class="column-filters">
                         <th></th> <!-- # -->
-                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="1"></th>
+                        <th>
+                            <select class="form-control form-control-sm" data-column="1">
+                                <option value="">Hamısı</option>
+                                <option value="Təsdiqlənib">Təsdiqlənib</option>
+                                <option value="Təsdiqlənməyib">Təsdiqlənməyib</option>
+                            </select>
+                        </th>
                         <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="2"></th>
                         <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="3"></th>
                         <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="4"></th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="5"></th>
                         <th>
-                            <select class="form-control form-control-sm" data-column="5">
+                            <select class="form-control form-control-sm" data-column="6">
                                 <option value="">Hamısı</option>
                                 @foreach (var department in Enum.GetValues(typeof(DepartmentName)))
                                 {
@@ -57,7 +68,7 @@
                             </select>
                         </th>
                         <th>
-                            <select class="form-control form-control-sm" data-column="6">
+                            <select class="form-control form-control-sm" data-column="7">
                                 <option value="">Hamısı</option>
                                 @foreach (var unit in Enum.GetValues(typeof(UnitName)))
                                 {
@@ -65,8 +76,8 @@
                                 }
                             </select>
                         </th>
-                        <th><input type="text" class="form-control form-control-sm datepicker" placeholder="dd.mm.yyyy" data-column="7"></th>
-                        <th><input type="text" class="form-control form-control-sm datepicker" placeholder="dd.mm.yyyy" data-column="8"></th>
+                        <th><input type="date" class="form-control form-control-sm" data-column="8"></th>
+                        <th><input type="date" class="form-control form-control-sm" data-column="9"></th>
                         <th></th> <!-- Fayl -->
                         <th></th> <!-- Əməliyyatlar -->
                     </tr>
@@ -78,6 +89,18 @@
                         {
                             <tr>
                                 <td>@counter</td>
+                                <td data-order="@item.IsSigned.ToString().ToLower()">
+                                    <span class="d-none">@((item.IsSigned ? "Təsdiqlənib" : "Təsdiqlənməyib"))</span>
+                                    @if (item.IsSigned)
+                                    {
+                                        <i class="fas fa-check-circle text-success" title="Təsdiqlənib"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-times-circle text-danger" title="Təsdiqlənməyib"></i>
+                                    }
+                                </td>
+
                                 <td>@item.InventarId</td>
                                 <td>@item.Recipient</td>
                                 <td>@item.Name</td>
@@ -88,50 +111,50 @@
                                 <td>
                                     <span class="badge badge-department" style="background-color:#005b96">@item.Unit.ToString()</span>
                                 </td>
-                                <td data-order="@item.DateofIssue.ToString("yyyy-MM-dd HH:mm")">@item.DateofIssue.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td data-order="@item.DateofIssue.ToString("yyyy-MM-dd HH:mm")">
+                                    <span class="d-none">@item.DateofIssue.ToString("dd.MM.yyyy")</span>
+                                    @item.DateofIssue.ToString("dd.MM.yyyy HH:mm")
+                                </td>
                                 <td data-order="@(item.DateofReceipt?.ToString("yyyy-MM-dd HH:mm") ?? "")">
                                     @if (item.DateofReceipt.HasValue)
                                     {
+                                        <span class="d-none">@item.DateofReceipt.Value.ToString("dd.MM.yyyy")</span>
                                         @item.DateofReceipt.Value.ToString("dd.MM.yyyy HH:mm")
                                     }
                                     else
                                     {
+                                        <span class="d-none">Təhvil alınmayıb</span>
                                         <span>Təhvil alınmayıb</span>
                                     }
                                 </td>
+
                                 <td>
                                     @if (!string.IsNullOrEmpty(item.FilePath))
                                     {
-                                        <a href="@item.FilePath" class="btn btn-sm btn-outline-primary" download>
+                                        <a href="@item.FilePath"
+                                           class="btn btn-sm @(item.IsSigned ? "btn-success" : "btn-outline-danger")"
+                                           download
+                                           onclick="downloadAndRefresh(event, this)">
                                             <i class="fas fa-download"></i>
                                         </a>
                                     }
                                     else
                                     {
-                                        <a asp-action="GenerateHandoverPdf" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                        <a href="@Url.Action("GenerateHandoverPdf", "Home", new { id = item.Id })"
+                                           class="btn btn-sm @(item.IsSigned ? "btn-success" : "btn-outline-danger")"
+                                           download
+                                           onclick="downloadAndRefresh(event, this)">
                                             <i class="fas fa-download"></i>
                                         </a>
                                     }
                                 </td>
                                 <td>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <button class="btn btn-warning btn-sm" disabled>
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-danger btn-sm" disabled>
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    }
+                                    <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
                                 </td>
                             </tr>
                             counter++;
@@ -144,43 +167,83 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+
 <script>
-    $(document).ready(function() {
-        // Initialize global search
+     $(document).ready(function() {
+        // Initialize DataTable without ordering, info, paging
+        const table = $('#productsTable').DataTable({
+            dom: 't',           // sadəcə table göstər
+            ordering: false,    // sütun başlıqlarına kliklə sıralama olmayacaq
+            info: false,        // "1-8 arası" kimi info göstərməyəcək
+            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/az-AZ.json' }
+        });
+
+        // Global search
         $('#globalSearch').on('keyup', function() {
-            const searchText = $(this).val().toLowerCase();
-            $('#productsTable tbody tr').filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(searchText) > -1);
-            });
+            table.search(this.value).draw();
         });
 
-        // Initialize column search
-        $('.column-filters input, .column-filters select').on('keyup change', function() {
-            const columnIndex = $(this).data('column');
-            const searchValue = $(this).val().toLowerCase();
-
-            $('#productsTable tbody tr').each(function() {
-                const cell = $(this).find('td').eq(columnIndex);
-                if (cell.length) {
-                    const cellText = cell.text().toLowerCase();
-                    const cellData = cell.data('order') || cellText;
-
-                    if (searchValue === '' || cellData.toString().toLowerCase().indexOf(searchValue) > -1) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                }
-            });
+        // Boolean column filter
+        $('#productsTable thead select[data-column="1"]').on('change', function() {
+            const val = $(this).val();
+            table.column(1).search(val).draw();
         });
 
-        // Datepicker for date columns
-        $('.datepicker').on('focus', function() {
-            $(this).attr('type', 'date');
-        }).on('blur', function() {
-            if (!$(this).val()) {
-                $(this).attr('type', 'text');
+        // Text input filters
+        $('#productsTable thead input').on('keyup change', function() {
+            const colIndex = $(this).data('column');
+            table.column(colIndex).search(this.value).draw();
+        });
+
+        // Datepicker
+        $('.datepicker').datepicker({
+            format: 'dd.mm.yyyy',
+            autoclose: true
+        }).on('changeDate', function(e) {
+            table.draw();
+        });
+
+            $('#productsTable thead select[data-column="6"]').on('change', function() {
+        const val = $(this).val();
+        table.column(6).search(val ? "^" + val + "$" : "", true, false).draw();
+    });
+
+    $('#productsTable thead select[data-column="7"]').on('change', function() {
+        const val = $(this).val();
+        table.column(7).search(val ? "^" + val + "$" : "", true, false).draw();
+    });
+
+
+        // Custom date filter
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            // Verilmə tarixi
+            const dateIssueFilter = $('input[data-column="8"]').val();
+            const dateIssueStr = $(table.row(dataIndex).node()).find('td').eq(8).find('span.d-none').text();
+            if (dateIssueFilter) {
+                const partsFilter = dateIssueFilter.split('.');
+                const partsCell = dateIssueStr.split('.');
+                const filterDate = new Date(partsFilter[2], partsFilter[1]-1, partsFilter[0]);
+                const cellDate = new Date(partsCell[2], partsCell[1]-1, partsCell[0]);
+                if (cellDate.getTime() !== filterDate.getTime()) return false;
             }
+
+            // Alınma tarixi
+            const dateReceiptFilter = $('input[data-column="9"]').val();
+            const dateReceiptStr = $(table.row(dataIndex).node()).find('td').eq(9).find('span.d-none').text();
+            if (dateReceiptFilter) {
+                const partsFilter = dateReceiptFilter.split('.');
+                const partsCell = dateReceiptStr.split('.');
+                const filterDate = new Date(partsFilter[2], partsFilter[1]-1, partsFilter[0]);
+                const cellDate = new Date(partsCell[2], partsCell[1]-1, partsCell[0]);
+                if (cellDate.getTime() !== filterDate.getTime()) return false;
+            }
+
+            return true;
         });
     });
+
 </script>
+
