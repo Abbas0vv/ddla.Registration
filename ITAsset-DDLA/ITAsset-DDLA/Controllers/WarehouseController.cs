@@ -13,11 +13,16 @@ public class WarehouseController : Controller
 {
     private readonly IStockService _stockService;
     private readonly IProductService _productService;
+    private readonly IActivityLogger _activityLogger;
 
-    public WarehouseController(IStockService stockService, IProductService productService)
+    public WarehouseController(
+        IStockService stockService, 
+        IProductService productService, 
+        IActivityLogger activityLogger)
     {
         _stockService = stockService;
         _productService = productService;
+        _activityLogger = activityLogger;
     }
 
     [Permission(PermissionType.InventoryView)]
@@ -78,6 +83,7 @@ public class WarehouseController : Controller
             return View(model);
         }
 
+        await _activityLogger.LogAsync(User.Identity.Name, "anbara yeni məhsul əlavə etdi.");
         await _stockService.InsertAsync(model);
         return RedirectToAction(nameof(Index));
     }
@@ -105,6 +111,7 @@ public class WarehouseController : Controller
     public async Task<IActionResult> Update(int? id, UpdateStockViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
+        await _activityLogger.LogAsync(User.Identity.Name, $"{model.Name} məhsulunu redaktə etdi.");
         await _stockService.UpdateAsync(id, model);
         return RedirectToAction(nameof(Index));
     }
@@ -113,6 +120,8 @@ public class WarehouseController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int? id)
     {
+        var product = await _stockService.GetByIdAsync(id);
+        await _activityLogger.LogAsync(User.Identity.Name, $"{product.Name} məhsulunu sildi.");
         await _stockService.RemoveAsync(id);
         return RedirectToAction(nameof(Index));
     }

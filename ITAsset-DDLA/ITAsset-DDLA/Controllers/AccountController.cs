@@ -1,15 +1,17 @@
 ﻿using ddla.ITApplication.Database.Models.ViewModels.Account;
 using ddla.ITApplication.Services.Abstract;
+using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Mvc;
 namespace ddla.ITApplication.Controllers;
 
 public class AccountController : Controller
 {
     private readonly IUserService _userService;
-
-    public AccountController(IUserService userService)
+    private readonly IActivityLogger _activityLogger;
+    public AccountController(IUserService userService, IActivityLogger activityLogger)
     {
         _userService = userService;
+        _activityLogger = activityLogger;
     }
 
     //[HttpGet]
@@ -44,12 +46,14 @@ public class AccountController : Controller
             return View(model);
         }
 
+        await _activityLogger.LogAsync(User.Identity.Name, "sistemə daxil oldu.");
         return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]
     public async Task<IActionResult> LogOut()
     {
+        await _activityLogger.LogAsync(User.Identity.Name, "sistemdən çıxdı.");
         await _userService.LogOut();
         return RedirectToAction("Index", "Welcome");
     }

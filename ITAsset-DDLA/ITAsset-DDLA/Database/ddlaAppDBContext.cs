@@ -15,4 +15,6 @@ public class ddlaAppDBContext : IdentityDbContext<ddlaUser>
     public DbSet<Customer> Customers { get; set; }
     public DbSet<UserPermission> UserPermissions { get; set; }
     public DbSet<Permission> Permissions { get; set; }
+    public DbSet<ActivityLog> ActivityLogs { get; set; }
+
 }

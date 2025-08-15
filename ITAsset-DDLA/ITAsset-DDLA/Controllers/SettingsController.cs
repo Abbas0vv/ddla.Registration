@@ -3,6 +3,7 @@ using ddla.ITApplication.Database.Models.ViewModels.Account;
 using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.ViewModels.Account;
+using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,22 +12,25 @@ namespace ddla.ITApplication.Controllers
 {
     public class SettingsController : Controller
     {
-        private readonly UserManager<ddlaUser> _userManager;
+        private readonly IActivityLogger _activityLogger;
         private readonly IUserService _userService;
-        private readonly SignInManager<ddlaUser> _signInManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly UserManager<ddlaUser> _userManager;
+        private readonly SignInManager<ddlaUser> _signInManager;
         private const string FOLDER_NAME = "assets/images/Uploads/ProfilePictures";
 
         public SettingsController(
             UserManager<ddlaUser> userManager,
             IUserService userService,
             IWebHostEnvironment webHostEnvironment,
-            SignInManager<ddlaUser> signInManager)
+            SignInManager<ddlaUser> signInManager,
+            IActivityLogger activityLogger)
         {
             _userManager = userManager;
             _userService = userService;
             _webHostEnvironment = webHostEnvironment;
             _signInManager = signInManager;
+            _activityLogger = activityLogger;
         }
 
         public async Task<IActionResult> UpdateProfile()
@@ -101,6 +105,7 @@ namespace ddla.ITApplication.Controllers
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 
+            await _activityLogger.LogAsync(User.Identity.Name, "profilini redaktə etdi");
             return View("UpdateProfile", model);
         }
         [HttpPost]
@@ -116,6 +121,7 @@ namespace ddla.ITApplication.Controllers
                 TempData["SuccessMessage"] = "Profil şəkli uğurla yeniləndi";
             }
 
+            await _activityLogger.LogAsync(User.Identity.Name, "profil şəklini redaktə etdi");
             return RedirectToAction("UpdateProfile");
         }
 
@@ -147,6 +153,7 @@ namespace ddla.ITApplication.Controllers
                 ModelState.AddModelError("", error.Description);
             }
 
+            await _activityLogger.LogAsync(User.Identity.Name, "şifrəsini dəyişdi");
             return View(model);
         }
     }

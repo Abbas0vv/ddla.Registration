@@ -20,6 +20,7 @@ public class HomeController : Controller
 {
     private readonly IProductService _productService;
     private readonly IStockService _stockService;
+    private readonly IActivityLogger _activityLogger;
     private readonly LdapService _ldapService;
     private readonly ddlaAppDBContext _context;
 
@@ -27,12 +28,14 @@ public class HomeController : Controller
         IProductService productService,
         IStockService stockService,
         ddlaAppDBContext context,
-        LdapService ldapService)
+        LdapService ldapService,
+        IActivityLogger activityLogger)
     {
         _productService = productService;
         _stockService = stockService;
         _context = context;
         _ldapService = ldapService;
+        _activityLogger = activityLogger;
     }
 
     [Permission(PermissionType.OperationView)]
@@ -74,9 +77,8 @@ public class HomeController : Controller
             return View(model);
         }
 
-
+        await _activityLogger.LogAsync(User.Identity.Name, "yeni məhsul əlavə etdi");
         await _productService.InsertMultipleAsync(model);
-
         return RedirectToAction(nameof(Index));
     }
 
@@ -119,6 +121,7 @@ public class HomeController : Controller
 
         try
         {
+            await _activityLogger.LogAsync(User.Identity.Name, "məhsulu redaktə etdi");
             await _productService.UpdateAsync(model);
             return RedirectToAction(nameof(Index));
         }
@@ -285,6 +288,7 @@ public class HomeController : Controller
         product.IsSigned = true;
         _context.SaveChanges();
 
+        _activityLogger.LogAsync(User.Identity.Name, "Təhvil-Təslim faylını yüklədi.");
         return File(memoryStream.ToArray(), "application/pdf", $"TehvilTeslim_{product.InventarId}.pdf");
     }
 
@@ -328,6 +332,7 @@ public class HomeController : Controller
         }
 
         // Generate the blank PDF
+        await _activityLogger.LogAsync(User.Identity.Name,$"{model.CreateProductViewModel.Recipient} üçün ümumi akt yaratdı");
         return GenerateBlankPdf(model.CreateProductViewModel.Recipient, userProducts);
     }
 

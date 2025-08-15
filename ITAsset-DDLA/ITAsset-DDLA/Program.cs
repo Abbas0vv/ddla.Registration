@@ -44,6 +44,7 @@ public class Program
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IStockService, StockService>();
+        builder.Services.AddScoped<IActivityLogger, ActivityLogger>();
         builder.Services.AddScoped<IUserClaimsPrincipalFactory<ddlaUser>, CustomUserClaimsPrincipalFactory>();
         builder.Services.AddScoped(typeof(Lazy<>), typeof(LazyService<>));
         builder.Services.AddScoped<LdapService>(provider =>

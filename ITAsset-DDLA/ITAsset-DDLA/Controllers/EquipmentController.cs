@@ -11,12 +11,15 @@ namespace ddla.ITApplication.Controllers
     public class EquipmentController : Controller
     {
         private readonly IStockService _stockService;
+        private readonly IActivityLogger _activityLogger;
 
-        public EquipmentController(IStockService stockService)
+        public EquipmentController(IStockService stockService, IActivityLogger activityLogger)
         {
             _stockService = stockService;
+            _activityLogger = activityLogger;
         }
 
+        [HttpGet]
         [Permission(PermissionType.EquipmentView)]
         public async Task<IActionResult> Index()
         {
@@ -24,9 +27,11 @@ namespace ddla.ITApplication.Controllers
             return View(products);
         }
 
+        [HttpPost]
         [Permission(PermissionType.EquipmentEdit)]
         public async Task<IActionResult> ToggleStatus(int? id)
         {
+            await _activityLogger.LogAsync(User.Identity.Name, $"{id} id-li məhsulun statusunu dəyişdi.");
             await _stockService.ToggleStatusAsync(id);
             return RedirectToAction(nameof(Index));
         }

@@ -5,6 +5,7 @@ using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Database.Models.ViewModels.Admin;
 using ITAsset_DDLA.Helpers.Enums;
 using ITAsset_DDLA.Helpers.Extentions;
+using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITAsset_DDLA.Controllers;
 
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin,SuperAdmin")]
 public class PermissionController : Controller
 {
     private readonly IUserService _userService;
+    private readonly IActivityLogger _activityLogger;
     private readonly UserManager<ddlaUser> _userManager;
     private readonly ddlaAppDBContext _context;
     private readonly SignInManager<ddlaUser> _signInManager;
@@ -24,14 +26,17 @@ public class PermissionController : Controller
         IUserService userService,
         UserManager<ddlaUser> userManager,
         SignInManager<ddlaUser> signInManager,
-        ddlaAppDBContext context)
+        ddlaAppDBContext context,
+        IActivityLogger activityLogger)
     {
         _userService = userService;
         _userManager = userManager;
         _signInManager = signInManager;
         _context = context;
+        _activityLogger = activityLogger;
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         var users = await _userService.GetAllUsersWithPermissions();
@@ -178,6 +183,7 @@ public class PermissionController : Controller
             TempData["ErrorMessage"] = $"Xəta baş verdi: {ex.Message}";
         }
 
+        await _activityLogger.LogAsync(User.Identity.Name, "yeni icazələr əlavə etdi");
         return RedirectToAction(nameof(Index));
     }
 }
