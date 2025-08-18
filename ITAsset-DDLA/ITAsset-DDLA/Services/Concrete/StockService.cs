@@ -118,13 +118,13 @@ public class StockService : IStockService
         var stockProduct = await GetByIdAsync(id);
         if (stockProduct == null) return;
 
-        // Check if we're reducing the total count below what's already in use
-
         stockProduct.Description = model.Description;
         stockProduct.InventoryCode = model.InventoryCode;
 
         await _context.SaveChangesAsync();
     }
+
+
 
     public async Task ToggleStatusAsync(int? id)
     {

@@ -2,11 +2,15 @@
 using ITAsset_DDLA.Helpers.Enums;
 
 namespace ddla.ITApplication.Database.Models.DomainModels;
-
 public class Product
 {
     public int Id { get; set; }
-    public string InventarId { get; set; }
+
+    public int StockProductId { get; set; }
+    public StockProduct StockProduct { get; set; }
+
+    public string InventarId => StockProduct?.InventoryCode ?? string.Empty;
+
     public string Recipient { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
@@ -17,6 +21,4 @@ public class Product
     public UnitName Unit { get; set; }
     public DateTime DateofIssue { get; set; } = DateTime.Now;
     public DateTime? DateofReceipt { get; set; }
-    public int StockProductId { get; set; }
-    public StockProduct StockProduct { get; set; }
 }

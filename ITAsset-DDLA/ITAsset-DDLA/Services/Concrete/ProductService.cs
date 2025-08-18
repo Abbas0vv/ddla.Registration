@@ -1,9 +1,7 @@
 ﻿using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.DomainModels;
-using ddla.ITApplication.Database.Models.ViewModels.Product;
 using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
-using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
 using ITAsset_DDLA.Services.Abstract;
 using Microsoft.EntityFrameworkCore;
@@ -60,6 +58,13 @@ public class ProductService : IProductService
             .Include(p => p.StockProduct)
             .FirstOrDefaultAsync(s => s.StockProductId == stockId);
     }
+
+    public async Task<Product> GetByInventaryCode(string InventaryCode)
+    {
+        return await _context.Products
+            .Include(p => p.StockProduct)
+            .FirstOrDefaultAsync(s => s.InventarId == InventaryCode);
+    }
     public async Task InsertMultipleAsync(DoubleCreateProductTypeViewModel model)
     {
         // Validate input
@@ -91,7 +96,6 @@ public class ProductService : IProductService
         // Create products
         var products = stockProducts.Select(stockItem => new Product
         {
-            InventarId = stockItem.InventoryCode,
             Recipient = model.CreateProductViewModel.Recipient,
             Name = stockItem.Name,
             Description = stockItem.Description,

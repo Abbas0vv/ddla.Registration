@@ -23,6 +23,13 @@
                 <input type="hidden" asp-for="UpdateProductViewModel.DocumentFile" />
                 <input type="hidden" asp-for="UpdateProductViewModel.StockProductId" />
 
+                <input type="hidden" asp-for="StockProduct.Id" />
+                <input type="hidden" asp-for="StockProduct.Name" />
+                <input type="hidden" asp-for="StockProduct.Description" />
+                <input type="hidden" asp-for="StockProduct.InventoryCode" />
+                <input type="hidden" asp-for="StockProduct.ImageUrl" />
+
+
                 <div class="row">
                     <div class="col-md-6">
                         <!-- Recipient Section -->
@@ -30,9 +37,16 @@
                             <h5 class="mb-3">Məhsulu təhvil alan</h5>
                             <select asp-for="UpdateProductViewModel.Recipient" class="form-select">
                                 <option value="" disabled selected>Seçim edin</option>
-                                @foreach (var user in ViewBag.LdapUsers as List<string>)
+                                @if (ViewBag.LdapUsers != null)
                                 {
-                                    <option value="@user">@user</option>
+                                    @foreach (var user in ViewBag.LdapUsers)
+                                    {
+                                        <option value="@user">@user</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="" disabled>LDAP məlumatları yüklənmədi</option>
                                 }
                             </select>
                             <span asp-validation-for="UpdateProductViewModel.Recipient" class="error-message"></span>

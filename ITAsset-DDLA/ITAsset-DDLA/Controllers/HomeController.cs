@@ -77,66 +77,106 @@ public class HomeController : Controller
             return View(model);
         }
 
-        foreach (var stockProduct in model.StockProducts)
+        // Seçilmiş StockProductId-lərə görə anbar məhsullarını çəkirik
+        var stockProducts = await _context.StockProducts
+            .Where(s => model.CreateProductViewModel.StockProductIds.Contains(s.Id))
+            .ToListAsync();
+
+        foreach (var stockProduct in stockProducts)
         {
             await _activityLogger.LogAsync(
                 User.Identity.Name,
                 $"İstifadəçi '{User.Identity.Name}' yeni məhsul əlavə etdi: '{stockProduct.Name}' (Inventar ID: {stockProduct.InventoryCode})"
             );
         }
+
         await _productService.InsertMultipleAsync(model);
         return RedirectToAction(nameof(Index));
     }
+
 
     [Permission(PermissionType.OperationEdit)]
     [HttpGet]
     public async Task<IActionResult> Update(int? id)
     {
-        var ldapUsers = _ldapService.GetLdapUsers();
-        ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).ToList();
-
-        var product = await _productService.GetByIdAsync(id);
-        if (product == null)
+        try
         {
-            return NotFound();
-        }
+            // Safely get LDAP users with null check
+            var ldapUsers = _ldapService.GetLdapUsers();
+            ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).Where(name => !string.IsNullOrEmpty(name)).ToList();
 
-        var stockProduct = await _stockService.GetByIdAsync(product.StockProductId);
-
-        var model = new DoubleUpdateProductTypeViewModel
-        {
-            UpdateProductViewModel = new UpdateProductViewModel
+            if (id == null)
             {
-                Recipient = product.Recipient,
-                DepartmentName = product.Department,
-                UnitName = product.Unit,
-                DateofReceipt = product.DateofReceipt,
-                StockProductId = product.StockProductId
-            },
-            StockProduct = stockProduct
-        };
+                return NotFound();
+            }
 
-        return View(model);
+            var product = await _productService.GetByIdAsync(id.Value);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var stockProduct = await _stockService.GetByIdAsync(product.StockProductId);
+
+            var model = new DoubleUpdateProductTypeViewModel
+            {
+                UpdateProductViewModel = new UpdateProductViewModel
+                {
+                    Recipient = product.Recipient,
+                    DepartmentName = product.Department,
+                    UnitName = product.Unit,
+                    DateofReceipt = product.DateofReceipt,
+                    StockProductId = product.StockProductId
+                },
+                StockProduct = stockProduct
+            };
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            // Provide empty list to prevent null reference in view
+            ViewBag.LdapUsers = new List<string>();
+            return View(new DoubleUpdateProductTypeViewModel());
+        }
     }
 
     [HttpPost]
     public async Task<IActionResult> Update(DoubleUpdateProductTypeViewModel model)
     {
-        if (!ModelState.IsValid)
-            return View(model);
-
         try
         {
+            if (!ModelState.IsValid)
+            {
+                // Repopulate ViewBag.LdapUsers if validation fails
+                var ldapUsers = _ldapService.GetLdapUsers();
+                ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).Where(name => !string.IsNullOrEmpty(name)).ToList();
+                return View(model);
+            }
+
+            var stockProduct = await _stockService.GetByIdAsync(model.UpdateProductViewModel.StockProductId);
+
             await _activityLogger.LogAsync(
                 User.Identity.Name,
-                $"İstifadəçi '{User.Identity.Name}' məhsulu redaktə etdi: '{model.StockProduct.Name}' (Inventar ID: {model.StockProduct.InventoryCode})"
+                $"İstifadəçi '{User.Identity.Name}' məhsulu redaktə etdi: '{stockProduct?.Name}' (Inventar ID: {stockProduct?.InventoryCode})"
             );
+
             await _productService.UpdateAsync(model);
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
             ModelState.AddModelError("", "Xəta baş verdi: " + ex.Message);
+
+            // Repopulate necessary data for the view
+            var ldapUsers = _ldapService.GetLdapUsers();
+            ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).Where(name => !string.IsNullOrEmpty(name)).ToList();
+
+            if (model.UpdateProductViewModel?.StockProductId != null)
+            {
+                model.StockProduct = await _stockService.GetByIdAsync(model.UpdateProductViewModel.StockProductId);
+            }
+
             return View(model);
         }
     }
