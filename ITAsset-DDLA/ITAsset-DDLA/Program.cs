@@ -78,8 +78,10 @@ public class Program
 
         var app = builder.Build();
 
+        app.UseExceptionHandler("/Error");                  
+        app.UseStatusCodePagesWithReExecute("/Error/{0}");  
+
         app.UseStaticFiles();
-        app.UseStatusCodePagesWithReExecute("/Error/{0}");
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();

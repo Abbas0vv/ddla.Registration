@@ -1,0 +1,142 @@
+﻿:root {
+    --primary-color: #2b2d42;
+    --secondary-color: #8d99ae;
+    --accent-color: #ef233c;
+    --light-color: #edf2f4;
+    --dark-color: #2b2d42;
+}
+
+.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+    .dark-theme .error-container {
+        background-color: #1e1e1e;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .dark-theme .btn-home {
+        background-color: #ef233c;
+        color: white;
+    }
+
+    .dark-theme .btn-secondary {
+        background-color: #3a3a3a;
+        color: white;
+    }
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.error-container {
+    text-align: center;
+    max-width: 600px;
+    padding: 2rem;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.error-logo {
+    max-width: 150px;
+    margin-bottom: 1.5rem;
+}
+
+.error-code {
+    font-size: 5rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+    color: var(--dark-color);
+}
+
+    .error-code[style*="color:#ef233c"] {
+        color: #ef233c !important;
+    }
+
+.error-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+}
+
+.error-message {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: var(--secondary-color);
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-home {
+    background-color: var(--dark-color);
+    color: white;
+}
+
+    .btn-home:hover {
+        background-color: #1a1a2e;
+        transform: translateY(-2px);
+    }
+
+.btn-secondary {
+    background-color: var(--light-color);
+    color: var(--dark-color);
+}
+
+    .btn-secondary:hover {
+        background-color: #d8e1e8;
+        transform: translateY(-2px);
+    }
+
+@media (max-width: 576px) {
+    .error-container {
+        padding: 1.5rem;
+        margin: 0 1rem;
+    }
+
+    .error-code {
+        font-size: 3.5rem;
+    }
+
+    .error-title {
+        font-size: 1.5rem;
+    }
+
+    .error-message {
+        font-size: 1rem;
+    }
+
+    .error-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

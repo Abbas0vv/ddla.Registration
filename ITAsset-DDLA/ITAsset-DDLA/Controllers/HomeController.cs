@@ -139,6 +139,24 @@ public class HomeController : Controller
         await _productService.RemoveAsync(id);
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpPost]
+    public async Task<IActionResult> MarkAsSigned(int id)
+    {
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        product.IsSigned = true;
+        await _context.SaveChangesAsync();
+
+        await _activityLogger.LogAsync(User.Identity.Name, $"ID={id} üçün təhvil-təslim təsdiqləndi.");
+
+        return RedirectToAction(nameof(Index));
+    }
+
     [HttpGet]
     public IActionResult GenerateHandoverPdf(int id)
     {
@@ -284,9 +302,6 @@ public class HomeController : Controller
         document.Add(signatureTable);
 
         document.Close();
-
-        product.IsSigned = true;
-        _context.SaveChanges();
 
         _activityLogger.LogAsync(User.Identity.Name, "Təhvil-Təslim faylını yüklədi.");
         return File(memoryStream.ToArray(), "application/pdf", $"TehvilTeslim_{product.InventarId}.pdf");

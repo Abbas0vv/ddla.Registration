@@ -127,23 +127,16 @@
                                         <span>Təhvil alınmayıb</span>
                                     }
                                 </td>
-
                                 <td>
                                     @if (!string.IsNullOrEmpty(item.FilePath))
                                     {
-                                        <a href="@item.FilePath"
-                                           class="btn btn-sm @(item.IsSigned ? "btn-success" : "btn-outline-danger")"
-                                           download
-                                           onclick="downloadAndRefresh(event, this)">
+                                        <a href="@item.FilePath" class="btn btn-sm btn-outline-primary" download>
                                             <i class="fas fa-download"></i>
                                         </a>
                                     }
                                     else
                                     {
-                                        <a href="@Url.Action("GenerateHandoverPdf", "Home", new { id = item.Id })"
-                                           class="btn btn-sm @(item.IsSigned ? "btn-success" : "btn-outline-danger")"
-                                           download
-                                           onclick="downloadAndRefresh(event, this)">
+                                        <a asp-action="GenerateHandoverPdf" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-download"></i>
                                         </a>
                                     }
@@ -155,6 +148,24 @@
                                     <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
                                         <i class="fas fa-trash"></i>
                                     </a>
+                                    @if (item.IsSigned)
+                                    {
+                                        <a asp-action="MarkAsSigned" asp-route-id="@item.Id"
+                                           class="btn btn-secondary btn-sm disabled"
+                                           style="margin: 8px; pointer-events:none;">
+                                            <i class="fas fa-check"></i> İmzalanıb
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="MarkAsSigned" asp-route-id="@item.Id"
+                                           class="btn btn-outline-danger btn-sm"
+                                           style="margin: 8px;"
+                                           onclick="return confirm('Bu sənədi \'imzalandı\' olaraq redaktə etmək istədiyinizə əminsinizmi?');">
+                                            İmzalanmayıb
+                                        </a>
+                                    }
+
                                 </td>
                             </tr>
                             counter++;
