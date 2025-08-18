@@ -1,27 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 
 namespace ITAsset_DDLA.Controllers;
 
-[Route("Error")]
 public class ErrorController : Controller
 {
-    // 500 və istisnalar
-    [HttpGet("")]
-    public IActionResult Index()
+    [Route("Error/404")]
+    public IActionResult NotFound()
     {
-        Response.StatusCode = 500;
-        ViewBag.StatusCode = 500;
-        return View("Error"); // generic view
+        Response.StatusCode = 404;
+        return View("NotFound");
     }
-
-    // Status kodları (404, 403, 401, 405, ...)
-    [HttpGet("{code:int}")]
-    public IActionResult Status(int code)
+    [Route("Error/403")]
+    public IActionResult AccessDenied()
     {
-        if (code == 404) return View("NotFound");
-        if (code == 403) return View("Forbidden");
-
-        ViewBag.StatusCode = code; // qalan hamısı generic view
-        return View("Error");
+        Response.StatusCode = 403;
+        return View("AccessDenied");
+    }
+    [Route("Error/{statusCode}")]
+    public IActionResult HandleError(int statusCode)
+    {
+        return statusCode switch
+        {
+            403 => RedirectToAction("AccessDenied"),
+            404 => RedirectToAction("NotFound"),
+            _ => View("Error") // You can create a generic error view for other status codes
+        };
     }
 }

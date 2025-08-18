@@ -48,7 +48,7 @@ public class AccountController : Controller
 
         await _activityLogger.LogAsync(
             User.Identity.Name,
-            $"İstifadəçi '{User.Identity.Name}' sistemə daxil oldu. (IP: {HttpContext.Connection.RemoteIpAddress})"
+            $"İstifadəçi '{User.Identity.Name}' sistemə daxil oldu."
         );
 
         return RedirectToAction("Index", "Home");
@@ -59,7 +59,7 @@ public class AccountController : Controller
     {
         await _activityLogger.LogAsync(
             User.Identity.Name,
-            $"İstifadəçi '{User.Identity.Name}' sistemdən çıxdı. (IP: {HttpContext.Connection.RemoteIpAddress})"
+            $"İstifadəçi '{User.Identity.Name}' sistemdən çıxdı."
         );
         await _userService.LogOut();
         return RedirectToAction("Index", "Welcome");

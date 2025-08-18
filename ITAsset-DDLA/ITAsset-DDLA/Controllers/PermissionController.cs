@@ -175,7 +175,7 @@ public class PermissionController : Controller
             await _context.SaveChangesAsync();
             var updatedUser = await _userManager.FindByIdAsync(user.Id);
             await _signInManager.RefreshSignInAsync(updatedUser);
-            var addedPermissions = string.Join(", ", user.UserPermissions.Select(p => p.Permission));
+            var addedPermissions = string.Join(", ", user.UserPermissions.Select(p => p.Permission.Type));
 
             await _activityLogger.LogAsync(
                 User.Identity.Name,

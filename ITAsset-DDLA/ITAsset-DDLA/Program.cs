@@ -7,6 +7,7 @@ using ITAsset_DDLA.Helpers;
 using ITAsset_DDLA.Services.Abstract;
 using ITAsset_DDLA.Services.Concrete;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -77,8 +78,6 @@ public class Program
         });
 
         var app = builder.Build();
-
-        app.UseExceptionHandler("/Error");                  
         app.UseStatusCodePagesWithReExecute("/Error/{0}");  
 
         app.UseStaticFiles();
