@@ -97,6 +97,7 @@ public class ProductService : IProductService
         var products = stockProducts.Select(stockItem => new Product
         {
             Recipient = model.CreateProductViewModel.Recipient,
+            IsSigned = false,
             Name = stockItem.Name,
             Description = stockItem.Description,
             ImageUrl = stockItem.ImageUrl,
