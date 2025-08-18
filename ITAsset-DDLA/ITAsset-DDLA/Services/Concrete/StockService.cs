@@ -115,24 +115,13 @@ public class StockService : IStockService
     {
         if (id is null) return;
 
-        var stockProduct = await _context.StockProducts.FindAsync(id);
+        var stockProduct = await GetByIdAsync(id);
         if (stockProduct == null) return;
 
         // Check if we're reducing the total count below what's already in use
-        var InUseCount = model.TotalCount - await _productService.Value.GetAviableProductCount();
-        if (model.TotalCount < InUseCount)
-        {
-            throw new Exception($"Cannot reduce total count below currently in-use count ({InUseCount})");
-        }
 
-        stockProduct.Name = model.Name;
         stockProduct.Description = model.Description;
-        stockProduct.RegistrationDate = model.DateofRegistration ?? stockProduct.RegistrationDate;
-
-        if (model.ImageFile is not null)
-        {
-            stockProduct.ImageUrl = model.ImageFile.UpdateFile(_webHostEnvironment.WebRootPath, FOLDER_NAME, stockProduct.ImageUrl);
-        }
+        stockProduct.InventoryCode = model.InventoryCode;
 
         await _context.SaveChangesAsync();
     }

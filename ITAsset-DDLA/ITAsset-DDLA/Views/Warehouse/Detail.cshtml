@@ -76,8 +76,14 @@
                                                 @(product?.Recipient ?? "Yoxdur")
                                             }
                                         </td>
-                                        <td>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm" title="Delete">
+                                        <td> 
+                                            <!-- Redaktə düyməsi -->
+                                            <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-primary btn-sm" title="Redaktə et">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        
+                                            <!-- Silmə düyməsi -->
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm" title="Sil">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </td>

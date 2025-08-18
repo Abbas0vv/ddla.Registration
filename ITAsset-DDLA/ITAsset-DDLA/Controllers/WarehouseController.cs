@@ -90,32 +90,31 @@ public class WarehouseController : Controller
 
     [Permission(PermissionType.InventoryEdit)]
     [HttpGet]
-    public async Task<IActionResult> Update(int? id)
+    public async Task<IActionResult> Update(int id)
     {
         var product = await _stockService.GetByIdAsync(id);
-        if (id is null || product is null) return RedirectToAction("NotFound", "Shared");
+        if (product == null) return RedirectToAction("NotFound", "Shared");
 
-        var model = new UpdateStockViewModel()
+        var model = new UpdateStockViewModel
         {
+            Id = product.Id,
             Name = product.Name,
+            InventoryCode = product.InventoryCode,
             Description = product.Description,
-            DateofRegistration = product.RegistrationDate,
-            DocumentPath = product.FilePath,
-            ImagePath = product.ImageUrl
         };
 
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Update(int? id, UpdateStockViewModel model)
+    public async Task<IActionResult> Update(UpdateStockViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
+
+        await _stockService.UpdateAsync(model.Id, model);
         await _activityLogger.LogAsync(User.Identity.Name, $"{model.Name} məhsulunu redaktə etdi.");
-        await _stockService.UpdateAsync(id, model);
         return RedirectToAction(nameof(Index));
     }
-
     [Permission(PermissionType.InventoryDelete)]
     [HttpGet]
     public async Task<IActionResult> Delete(int? id)

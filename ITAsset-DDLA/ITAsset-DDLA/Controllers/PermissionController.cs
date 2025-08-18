@@ -175,6 +175,13 @@ public class PermissionController : Controller
             await _context.SaveChangesAsync();
             var updatedUser = await _userManager.FindByIdAsync(user.Id);
             await _signInManager.RefreshSignInAsync(updatedUser);
+            var addedPermissions = string.Join(", ", user.UserPermissions.Select(p => p.Permission));
+
+            await _activityLogger.LogAsync(
+                User.Identity.Name,
+                $"İstifadəçi '{User.Identity.Name}' '{updatedUser.UserName}' istifadəçisinə yeni icazələr əlavə etdi: {addedPermissions}"
+            );
+
 
             TempData["SuccessMessage"] = "İcazələr uğurla yeniləndi!";
         }
@@ -183,7 +190,6 @@ public class PermissionController : Controller
             TempData["ErrorMessage"] = $"Xəta baş verdi: {ex.Message}";
         }
 
-        await _activityLogger.LogAsync(User.Identity.Name, "yeni icazələr əlavə etdi");
         return RedirectToAction(nameof(Index));
     }
 }

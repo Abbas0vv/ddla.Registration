@@ -77,7 +77,13 @@ public class HomeController : Controller
             return View(model);
         }
 
-        await _activityLogger.LogAsync(User.Identity.Name, "yeni məhsul əlavə etdi");
+        foreach (var stockProduct in model.StockProducts)
+        {
+            await _activityLogger.LogAsync(
+                User.Identity.Name,
+                $"İstifadəçi '{User.Identity.Name}' yeni məhsul əlavə etdi: '{stockProduct.Name}' (Inventar ID: {stockProduct.InventoryCode})"
+            );
+        }
         await _productService.InsertMultipleAsync(model);
         return RedirectToAction(nameof(Index));
     }
@@ -121,7 +127,10 @@ public class HomeController : Controller
 
         try
         {
-            await _activityLogger.LogAsync(User.Identity.Name, "məhsulu redaktə etdi");
+            await _activityLogger.LogAsync(
+                User.Identity.Name,
+                $"İstifadəçi '{User.Identity.Name}' məhsulu redaktə etdi: '{model.StockProduct.Name}' (Inventar ID: {model.StockProduct.InventoryCode})"
+            );
             await _productService.UpdateAsync(model);
             return RedirectToAction(nameof(Index));
         }
@@ -143,16 +152,17 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> MarkAsSigned(int id)
     {
-        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        var product = await _productService.GetByIdAsync(id);
         if (product == null)
-        {
             return NotFound();
-        }
 
         product.IsSigned = true;
         await _context.SaveChangesAsync();
 
-        await _activityLogger.LogAsync(User.Identity.Name, $"ID={id} üçün təhvil-təslim təsdiqləndi.");
+        await _activityLogger.LogAsync(
+            User.Identity.Name,
+            $"Məhsul '{product.Name}' (Inventar ID: {product.InventarId}) üçün təhvil-təslim \"İmzalandı\" olaraq seçildi."
+        );
 
         return RedirectToAction(nameof(Index));
     }
@@ -347,7 +357,11 @@ public class HomeController : Controller
         }
 
         // Generate the blank PDF
-        await _activityLogger.LogAsync(User.Identity.Name,$"{model.CreateProductViewModel.Recipient} üçün ümumi akt yaratdı");
+        await _activityLogger.LogAsync(
+            User.Identity.Name,
+            $"İstifadəçi '{User.Identity.Name}' {model.CreateProductViewModel.Recipient} üçün ümumi akt yaratdı. "
+        );
+
         return GenerateBlankPdf(model.CreateProductViewModel.Recipient, userProducts);
     }
 

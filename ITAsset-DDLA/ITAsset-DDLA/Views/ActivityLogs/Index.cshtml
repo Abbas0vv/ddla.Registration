@@ -9,9 +9,9 @@
             @foreach (var log in Model)
             {
                 <div class="activity-log-item">
-                    <div class="activity-log-content">
+                    <div class="activity-log-info">
                         <span class="log-user-name">@log.UserFullName</span>
-                        <span class="action">@log.Action</span>
+                        <span class="log-action">@log.Action</span>
                     </div>
                     <div class="activity-log-time">
                         @log.CreatedAt.ToString("dd.MM.yyyy HH:mm")
@@ -25,62 +25,75 @@
 <style>
     .activity-log-container {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
+        margin: 20px;
+        padding: 0 15px;
     }
 
     .activity-log-title {
-        color: #0056b3;
-        text-align: center;
-        margin-bottom: 25px;
-        font-size: 24px;
-        border-bottom: 2px solid #0056b3;
-        padding-bottom: 10px;
+        color: #007bff;
+        text-align: left;
+        margin-bottom: 20px;
+        font-size: 22px;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 6px;
     }
 
     .activity-log-list {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
     }
 
     .activity-log-item {
-        background-color: #f8f9fa;
-        border-left: 4px solid #0056b3;
+        background-color: #ffffff;
+        border-left: 3px solid #007bff;
         border-radius: 4px;
-        padding: 15px;
+        padding: 10px 15px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: all 0.15s ease;
+        font-size: 14px;
     }
 
         .activity-log-item:hover {
-            background-color: #e9f0f7;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f1f7fc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
         }
 
-    .activity-log-content {
+    .activity-log-info {
         display: flex;
         flex-direction: column;
+        gap: 2px;
     }
 
     .log-user-name {
-        font-weight: 600;
-        color: #0056b3;
-        margin-bottom: 5px;
+        font-weight: 500;
+        color: #007bff;
     }
 
-    .action {
+    .log-action {
         color: #495057;
     }
 
     .activity-log-time {
         color: #6c757d;
-        font-size: 14px;
+        font-size: 12px;
         white-space: nowrap;
-        margin-left: 15px;
+    }
+
+    @@media (max-width: 600px) {
+        .activity-log-item
+
+    {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .activity-log-time {
+        margin-top: 5px;
+    }
+
     }
 </style>

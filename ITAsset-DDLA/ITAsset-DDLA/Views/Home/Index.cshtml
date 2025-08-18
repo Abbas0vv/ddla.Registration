@@ -158,14 +158,12 @@
                                     }
                                     else
                                     {
-                                        <a asp-action="MarkAsSigned" asp-route-id="@item.Id"
-                                           class="btn btn-outline-danger btn-sm"
-                                           style="margin: 8px;"
-                                           onclick="return confirm('Bu sənədi \'imzalandı\' olaraq redaktə etmək istədiyinizə əminsinizmi?');">
-                                            İmzalanmayıb
-                                        </a>
+                                        <form asp-action="MarkAsSigned" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" style="margin: 8px;">
+                                                İmzalanmayıb
+                                            </button>
+                                        </form>
                                     }
-
                                 </td>
                             </tr>
                             counter++;

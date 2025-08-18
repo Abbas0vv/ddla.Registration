@@ -46,14 +46,21 @@ public class AccountController : Controller
             return View(model);
         }
 
-        await _activityLogger.LogAsync(User.Identity.Name, "sistemə daxil oldu.");
+        await _activityLogger.LogAsync(
+            User.Identity.Name,
+            $"İstifadəçi '{User.Identity.Name}' sistemə daxil oldu. (IP: {HttpContext.Connection.RemoteIpAddress})"
+        );
+
         return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]
     public async Task<IActionResult> LogOut()
     {
-        await _activityLogger.LogAsync(User.Identity.Name, "sistemdən çıxdı.");
+        await _activityLogger.LogAsync(
+            User.Identity.Name,
+            $"İstifadəçi '{User.Identity.Name}' sistemdən çıxdı. (IP: {HttpContext.Connection.RemoteIpAddress})"
+        );
         await _userService.LogOut();
         return RedirectToAction("Index", "Welcome");
     }

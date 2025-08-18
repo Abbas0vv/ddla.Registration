@@ -32,7 +32,10 @@ namespace ddla.ITApplication.Controllers
         public async Task<IActionResult> ToggleStatus(int? id)
         {
             var product = await _stockService.GetByIdAsync(id);
-            await _activityLogger.LogAsync(User.Identity.Name, $"{product.Name}({product.InventoryCode}) məhsulunun statusunu dəyişdi.");
+            await _activityLogger.LogAsync(
+                User.Identity.Name,
+                $"İstifadəçi '{User.Identity.Name}' məhsul '{product.Name}' (Inventar ID: {product.InventoryCode}) üçün statusu dəyişdi."
+            );
             await _stockService.ToggleStatusAsync(id);
             return RedirectToAction(nameof(Index));
         }
