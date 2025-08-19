@@ -1,4 +1,5 @@
-﻿using ddla.ITApplication.Database;
+﻿using ClosedXML.Excel;
+using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.DomainModels;
 using ddla.ITApplication.Database.Models.ViewModels.Product;
 using ddla.ITApplication.Services.Abstract;
@@ -20,6 +21,7 @@ public class TransferController : Controller
 {
     private readonly IProductService _productService;
     private readonly IPdfService _pdfService;
+    private readonly IExcelService _excelService;
     private readonly IStockService _stockService;
     private readonly IActivityLogger _activityLogger;
     private readonly LdapService _ldapService;
@@ -31,7 +33,8 @@ public class TransferController : Controller
         ddlaAppDBContext context,
         LdapService ldapService,
         IActivityLogger activityLogger,
-        IPdfService pdfService)
+        IPdfService pdfService,
+        IExcelService excelService)
     {
         _productService = productService;
         _stockService = stockService;
@@ -39,6 +42,7 @@ public class TransferController : Controller
         _ldapService = ldapService;
         _activityLogger = activityLogger;
         _pdfService = pdfService;
+        _excelService = excelService;
     }
 
     [Permission(PermissionType.OperationView)]
@@ -266,4 +270,18 @@ public class TransferController : Controller
         var pdfBytes = _pdfService.GenerateBlankPdf(model.CreateProductViewModel.Recipient, userProducts);
         return File(pdfBytes, "application/pdf", $"TehvilTeslim_Blank_{model.CreateProductViewModel.Recipient}.pdf");
     }
+
+    [HttpGet]
+    public IActionResult ExportProductsToExcel()
+    {
+        var products = _context.Products
+            .Include(p => p.StockProduct)
+            .ToList();
+
+        var content = _excelService.ExportProductsToExcel(products);
+        return File(content,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "Təhvil-Təslim.xlsx");
+    }
+
 }

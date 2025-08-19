@@ -44,6 +44,7 @@ public class Program
 
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IPdfService, PdfService>();
+        builder.Services.AddScoped<IExcelService, ExcelService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IStockService, StockService>();
         builder.Services.AddScoped<IActivityLogger, ActivityLogger>();
