@@ -43,6 +43,7 @@ public class Program
         var ldapSettings = builder.Configuration.GetSection("LdapSettings").Get<LdapSettings>();
 
         builder.Services.AddScoped<IProductService, ProductService>();
+        builder.Services.AddScoped<IPdfService, PdfService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IStockService, StockService>();
         builder.Services.AddScoped<IActivityLogger, ActivityLogger>();
