@@ -12,7 +12,7 @@ public class Product
     public string InventarId => StockProduct?.InventoryCode ?? string.Empty;
 
     public string Recipient { get; set; }
-    public string Name => StockProduct?.Description ?? string.Empty;
+    public string Name => StockProduct?.Name ?? string.Empty;
     public string Description => StockProduct?.Description ?? string.Empty;
     public bool IsSigned { get; set; } = false;
     public string? ImageUrl { get; set; }

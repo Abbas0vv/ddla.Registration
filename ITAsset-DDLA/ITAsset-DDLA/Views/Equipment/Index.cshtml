@@ -12,6 +12,12 @@
             </div>
         </div>
 
+        <div class="mb-3 text-end">
+            <a asp-action="ExportStockProductsToExcel" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Excel-ə çıxar
+            </a>
+        </div>
+
         <div class="mb-3">
             <input type="text" id="globalSearch" class="form-control" placeholder="Ümumi axtarış...">
         </div>
@@ -34,8 +40,8 @@
                         <th>
                             <select class="form-control form-control-sm" data-column="1">
                                 <option value="">Hamısı</option>
-                                <option value="true">Aktiv</option>
-                                <option value="false">Deaktiv</option>
+                                <option value="true">Anbarda</option>
+                                <option value="false">İstifadədə</option>
 
                             </select>
                         </th>
@@ -57,11 +63,11 @@
                                 <td data-order="@item.IsActive.ToString().ToLower()">
                                     @if (item.IsActive)
                                     {
-                                        <i class="fas fa-circle text-success" title="Aktiv"></i>
+                                        <i class="fas fa-circle text-success" title="Anbarda"></i>
                                     }
                                     else
                                     {
-                                        <i class="fas fa-circle text-danger" title="Deaktiv"></i>
+                                        <i class="fas fa-circle text-danger" title="İstifadədə"></i>
                                     }
                                 </td>
 
@@ -86,13 +92,27 @@
                                     }
                                 </td>
                                 <td>
-                                    <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post" style="display:inline;">
-                                        <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")">
-                                            <i class="fas @(item.IsActive ? "fa-times" : "fa-check")"></i>
-                                            @(item.IsActive ? "Deaktiv et" : "Aktiv et")
+                                    @{
+                                        bool hasRecipient = item.Products.Any(p => !string.IsNullOrEmpty(p.Recipient));
+                                    }
+
+                                    @if (hasRecipient)  // Təhvil verilmişsə
+                                    {
+                                        <button class="btn btn-sm btn-secondary" disabled title="Bu məhsul təhvil verilib və aktiv edilə bilməz">
+                                            <i class="fas fa-lock"></i> Deaktiv
                                         </button>
-                                    </form>
+                                    }
+                                    else  // Manual deaktivasiya üçün
+                                    {
+                                        <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")">
+                                                <i class="fas @(item.IsActive ? "fa-times" : "fa-check")"></i>
+                                                @(item.IsActive ? "Deaktiv et" : "Aktiv et")
+                                            </button>
+                                        </form>
+                                    }
                                 </td>
+
                             </tr>
                             counter++;
                         }

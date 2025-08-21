@@ -254,8 +254,9 @@ public class TransferController : Controller
         }
 
         var userProducts = await _context.Products
-            .Where(p => p.Recipient == model.CreateProductViewModel.Recipient)
-            .ToListAsync();
+           .Include(p => p.StockProduct)
+           .Where(p => p.Recipient == model.CreateProductViewModel.Recipient)
+           .ToListAsync();
 
         if (!userProducts.Any())
         {
