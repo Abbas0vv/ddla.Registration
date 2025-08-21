@@ -17,8 +17,7 @@ public class Product
     public bool IsSigned { get; set; } = false;
     public string? ImageUrl { get; set; }
     public string? FilePath { get; set; }
-    public DepartmentName Department { get; set; }
-    public UnitName Unit { get; set; }
+    public string DepartmentSection { get; set; }
     public DateTime DateofIssue { get; set; } = DateTime.Now;
     public DateTime? DateofReceipt { get; set; }
 }

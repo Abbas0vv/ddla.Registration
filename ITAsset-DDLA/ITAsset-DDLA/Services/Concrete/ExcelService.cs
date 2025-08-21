@@ -28,8 +28,7 @@ public class ExcelService : IExcelService
             worksheet.Cell(currentRow, 3).Value = p.Recipient;
             worksheet.Cell(currentRow, 4).Value = p.StockProduct?.Name ?? "";
             worksheet.Cell(currentRow, 5).Value = p.StockProduct?.Description ?? "";
-            worksheet.Cell(currentRow, 6).Value = p.Department.ToString() ?? "";
-            worksheet.Cell(currentRow, 7).Value = p.Unit.ToString() ?? "";
+            worksheet.Cell(currentRow, 6).Value = p.DepartmentSection ?? "";
             worksheet.Cell(currentRow, 8).Value = p.DateofIssue.ToString("dd.MM.yyyy");
             worksheet.Cell(currentRow, 9).Value = p.DateofReceipt?.ToString("dd.MM.yyyy");
         }

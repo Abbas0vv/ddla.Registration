@@ -1,4 +1,4 @@
-﻿@using ITAsset_DDLA.Database.Models.DomainModels
+﻿﻿@using ITAsset_DDLA.Database.Models.DomainModels
 @using ITAsset_DDLA.Database.Models.ViewModels.Shared
 @using ITAsset_DDLA.Helpers.Enums
 @using ddla.ITApplication.Database.Models.ViewModels.Product
@@ -45,18 +45,14 @@
                             <!-- Product Type Selection -->
                             <div class="mb-3">
                                 <label class="form-label">Məhsul növü:</label>
-                                <select asp-for="CreateProductViewModel.Recipient" id="recipientSelect" class="form-select" onchange="updateShobe()">
-                                    <option value="" disabled selected>Seçim edin</option>
-                                    @foreach (var user in Model.LdapUsers)
-                                    {
-                                        <option value="@user.FullName" data-shobe="@user.Shobe">
-                                            @user.FullName
-                                        </option>
-                                    }
+                                <select id="productType" class="form-select" onchange="filterProductsByType()">
+                                    <option value="">-- Bütün növlər --</option>
+                                    @foreach (var type in Model.StockProducts.Select(p => p.Name).Distinct())
+                                        {
+                                        <option value="@type">@type</option>
+                                        }
                                 </select>
-
                             </div>
-
                             <!-- Product Selection (Checkboxes) -->
                             <div class="mb-3">
                                 <label class="form-label">Məhsullar (Çoxlu seçim):</label>
@@ -95,26 +91,13 @@
                         <!-- Department -->
                         <div class="mb-4">
                             <h5 class="mb-3">Departamentə</h5>
-                            <select asp-for="CreateProductViewModel.DepartmentName" id="unitSelect" class="form-select" readonly>
+                            <select asp-for="CreateProductViewModel.DepartmentSection" id="unitSelect" class="form-select" readonly>
                                 <option value="">-- Seçilmiş istifadəçinin şöbəsi --</option>
                             </select>
                         </div>
 
-
-                        <!-- Unit -->
-                        <div class="mb-4">
-                            <h5 class="mb-3">Şöbə</h5>
-                            <select asp-for="CreateProductViewModel.UnitName" class="form-select">
-                                <option value="" disabled selected>Seçim edin</option>
-                                @foreach (var unit in Enum.GetValues(typeof(UnitName)))
-                                {
-                                    <option value="@unit">@unit</option>
-                                }
-                            </select>
-                        </div>
-
                         <!-- Date -->
-                        <div class="mb-4">
+                        <div class="mb-4" style="margin-top: 3.3rem !important;">
                             <h5 class="mb-3">Alınma tarixi</h5>
                             <input asp-for="CreateProductViewModel.DateofReceipt" class="form-control" type="date" />
                         </div>
@@ -138,12 +121,12 @@
      const allProducts = [
          @foreach (var product in Model.StockProducts)
          {
-                         <text>{
-                             id: "@product.Id",
-                             name: "@product.Name",
-                             inventoryCode: "@product.InventoryCode",
-                             type: "@product.Name"
-                         },</text>
+                                     <text>{
+                                         id: "@product.Id",
+                                         name: "@product.Name",
+                                         inventoryCode: "@product.InventoryCode",
+                                         type: "@product.Name"
+                                     },</text>
          }
      ];
 
@@ -314,4 +297,3 @@
         }
     }
 </script>
-

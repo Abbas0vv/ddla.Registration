@@ -121,8 +121,7 @@ public class TransferController : Controller
                 UpdateProductViewModel = new UpdateProductViewModel
                 {
                     Recipient = product.Recipient,
-                    DepartmentName = product.Department,
-                    UnitName = product.Unit,
+                    DepartmentSection = product.DepartmentSection,
                     DateofReceipt = product.DateofReceipt,
                     StockProductId = product.StockProductId
                 },

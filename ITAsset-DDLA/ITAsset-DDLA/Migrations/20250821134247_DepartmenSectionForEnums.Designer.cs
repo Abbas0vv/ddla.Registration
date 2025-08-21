@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ddla.ITApplication.Database;
 
@@ -11,9 +12,11 @@ using ddla.ITApplication.Database;
 namespace ITAsset_DDLA.Migrations
 {
     [DbContext(typeof(ddlaAppDBContext))]
-    partial class ddlaAppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250821134247_DepartmenSectionForEnums")]
+    partial class DepartmenSectionForEnums
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

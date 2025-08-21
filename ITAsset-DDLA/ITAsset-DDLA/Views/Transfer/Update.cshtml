@@ -35,18 +35,13 @@
                         <!-- Recipient Section -->
                         <div class="mb-4">
                             <h5 class="mb-3">Məhsulu təhvil alan</h5>
-                            <select asp-for="UpdateProductViewModel.Recipient" class="form-select">
+                            <select asp-for="UpdateProductViewModel.Recipient" id="recipientSelect" class="form-select" onchange="updateShobe()">
                                 <option value="" disabled selected>Seçim edin</option>
-                                @if (ViewBag.LdapUsers != null)
+                                @foreach (var user in Model.LdapUsers)
                                 {
-                                    @foreach (var user in ViewBag.LdapUsers)
-                                    {
-                                        <option value="@user">@user</option>
-                                    }
-                                }
-                                else
-                                {
-                                    <option value="" disabled>LDAP məlumatları yüklənmədi</option>
+                                    <option value="@user.FullName" data-shobe="@user.Shobe">
+                                        @user.FullName
+                                    </option>
                                 }
                             </select>
                             <span asp-validation-for="UpdateProductViewModel.Recipient" class="error-message"></span>
@@ -66,28 +61,10 @@
                     <div class="col-md-6">
                         <!-- Department -->
                         <div class="mb-4">
-                            <h5 class="mb-3">Departament</h5>
-                            <select asp-for="UpdateProductViewModel.DepartmentName" class="form-select">
-                                <option value="" disabled selected>Seçim edin</option>
-                                @foreach (var department in Enum.GetValues(typeof(DepartmentName)))
-                                {
-                                    <option value="@department">@department</option>
-                                }
+                            <h5 class="mb-3">Departamentə</h5>
+                            <select asp-for="UpdateProductViewModel.DepartmentSection" id="unitSelect" class="form-select" readonly>
+                                <option value="">-- Seçilmiş istifadəçinin şöbəsi --</option>
                             </select>
-                            <span asp-validation-for="UpdateProductViewModel.DepartmentName" class="error-message"></span>
-                        </div>
-
-                        <!-- Unit -->
-                        <div class="mb-4">
-                            <h5 class="mb-3">Şöbə</h5>
-                            <select asp-for="UpdateProductViewModel.UnitName" class="form-select">
-                                <option value="" disabled selected>Seçim edin</option>
-                                @foreach (var unit in Enum.GetValues(typeof(UnitName)))
-                                {
-                                    <option value="@unit">@unit</option>
-                                }
-                            </select>
-                            <span asp-validation-for="UpdateProductViewModel.UnitName" class="error-message"></span>
                         </div>
 
                         <!-- Date -->
@@ -121,4 +98,19 @@
             document.getElementById('fileName').textContent = fileName;
         });
     });
+        function updateShobe() {
+        var recipientSelect = document.getElementById('recipientSelect');
+        var unitSelect = document.getElementById('unitSelect');
+        var selectedOption = recipientSelect.options[recipientSelect.selectedIndex];
+        var shobeAz = selectedOption.getAttribute('data-shobe');
+
+        unitSelect.innerHTML = '';
+        if (shobeAz) {
+            var opt = document.createElement('option');
+            opt.value = shobeAz;
+            opt.text = shobeAz;
+            opt.selected = true;
+            unitSelect.appendChild(opt);
+        }
+    }
 </script>

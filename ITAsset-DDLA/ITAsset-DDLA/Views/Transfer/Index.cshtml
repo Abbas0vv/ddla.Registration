@@ -41,8 +41,7 @@
                         <th>İstifadəçi adı</th>
                         <th>Məhsul adı</th>
                         <th>Təsvir</th>
-                        <th>Departament</th>
-                        <th>Şöbə</th>
+                        <th>Departament/Şöbə</th>
                         <th>Verilmə tarixi</th>
                         <th>Alınma tarixi</th>
                         <th>Fayl</th>
@@ -61,26 +60,9 @@
                         <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="3"></th>
                         <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="4"></th>
                         <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="5"></th>
-                        <th>
-                            <select class="form-control form-control-sm" data-column="6">
-                                <option value="">Hamısı</option>
-                                @foreach (var department in Enum.GetValues(typeof(DepartmentName)))
-                                {
-                                    <option value="@department">@department</option>
-                                }
-                            </select>
-                        </th>
-                        <th>
-                            <select class="form-control form-control-sm" data-column="7">
-                                <option value="">Hamısı</option>
-                                @foreach (var unit in Enum.GetValues(typeof(UnitName)))
-                                {
-                                    <option value="@unit">@unit</option>
-                                }
-                            </select>
-                        </th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="6"></th>
+                        <th><input type="date" class="form-control form-control-sm" data-column="7"></th>
                         <th><input type="date" class="form-control form-control-sm" data-column="8"></th>
-                        <th><input type="date" class="form-control form-control-sm" data-column="9"></th>
                         <th></th> <!-- Fayl -->
                         <th></th> <!-- Əməliyyatlar -->
                     </tr>
@@ -109,11 +91,13 @@
                                 <td>@item.Name</td>
                                 <td>@item.Description</td>
                                 <td>
-                                    <span class="badge badge-department" style="background-color:#005b96">@item.Department.ToString()</span>
+                                    @{
+                                        var parts = item.DepartmentSection?.Split(',');
+                                        var sectionName = parts != null && parts.Length > 1 ? parts[1].Trim() : item.DepartmentSection;
+                                    }
+                                    @sectionName
                                 </td>
-                                <td>
-                                    <span class="badge badge-department" style="background-color:#005b96">@item.Unit.ToString()</span>
-                                </td>
+
                                 <td data-order="@item.DateofIssue.ToString("yyyy-MM-dd HH:mm")">
                                     <span class="d-none">@item.DateofIssue.ToString("dd.MM.yyyy")</span>
                                     @item.DateofIssue.ToString("dd.MM.yyyy HH:mm")

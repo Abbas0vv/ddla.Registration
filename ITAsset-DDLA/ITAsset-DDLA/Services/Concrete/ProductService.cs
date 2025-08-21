@@ -100,8 +100,7 @@ public class ProductService : IProductService
             IsSigned = false,
             ImageUrl = stockItem.ImageUrl,
             FilePath = filePath,
-            Department = model.CreateProductViewModel.DepartmentName,
-            Unit = model.CreateProductViewModel.UnitName,
+            DepartmentSection = model.CreateProductViewModel.DepartmentSection,
             DateofReceipt = model.CreateProductViewModel.DateofReceipt,
             StockProductId = stockItem.Id
         }).ToList();
@@ -147,8 +146,7 @@ public class ProductService : IProductService
 
         // Update product
         existingProduct.Recipient = model.UpdateProductViewModel.Recipient;
-        existingProduct.Department = model.UpdateProductViewModel.DepartmentName;
-        existingProduct.Unit = model.UpdateProductViewModel.UnitName;
+        existingProduct.DepartmentSection = model.UpdateProductViewModel.DepartmentSection;
         existingProduct.DateofReceipt = model.UpdateProductViewModel.DateofReceipt;
         existingProduct.FilePath = filePath;
 
