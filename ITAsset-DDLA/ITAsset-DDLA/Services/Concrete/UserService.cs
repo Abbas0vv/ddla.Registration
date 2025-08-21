@@ -2,6 +2,7 @@
 using ddla.ITApplication.Database.Models.DomainModels.Account;
 using ddla.ITApplication.Database.Models.ViewModels.Account;
 using ddla.ITApplication.Helpers.Enums;
+using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.ViewModels.Admin;
 using Microsoft.AspNetCore.Identity;
@@ -15,21 +16,21 @@ public class UserService : IUserService
     private readonly SignInManager<ddlaUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ddlaAppDBContext _context;
-    //private readonly IWebHostEnvironment _webHostEnvironment;
-    //private const string IMAGE_PATH = "~/assets/images/Uploads/ProfilePictures/";
+    private readonly IWebHostEnvironment _webHostEnvironment;
+    private const string IMAGE_PATH = "~/assets/images/Uploads/ProfilePictures/";
 
     public UserService(
-        UserManager<ddlaUser> userManager, 
+        UserManager<ddlaUser> userManager,
         SignInManager<ddlaUser> signInManager,
         RoleManager<IdentityRole> roleManager,
-        //IWebHostEnvironment webHostEnvironment, 
+        IWebHostEnvironment webHostEnvironment,
         ddlaAppDBContext context)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
         _context = context;
-        //_webHostEnvironment = webHostEnvironment;
+        _webHostEnvironment = webHostEnvironment;
     }
     public async Task<List<UserWithPermissionsViewModel>> GetAllUsersWithPermissions()
     {
@@ -109,29 +110,29 @@ public class UserService : IUserService
         return permissions;
     }
 
-    //public async Task Register(RegisterViewModel model)
-    //{
-    //    int count = await _userManager.Users.CountAsync();
+    public async Task Register(RegisterViewModel model)
+    {
+        int count = await _userManager.Users.CountAsync();
 
-    //    var user = new ddlaUser()
-    //    {
-    //        FirstName = model.FirstName,
-    //        LastName = model.LastName,
-    //        UserName = model.UserName,
-    //        Email = model.Email,
-    //        ProfilePictureUrl = model.ProfilePicture.CreateFile(_webHostEnvironment.WebRootPath, IMAGE_PATH)
-    //    };
+        var user = new ddlaUser()
+        {
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            UserName = model.UserName,
+            Email = model.Email,
+            ProfilePictureUrl = model.ProfilePicture.CreateFile(_webHostEnvironment.WebRootPath, IMAGE_PATH)
+        };
 
-    //    var result = await _userManager.CreateAsync(user, model.Password);
+        var result = await _userManager.CreateAsync(user, model.Password);
 
-    //    if (result.Succeeded)
-    //    {
-    //        if (count == 1)
-    //            await _userManager.AddToRoleAsync(user, Role.Admin.ToString());
-    //        else
-    //            await _userManager.AddToRoleAsync(user, Role.User.ToString());
+        if (result.Succeeded)
+        {
+            if (count == 1)
+                await _userManager.AddToRoleAsync(user, Role.Admin.ToString());
+            else
+                await _userManager.AddToRoleAsync(user, Role.User.ToString());
 
-    //        await _signInManager.SignInAsync(user, true);
-    //    }
-    //}
+            await _signInManager.SignInAsync(user, true);
+        }
+    }
 }

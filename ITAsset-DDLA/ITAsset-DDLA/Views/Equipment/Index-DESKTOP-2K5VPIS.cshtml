@@ -1,0 +1,153 @@
+﻿@using ITAsset_DDLA.Database.Models.DomainModels
+@using ddla.ITApplication.Database.Models.DomainModels
+@model List<StockProduct>
+
+<div class="main-content">
+    <div class="container mt-5">
+        <div class="logo-header">
+            <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+            <div class="logo-text">
+                <h1>Avadanlıqlar</h1>
+                <small>Dövlət Dəniz və Liman Agentliyi</small>
+            </div>
+        </div>
+
+        <div class="mb-3 text-end">
+            <a asp-action="ExportStockProductsToExcel" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Excel-ə çıxar
+            </a>
+        </div>
+
+        <div class="mb-3">
+            <input type="text" id="globalSearch" class="form-control" placeholder="Ümumi axtarış...">
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered" id="equipmentTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Status</th>
+                        <th>Ad</th>
+                        <th>Təsvir</th>
+                        <th>İnventar Kodu</th>
+                        <th>Qeydiyyat Tarixi</th>
+                        <th>Fayl</th>
+                        <th>Əməliyyatlar</th>
+                    </tr>
+                    <tr class="column-filters">
+                        <th></th> <!-- # -->
+                        <th>
+                            <select class="form-control form-control-sm" data-column="1">
+                                <option value="">Hamısı</option>
+                                <option value="true">Anbarda</option>
+                                <option value="false">İstifadədə</option>
+
+                            </select>
+                        </th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="2"></th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="3"></th>
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="4"></th>
+                        <th><input type="text" class="form-control form-control-sm datepicker" placeholder="dd.mm.yyyy" data-column="5"></th>
+                        <th></th> <!-- Fayl -->
+                        <th></th> <!-- Əməliyyatlar -->
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int counter = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td data-order="@counter">@counter</td>
+                                <td data-order="@item.IsActive.ToString().ToLower()">
+                                    @if (item.IsActive)
+                                    {
+                                        <i class="fas fa-circle text-success" title="Anbarda"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-circle text-danger" title="İstifadədə"></i>
+                                    }
+                                </td>
+
+                                <td>@item.Name</td>
+                                <td>@item.Description</td>
+                                <td>@item.InventoryCode</td>
+                                <td data-order="@item.RegistrationDate.ToString("yyyy-MM-dd")">
+                                    @item.RegistrationDate.ToString("dd.MM.yyyy")
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.FilePath))
+                                    {
+                                        <a href="~/@item.FilePath" class="btn btn-sm btn-outline-primary" download>
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-outline-primary" disabled title="Fayl mövcud deyil">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    }
+                                </td>
+                                <td>
+                                    <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")">
+                                            <i class="fas @(item.IsActive ? "fa-times" : "fa-check")"></i>
+                                            @(item.IsActive ? "Deaktiv et" : "Aktiv et")
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            counter++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+    // Initialize global search
+    $('#globalSearch').on('keyup', function() {
+        const searchText = $(this).val().toLowerCase();
+        $('#equipmentTable tbody tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(searchText) > -1);
+        });
+    });
+
+            // Initialize column search
+    $('.column-filters input, .column-filters select').on('keyup change', function () {
+        const columnIndex = $(this).data('column');
+        const searchValue = $(this).val().toLowerCase();
+
+        $('#equipmentTable tbody tr').each(function () {
+            const cell = $(this).find('td').eq(columnIndex);
+            if (cell.length) {
+                const cellText = cell.text().toString().toLowerCase();
+                const cellData = (cell.data('order') !== undefined)
+                    ? cell.data('order').toString().toLowerCase()
+                    : cellText;
+
+                if (searchValue === '' || cellData.indexOf(searchValue) > -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            }
+        });
+    });
+
+                // Datepicker for date columns
+        $('.datepicker').on('focus', function() {
+            $(this).attr('type', 'date');
+        }).on('blur', function() {
+            if (!$(this).val()) {
+                $(this).attr('type', 'text');
+            }
+        });
+    });
+</script>

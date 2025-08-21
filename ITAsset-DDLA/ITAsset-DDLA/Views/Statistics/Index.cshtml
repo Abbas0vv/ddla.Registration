@@ -1,0 +1,271 @@
+﻿@using ITAsset_DDLA.Database.Models.ViewModels.Statistic
+@model StatisticsViewModel
+
+<div class="main-content">
+    <div class="logo-header">
+        <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+        <div class="logo-text">
+            <h1>Statistika Paneli</h1>
+            <small>Dövlət Dəniz və Liman Agentliyi</small>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <!-- Təhvil Statistikası -->
+        <h3 class="section-title">📦 Təhvil Statistikası</h3>
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="icon bg-info"><i class="fas fa-calendar-day"></i></span>
+                    <div class="value">@Model.TodayTransfers</div>
+                    <div class="label">Bugün</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="icon bg-primary"><i class="fas fa-calendar-week"></i></span>
+                    <div class="value">@Model.MonthlyTransfers</div>
+                    <div class="label">Bu ay</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="icon bg-success"><i class="fa-solid fa-calendar"></i></span>
+                    <div class="value">@Model.YearlyTransfers</div>
+                    <div class="label">Bu il</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="icon bg-dark"><i class="fas fa-chart-bar"></i></span>
+                    <div class="value">@Model.TotalTransfers</div>
+                    <div class="label">Ümumi</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Qəbul Statistikası -->
+        <h3 class="section-title mt-5">📥 Qəbul Statistikası</h3>
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="icon bg-info"><i class="fas fa-calendar-day"></i></span>
+                    <div class="value">@Model.TodayReceipts</div>
+                    <div class="label">Bugün</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="icon bg-primary"><i class="fas fa-calendar-week"></i></span>
+                    <div class="value">@Model.MonthlyReceipts</div>
+                    <div class="label">Bu ay</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="icon bg-success"><i class="fa-solid fa-calendar"></i></span>
+                    <div class="value">@Model.YearlyReceipts</div>
+                    <div class="label">Bu il</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="icon bg-dark"><i class="fas fa-chart-bar"></i></span>
+                    <div class="value">@Model.TotalReceipts</div>
+                    <div class="label">Ümumi</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Məhsul Statistikası -->
+        <h3 class="section-title mt-5">📊 Məhsul Statistikası</h3>
+        <div class="row g-4">
+            <div class="col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <span class="icon bg-secondary"><i class="fas fa-box-open"></i></span>
+                    <div class="value">@Model.TotalProducts</div>
+                    <div class="label">Ümumi Məhsul</div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <span class="icon bg-success"><i class="fas fa-warehouse"></i></span>
+                    <div class="value">@Model.ActiveProducts</div>
+                    <div class="label">Anbarda</div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <span class="icon bg-warning"><i class="fas fa-laptop"></i></span>
+                    <div class="value">@Model.InUseProducts</div>
+                    <div class="label">İstifadədə</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Qrafiklər -->
+        <div class="row mt-5">
+            <!-- Sol tərəf: Təhvil və Təslim -->
+            <div class="col-lg-6 d-flex flex-column" style="gap:1rem;">
+                <!-- Təhvil -->
+                <div class="chart-container" style="flex:1;">
+                    <h3 class="chart-title">📊 Təhvil</h3>
+                    <canvas id="transfersChart"></canvas>
+                </div>
+                <!-- Təslim -->
+                <div class="chart-container" style="flex:1;">
+                    <h3 class="chart-title">📈 Təslim</h3>
+                    <canvas id="receiptsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Sağ tərəf: Məhsul -->
+            <div class="col-lg-6">
+                <div class="chart-container h-100">
+                    <h3 class="chart-title">📈 Məhsul</h3>
+                    <canvas id="productsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        background-color: transparent;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        color: #fff;
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+    }
+
+    .value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #222;
+    }
+
+    .label {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: #555;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-left: 4px solid #4361ee;
+        padding-left: 10px;
+        margin-bottom: 1rem;
+        color: #222;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .d-flex.flex-column > .chart-container {
+        height: 50%;
+    }
+
+    .h-100 {
+        height: 100%;
+    }
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Təhvil qrafiki
+    var transfersCtx = document.getElementById('transfersChart').getContext('2d');
+    new Chart(transfersCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Bugün', 'Bu ay', 'Bu il', 'Ümumi'],
+            datasets: [{
+                label: 'Təhvil sayı',
+                data: [@Model.TodayTransfers, @Model.MonthlyTransfers, @Model.YearlyTransfers, @Model.TotalTransfers],
+                backgroundColor: ['#17a2b8', '#007bff', '#28a745', '#6c757d'],
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Məhsul qrafiki
+    var productsCtx = document.getElementById('productsChart').getContext('2d');
+    new Chart(productsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Anbarda', 'İstifadədə'],
+            datasets: [{
+                data: [@Model.ActiveProducts, @Model.InUseProducts],
+                backgroundColor: ['#28a745', '#ffc107']
+            }]
+        },
+        options: {
+            cutout: '70%',
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+     // Təslim qrafiki
+    var receiptsCtx = document.getElementById('receiptsChart').getContext('2d');
+    new Chart(receiptsCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Bugün', 'Bu ay', 'Bu il', 'Ümumi'],
+            datasets: [{
+                label: 'Təslim sayı',
+                data: [@Model.TodayReceipts, @Model.MonthlyReceipts, @Model.YearlyReceipts, @Model.TotalReceipts],
+                backgroundColor: ['#f72585', '#ff6d00', '#ffcd38', '#6c757d'],
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+
