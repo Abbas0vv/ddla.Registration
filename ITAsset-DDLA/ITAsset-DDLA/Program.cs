@@ -2,8 +2,8 @@
 using ddla.ITApplication.Database.Models.DomainModels.Account;
 using ddla.ITApplication.Services.Abstract;
 using ddla.ITApplication.Services.Concrete;
-using ITAsset_DDLA.Database.Models.DomainModels.Account.LDAP;
 using ITAsset_DDLA.Helpers;
+using ITAsset_DDLA.LDAP;
 using ITAsset_DDLA.Services.Abstract;
 using ITAsset_DDLA.Services.Concrete;
 using Microsoft.AspNetCore.Authentication.Cookies;

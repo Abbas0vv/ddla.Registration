@@ -65,7 +65,7 @@ public class ProductService : IProductService
             .Include(p => p.StockProduct)
             .FirstOrDefaultAsync(s => s.InventarId == InventaryCode);
     }
-    public async Task InsertMultipleAsync(DoubleCreateProductTypeViewModel model)
+    public async Task InsertMultipleAsync(CreateTransferViewModel model)
     {
         // Validate input
         if (model == null || model.CreateProductViewModel.StockProductIds == null || !model.CreateProductViewModel.StockProductIds.Any())
@@ -128,7 +128,7 @@ public class ProductService : IProductService
         _context.Remove(product);
         await _context.SaveChangesAsync();
     }
-    public async Task UpdateAsync(DoubleUpdateProductTypeViewModel model)
+    public async Task UpdateAsync(UpdateTransferViewModel model)
     {
         var existingProduct = await GetProductByStockIdAsync(model.UpdateProductViewModel.StockProductId);
         if (existingProduct == null)

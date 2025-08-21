@@ -1,7 +1,10 @@
-﻿using ITAsset_DDLA.Database.Models.DomainModels.Account.LDAP;
+﻿using ITAsset_DDLA.LDAP;
 using System.DirectoryServices;
 
 namespace ITAsset_DDLA.Services.Concrete;
+using ITAsset_DDLA.LDAP;
+using System.DirectoryServices;
+
 public class LdapService
 {
     private readonly string _ldapPath;
@@ -18,49 +21,38 @@ public class LdapService
     public List<LdapUserModel> GetLdapUsers()
     {
         var ldapUsers = new List<LdapUserModel>();
+        var titles = LdapTranslations.Titles;
+        var companies = LdapTranslations.Companies;
 
-        using (DirectoryEntry entry = new DirectoryEntry(_ldapPath, _ldapUser, _ldapPassword))
-        using (DirectorySearcher searcher = new DirectorySearcher(entry))
+        using (var entry = new DirectoryEntry(_ldapPath, _ldapUser, _ldapPassword))
+        using (var searcher = new DirectorySearcher(entry))
         {
             searcher.Filter = "(objectCategory=person)";
-            searcher.PropertiesToLoad.AddRange(new[] {
-            "cn", "title", "telephoneNumber", "mail",
-            "department", "departmentName", "ou", "company",
-            "division", "organization", "physicalDeliveryOfficeName",
-            "thumbnailPhoto", "jpegPhoto", "photo"
-        });
+            searcher.PropertiesToLoad.AddRange(new[] { "cn", "title", "telephoneNumber", "mail", "company" });
 
             foreach (SearchResult result in searcher.FindAll())
             {
-                var user = new LdapUserModel
+                var title = GetPropertyValue(result, "title");
+                var company = GetPropertyValue(result, "company");
+
+                ldapUsers.Add(new LdapUserModel
                 {
                     FullName = GetPropertyValue(result, "cn"),
-                    Vazifa = GetPropertyValue(result, "title"),
+                    Vazifa = titles.ContainsKey(title) ? titles[title] : title,
                     InternalPhone = GetPropertyValue(result, "telephoneNumber"),
                     Email = GetPropertyValue(result, "mail"),
-                    Shobe = GetPropertyValue(result, "company")
-                };
-
-                ldapUsers.Add(user);
+                    Shobe = companies.ContainsKey(company) ? companies[company] : company
+                });
             }
         }
 
         return ldapUsers;
     }
+
     private string GetPropertyValue(SearchResult result, string propertyName)
     {
         return result.Properties.Contains(propertyName) && result.Properties[propertyName].Count > 0
             ? result.Properties[propertyName][0].ToString()
             : string.Empty;
-    }
-
-    private string GetPropertyValue(SearchResult result, IEnumerable<string> propertyNames)
-    {
-        foreach (var property in propertyNames)
-        {
-            if (result.Properties.Contains(property) && result.Properties[property].Count > 0)
-                return result.Properties[property][0].ToString();
-        }
-        return string.Empty;
     }
 }

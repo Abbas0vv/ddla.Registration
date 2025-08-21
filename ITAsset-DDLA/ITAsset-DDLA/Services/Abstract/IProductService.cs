@@ -11,7 +11,7 @@ public interface IProductService
     Task<Product> GetByIdAsync(int? id);
     Task<Product> GetByInventaryCode(string InventaryCode);
     Task<Product> GetByNameAsync(string name);
-    Task InsertMultipleAsync(DoubleCreateProductTypeViewModel model);
-    Task UpdateAsync(DoubleUpdateProductTypeViewModel model);
+    Task InsertMultipleAsync(CreateTransferViewModel model);
+    Task UpdateAsync(UpdateTransferViewModel model);
     Task RemoveAsync(int? id);
 }

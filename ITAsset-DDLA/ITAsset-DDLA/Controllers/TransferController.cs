@@ -52,39 +52,31 @@ public class TransferController : Controller
         return View(models);
     }
 
-
     [Permission(PermissionType.OperationAdd)]
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        var ldapUsers = _ldapService.GetLdapUsers();
-        ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).ToList();
+        var ldapUsers = _ldapService.GetLdapUsers(); // AZ dilində title və company
 
-        var model = new DoubleCreateProductTypeViewModel
+        var model = new CreateTransferViewModel
         {
             CreateProductViewModel = new CreateProductViewModel(),
+            LdapUsers = ldapUsers,
             StockProducts = await _context.StockProducts.ToListAsync()
         };
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(DoubleCreateProductTypeViewModel model)
+    public async Task<IActionResult> Create(CreateTransferViewModel model)
     {
         if (!ModelState.IsValid)
         {
-            var ldapUsers = _ldapService.GetLdapUsers();
-            ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).ToList();
-
-            model = new DoubleCreateProductTypeViewModel
-            {
-                CreateProductViewModel = new CreateProductViewModel(),
-                StockProducts = await _context.StockProducts.ToListAsync()
-            };
+            model.LdapUsers = _ldapService.GetLdapUsers(); // AZ dilində
+            model.StockProducts = await _context.StockProducts.ToListAsync();
             return View(model);
         }
 
-        // Seçilmiş StockProductId-lərə görə anbar məhsullarını çəkirik
         var stockProducts = await _context.StockProducts
             .Where(s => model.CreateProductViewModel.StockProductIds.Contains(s.Id))
             .ToListAsync();
@@ -100,7 +92,6 @@ public class TransferController : Controller
         await _productService.InsertMultipleAsync(model);
         return RedirectToAction(nameof(Index));
     }
-
 
     [Permission(PermissionType.OperationEdit)]
     [HttpGet]
@@ -125,7 +116,7 @@ public class TransferController : Controller
 
             var stockProduct = await _stockService.GetByIdAsync(product.StockProductId);
 
-            var model = new DoubleUpdateProductTypeViewModel
+            var model = new UpdateTransferViewModel
             {
                 UpdateProductViewModel = new UpdateProductViewModel
                 {
@@ -144,12 +135,12 @@ public class TransferController : Controller
         {
             // Provide empty list to prevent null reference in view
             ViewBag.LdapUsers = new List<string>();
-            return View(new DoubleUpdateProductTypeViewModel());
+            return View(new UpdateTransferViewModel());
         }
     }
 
     [HttpPost]
-    public async Task<IActionResult> Update(DoubleUpdateProductTypeViewModel model)
+    public async Task<IActionResult> Update(UpdateTransferViewModel model)
     {
         try
         {
@@ -236,7 +227,7 @@ public class TransferController : Controller
         var ldapUsers = _ldapService.GetLdapUsers();
         ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).ToList();
 
-        var model = new DoubleCreateProductTypeViewModel
+        var model = new CreateTransferViewModel
         {
             CreateProductViewModel = new CreateProductViewModel(),
             StockProducts = await _context.StockProducts.ToListAsync()
@@ -245,7 +236,7 @@ public class TransferController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateBlank(DoubleCreateProductTypeViewModel model)
+    public async Task<IActionResult> CreateBlank(CreateTransferViewModel model)
     {
         if (!ModelState.IsValid)
         {

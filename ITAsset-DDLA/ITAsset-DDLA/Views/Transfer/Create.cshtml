@@ -2,7 +2,7 @@
 @using ITAsset_DDLA.Database.Models.ViewModels.Shared
 @using ITAsset_DDLA.Helpers.Enums
 @using ddla.ITApplication.Database.Models.ViewModels.Product
-@model DoubleCreateProductTypeViewModel
+@model CreateTransferViewModel
 
 @{
     ViewData["Title"] = "Yeni məhsul qeydiyyatı";
@@ -26,13 +26,16 @@
                         <!-- Recipient Section -->
                         <div class="mb-4">
                             <h5 class="mb-3">Məhsulu təhvil alan</h5>
-                            <select asp-for="CreateProductViewModel.Recipient" class="form-select">
+                            <select asp-for="CreateProductViewModel.Recipient" id="recipientSelect" class="form-select" onchange="updateShobe()">
                                 <option value="" disabled selected>Seçim edin</option>
-                                @foreach (var user in ViewBag.LdapUsers as List<string>)
+                                @foreach (var user in Model.LdapUsers)
                                 {
-                                    <option value="@user">@user</option>
+                                    <option value="@user.FullName" data-shobe="@user.Shobe">
+                                        @user.FullName
+                                    </option>
                                 }
                             </select>
+
                             <span asp-validation-for="CreateProductViewModel.Recipient" class="error-message" style="color: red;"></span>
                         </div>
                         <!-- Product Selection -->
@@ -42,13 +45,16 @@
                             <!-- Product Type Selection -->
                             <div class="mb-3">
                                 <label class="form-label">Məhsul növü:</label>
-                                <select id="productType" class="form-select" onchange="filterProductsByType()">
-                                    <option value="">-- Bütün növlər --</option>
-                                    @foreach (var type in Model.StockProducts.Select(p => p.Name).Distinct())
+                                <select asp-for="CreateProductViewModel.Recipient" id="recipientSelect" class="form-select" onchange="updateShobe()">
+                                    <option value="" disabled selected>Seçim edin</option>
+                                    @foreach (var user in Model.LdapUsers)
                                     {
-                                        <option value="@type">@type</option>
+                                        <option value="@user.FullName" data-shobe="@user.Shobe">
+                                            @user.FullName
+                                        </option>
                                     }
                                 </select>
+
                             </div>
 
                             <!-- Product Selection (Checkboxes) -->
@@ -77,7 +83,7 @@
                             <div id="selectedProductsContainer" class="mt-3">
                                 <h6>Seçilmiş Məhsullar:</h6>
                                 <div id="selectedProductsList" class="list-group">
-                                    <div class="text-muted" style="color: red!important;">Heç bir məhsul seçilməyib</div>
+                                    <div class="text-muted">Heç bir məhsul seçilməyib</div>
                                 </div>
                             </div>
                         </div>
@@ -88,15 +94,12 @@
                     <div class="col-md-6">
                         <!-- Department -->
                         <div class="mb-4">
-                            <h5 class="mb-3">Departament</h5>
-                            <select asp-for="CreateProductViewModel.DepartmentName" class="form-select">
-                                <option value="" disabled selected>Seçim edin</option>
-                                @foreach (var department in Enum.GetValues(typeof(DepartmentName)))
-                                {
-                                    <option value="@department">@department</option>
-                                }
+                            <h5 class="mb-3">Departamentə</h5>
+                            <select asp-for="CreateProductViewModel.DepartmentName" id="unitSelect" class="form-select" readonly>
+                                <option value="">-- Seçilmiş istifadəçinin şöbəsi --</option>
                             </select>
                         </div>
+
 
                         <!-- Unit -->
                         <div class="mb-4">
@@ -135,12 +138,12 @@
      const allProducts = [
          @foreach (var product in Model.StockProducts)
          {
-                     <text>{
-                         id: "@product.Id",
-                         name: "@product.Name",
-                         inventoryCode: "@product.InventoryCode",
-                         type: "@product.Name"
-                     },</text>
+                         <text>{
+                             id: "@product.Id",
+                             name: "@product.Name",
+                             inventoryCode: "@product.InventoryCode",
+                             type: "@product.Name"
+                         },</text>
          }
      ];
 
@@ -295,4 +298,20 @@
 
         countInput.addEventListener('input', updateSelection);
     });
+    function updateShobe() {
+        var recipientSelect = document.getElementById('recipientSelect');
+        var unitSelect = document.getElementById('unitSelect');
+        var selectedOption = recipientSelect.options[recipientSelect.selectedIndex];
+        var shobeAz = selectedOption.getAttribute('data-shobe');
+
+        unitSelect.innerHTML = '';
+        if (shobeAz) {
+            var opt = document.createElement('option');
+            opt.value = shobeAz;
+            opt.text = shobeAz;
+            opt.selected = true;
+            unitSelect.appendChild(opt);
+        }
+    }
 </script>
+
