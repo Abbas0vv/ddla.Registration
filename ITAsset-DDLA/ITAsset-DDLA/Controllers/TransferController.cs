@@ -85,7 +85,7 @@ public class TransferController : Controller
         {
             await _activityLogger.LogAsync(
                 User.Identity.Name,
-                $"İstifadəçi '{User.Identity.Name}' yeni məhsul əlavə etdi: '{stockProduct.Name}' (Inventar ID: {stockProduct.InventoryCode})"
+                $"İstifadəçi '{User.Identity.Name}' yeni məhsul təhvil verdi: '{stockProduct.Name}' (Inventar ID: {stockProduct.InventoryCode}) Təhvil alan '{model.CreateProductViewModel.Recipient}'"
             );
         }
 
@@ -146,11 +146,6 @@ public class TransferController : Controller
             }
 
             var stockProduct = await _stockService.GetByIdAsync(model.UpdateProductViewModel.StockProductId);
-
-            await _activityLogger.LogAsync(
-                User.Identity.Name,
-                $"İstifadəçi '{User.Identity.Name}' məhsulu redaktə etdi: '{stockProduct?.Name}' (Inventar ID: {stockProduct?.InventoryCode})"
-            );
 
             await _productService.UpdateAsync(model);
             return RedirectToAction(nameof(Index));

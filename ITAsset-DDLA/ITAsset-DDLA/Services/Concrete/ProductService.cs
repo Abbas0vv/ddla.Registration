@@ -2,8 +2,11 @@
 using ddla.ITApplication.Database.Models.DomainModels;
 using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
+using DocumentFormat.OpenXml.Spreadsheet;
+using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
 using ITAsset_DDLA.Services.Abstract;
+using ITAsset_DDLA.Services.Concrete;
 using Microsoft.EntityFrameworkCore;
 
 namespace ddla.ITApplication.Services.Concrete;
@@ -11,17 +14,20 @@ namespace ddla.ITApplication.Services.Concrete;
 public class ProductService : IProductService
 {
     private readonly ddlaAppDBContext _context;
+    private readonly IActivityLogger _activityLogger;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly IStockService _stockService;
     private const string FOLDER_NAME = "assets/images/Uploads/Products";
     public ProductService(
-        ddlaAppDBContext context, 
-        IWebHostEnvironment webHostEnvironment, 
-        IStockService stockService)
+        ddlaAppDBContext context,
+        IWebHostEnvironment webHostEnvironment,
+        IStockService stockService,
+        IActivityLogger activityLogger)
     {
         _context = context;
         _webHostEnvironment = webHostEnvironment;
         _stockService = stockService;
+        _activityLogger = activityLogger;
     }
 
     #region Methods
@@ -143,6 +149,12 @@ public class ProductService : IProductService
             filePath = FileExtention.CreateFile(model.UpdateProductViewModel.DocumentFile,
                     _webHostEnvironment.WebRootPath, FOLDER_NAME);
         }
+
+        await _activityLogger.LogAsync(
+            User.Identity.Name,
+            $"İstifadəçi '{User.Identity.Name}' məhsulu redaktə etdi: '{stockProduct?.Name}' (Inventar ID: {stockProduct?.InventoryCode})"
+        );
+
 
         // Update product
         existingProduct.Recipient = model.UpdateProductViewModel.Recipient;
