@@ -43,7 +43,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ActivityLogs");
+                    b.ToTable("ActivityLogs", (string)null);
                 });
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.Customer", b =>
@@ -68,7 +68,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.Permission", b =>
@@ -88,7 +88,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", b =>
@@ -126,7 +126,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("StockProducts");
+                    b.ToTable("StockProducts", (string)null);
                 });
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.UserPermission", b =>
@@ -150,7 +150,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPermissions");
+                    b.ToTable("UserPermissions", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -403,7 +403,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasIndex("StockProductId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.UserPermission", b =>

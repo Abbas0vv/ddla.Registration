@@ -21,8 +21,8 @@
 
     .sidebar-header h3 {
         margin: 0;
-        font-size: 1.2rem;
-        font-weight: 600;
+        font-size: 26px;
+        font-weight: lighter;
     }
 
 /* Sidebar Menu Styles */
@@ -68,16 +68,9 @@
 
         /* Dropdown indicator for items with flyout */
         .sidebar-menu li.dropdown > a:after {
-            content: "\f105"; /* fa-angle-right */
-            font-family: "Font Awesome 5 Free";
-            font-weight: 900; /* solid versiya üçün */
-            margin-left: auto;
-            transition: transform 0.3s ease;
-            display: inline-block;
-        }
-        s
-        .sidebar-menu li.dropdown:hover > a:after {
-            transform: translateX(3px);
+            margin-left:auto;
+            color: #fff; 
+            background-color: #40444b;
         }
 
 .main-content {

@@ -1,7 +1,43 @@
 ﻿@using ITAsset_DDLA.Database.Models.ViewModels.ActivityLogs
 @model LogListViewModel
+<div class="container">
+    <div class="logo-header">
+        <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+        <div class="logo-text">
+            <h1>Fəaliyyət Logları</h1>
+            <small style="color:#7f8c8d">Dövlət Dəniz və Liman Agentliyi</small>
+        </div>
+    </div>
 
-<div id="logContainer">
-    @await Html.PartialAsync("_LogListPartial", Model)
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+        <div class="text-end">
+            <a href="/ActivityLogs/ExportLogsToExcel" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Excel-ə çıxar
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <div class="row">
+            <div class="col-md-4">
+                <label class="form-label">Tarixə görə filtrlə:</label>
+                <input type="date" class="form-control" id="dateFilter">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">İstifadəçiyə görə filtrlə:</label>
+                <select class="form-select" id="userFilter">
+                    <option value="" selected>Bütün istifadəçilər</option>
+                    @foreach (var user in Model.LocalUsers)
+                    {
+                        <option value="@user.FullName">@user.FullName</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="logContainer">
+        @await Html.PartialAsync("_LogListPartial", Model)
+    </div>
 </div>
-
