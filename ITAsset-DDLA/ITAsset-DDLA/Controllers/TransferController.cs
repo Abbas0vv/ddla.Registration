@@ -99,22 +99,13 @@ public class TransferController : Controller
     {
         try
         {
-            // Safely get LDAP users with null check
-            var ldapUsers = _ldapService.GetLdapUsers();
-            ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).Where(name => !string.IsNullOrEmpty(name)).ToList();
-
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var product = await _productService.GetByIdAsync(id.Value);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            if (product == null) return NotFound();
 
             var stockProduct = await _stockService.GetByIdAsync(product.StockProductId);
+            var ldapUsers = _ldapService.GetLdapUsers(); // AZ dilində title və company
 
             var model = new UpdateTransferViewModel
             {
@@ -125,7 +116,8 @@ public class TransferController : Controller
                     DateofReceipt = product.DateofReceipt,
                     StockProductId = product.StockProductId
                 },
-                StockProduct = stockProduct
+                StockProduct = stockProduct,
+                LdapUsers = ldapUsers // <- burada doldur
             };
 
             return View(model);
@@ -145,9 +137,11 @@ public class TransferController : Controller
         {
             if (!ModelState.IsValid)
             {
-                // Repopulate ViewBag.LdapUsers if validation fails
-                var ldapUsers = _ldapService.GetLdapUsers();
-                ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).Where(name => !string.IsNullOrEmpty(name)).ToList();
+                model.LdapUsers = _ldapService.GetLdapUsers();
+                if (model.UpdateProductViewModel?.StockProductId != null)
+                {
+                    model.StockProduct = await _stockService.GetByIdAsync(model.UpdateProductViewModel.StockProductId);
+                }
                 return View(model);
             }
 
@@ -167,7 +161,6 @@ public class TransferController : Controller
 
             // Repopulate necessary data for the view
             var ldapUsers = _ldapService.GetLdapUsers();
-            ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).Where(name => !string.IsNullOrEmpty(name)).ToList();
 
             if (model.UpdateProductViewModel?.StockProductId != null)
             {
@@ -223,13 +216,13 @@ public class TransferController : Controller
     [HttpGet]
     public async Task<IActionResult> CreateBlank()
     {
-        var ldapUsers = _ldapService.GetLdapUsers();
-        ViewBag.LdapUsers = ldapUsers.Select(u => u.FullName).ToList();
+        var ldapUsers = _ldapService.GetLdapUsers(); // AZ dilində title və company
 
         var model = new CreateTransferViewModel
         {
             CreateProductViewModel = new CreateProductViewModel(),
-            StockProducts = await _context.StockProducts.ToListAsync()
+            StockProducts = await _context.StockProducts.ToListAsync(),
+            LdapUsers = ldapUsers // <- burada doldur
         };
         return View(model);
     }
@@ -239,7 +232,9 @@ public class TransferController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.LdapUsers = _ldapService.GetLdapUsers().Select(u => u.FullName).ToList();
+            // POST zamanı da LdapUsers-ı doldur
+            model.LdapUsers = _ldapService.GetLdapUsers();
+            model.StockProducts = await _context.StockProducts.ToListAsync();
             return View(model);
         }
 
@@ -251,7 +246,8 @@ public class TransferController : Controller
         if (!userProducts.Any())
         {
             ModelState.AddModelError("", "Seçilmiş istifadəçiyə aid məhsul tapılmadı.");
-            ViewBag.LdapUsers = _ldapService.GetLdapUsers().Select(u => u.FullName).ToList();
+            model.LdapUsers = _ldapService.GetLdapUsers();
+            model.StockProducts = await _context.StockProducts.ToListAsync();
             return View(model);
         }
 
@@ -261,7 +257,6 @@ public class TransferController : Controller
         var pdfBytes = _pdfService.GenerateBlankPdf(model.CreateProductViewModel.Recipient, userProducts);
         return File(pdfBytes, "application/pdf", $"TehvilTeslim_Blank_{model.CreateProductViewModel.Recipient}.pdf");
     }
-
     [HttpGet]
     public IActionResult ExportProductsToExcel()
     {

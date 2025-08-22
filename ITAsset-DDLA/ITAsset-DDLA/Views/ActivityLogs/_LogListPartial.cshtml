@@ -1,0 +1,220 @@
+﻿
+<div class="container mt-5">
+    <div class="logo-header">
+        <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+        <div class="logo-text">
+            <h1>Fəaliyyət Logları</h1>
+            <small>Dövlət Dəniz və Liman Agentliyi</small>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Loglarda axtarış...">
+                <button class="btn btn-primary" type="button">
+                    <i class="fas fa-search"></i> Axtar
+                </button>
+            </div>
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Excel-ə çıxar
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <div class="row">
+            <div class="col-md-4">
+                <label class="form-label">Tarixə görə filtrlə:</label>
+                <input type="date" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">İstifadəçiyə görə filtrlə:</label>
+                <select class="form-select">
+                    <option value="">Bütün istifadəçilər</option>
+                    <option value="1">İstifadəçi 1</option>
+                    <option value="2">İstifadəçi 2</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Əməliyyat növü:</label>
+                <select class="form-select">
+                    <option value="">Bütün əməliyyatlar</option>
+                    <option value="create">Yaradılma</option>
+                    <option value="update">Yenilənmə</option>
+                    <option value="delete">Silinmə</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>İstifadəçi</th>
+                    <th>Əməliyyat</th>
+                    <th>Tarix</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model.Logs)
+                {
+                    <tr>
+                        <td>@log.UserFullName</td>
+                        <td>@log.Action</td>
+                        <td>@log.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<nav>
+    <ul class="pagination">
+        @if (Model.CurrentPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="loadLogs(@(Model.CurrentPage - 1))">Əvvəlki</a>
+            </li>
+        }
+
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" href="#" onclick="loadLogs(@i)">@i</a>
+            </li>
+        }
+
+        @if (Model.CurrentPage < Model.TotalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="loadLogs(@(Model.CurrentPage + 1))">Sonrakı</a>
+            </li>
+        }
+    </ul>
+</nav>
+
+<script>
+    function loadLogs(page) {
+        $.ajax({
+            url: '/ActivityLogs/GetLogs',
+            type: 'GET',
+            data: { page: page },
+            success: function (result) {
+                $('#logContainer').html(result);
+            },
+            error: function () {
+                alert("Loglar yüklənərkən xəta baş verdi.");
+            }
+        });
+    }
+</script>
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 91, 150, 0.1);
+        padding: 25px;
+    }
+
+    .logo-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+        .logo-header img {
+            height: 60px;
+            margin-right: 15px;
+        }
+
+    .logo-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .logo-text h1 {
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: none;
+            margin-bottom: 0;
+            font-size: 1.8rem;
+        }
+
+        .logo-text small {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+    .table thead {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .table th {
+        font-weight: 500;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: var(--light-blue);
+    }
+
+    .table td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .pagination {
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .page-item.active .page-link {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .page-link {
+        color: var(--primary-color);
+    }
+
+        .page-link:hover {
+            color: var(--secondary-color);
+        }
+
+    .search-container {
+        margin-bottom: 20px;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+    .filter-section {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+</style>

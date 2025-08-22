@@ -1,104 +1,101 @@
 ﻿@using ITAsset_DDLA.LDAP
 @model List<LdapUserModel>
 
-<div class="main-content">
-    <div class="container-fluid">
-        <div class="logo-header">
-            <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
-            <div class="logo-text">
-                <h1>İstifadəçilər</h1>
-                <small>Dövlət Dəniz və Liman Agentliyi</small>
-            </div>
+<div class="container-fluid">
+    <div class="logo-header">
+        <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+        <div class="logo-text">
+            <h1>İstifadəçilər</h1>
+            <small>Dövlət Dəniz və Liman Agentliyi</small>
         </div>
+    </div>
 
-        <div class="card">
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <input type="text" id="globalSearch" class="form-control" placeholder="Bütün sütunlarda axtarış...">
-                        </div>
-                    </div>
-                    <div class="col-md-6 text-end">
-                        <div class="btn-group">
-                            <button class="btn btn-outline-secondary sort-btn" data-sort="name">
-                                <i class="mdi mdi-sort-alphabetical-ascending"></i> Ada görə
-                            </button>
-                            <button class="btn btn-outline-secondary sort-btn" data-sort="unit">
-                                <i class="mdi mdi-sort-alphabetical-ascending"></i> Şöbəyə görə
-                            </button>
-                            <button class="btn btn-outline-secondary sort-btn" data-sort="phone">
-                                <i class="mdi mdi-sort-numeric-ascending"></i> Telefona görə
-                            </button>
-                        </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" id="globalSearch" class="form-control" placeholder="Bütün sütunlarda axtarış...">
                     </div>
                 </div>
-
-                <div class="table-responsive">
-                    <table class="table table-hover table-centered mb-0" id="usersTable">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <span>Şəkil</span>
-                                </th>
-                                <th>
-                                    <span>Tam ad</span>
-                                </th>
-                                <th>
-                                    <span>E-poçt</span>
-                                </th>
-                                <th>
-                                    <span>Telefon</span>
-                                </th>
-                                <th>
-                                    <span>Şöbə</span>
-                                </th>
-                                <th>
-                                    <span>Vəzifə</span>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th></th>
-                                <th><input type="text" class="form-control form-control-sm column-search" data-column="1" placeholder="Axtar..."></th>
-                                <th><input type="text" class="form-control form-control-sm column-search" data-column="2" placeholder="Axtar..."></th>
-                                <th><input type="text" class="form-control form-control-sm column-search" data-column="3" placeholder="Axtar..."></th>
-                                <th><input type="text" class="form-control form-control-sm column-search" data-column="4" placeholder="Axtar..."></th>
-                                <th><input type="text" class="form-control form-control-sm column-search" data-column="5" placeholder="Axtar..."></th>
-                            </tr>
-
-                        </thead>
-                        <tbody>
-                            @foreach (var user in Model)
-                            {
-                                <tr>
-                                    <td>
-                                        <div class="avatar-sm rounded-circle img-thumbnail d-flex align-items-center justify-content-center bg-secondary text-white">
-                                            @user.FullName?.Substring(0, 1).ToUpper()
-                                        </div>
-                                    </td>
-                                    <td>@user.FullName</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <a href="mailto:@user.Email">@user.Email</a>
-                                            <i class="mdi mdi-content-copy copy-icon ms-2" style="cursor:pointer; color:#4da6ff;" title="E-poçtu kopyala" data-email="@user.Email"></i>
-                                        </div>
-                                    </td>
-                                    <td>@user.InternalPhone</td>
-                                    <td>@user.Shobe</td>
-                                    <td>@user.Vazifa</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                    <div class="mt-3 text-muted" id="searchResultsInfo">
-                        Ümumi @Model.Count nəticə göstərilir
+                <div class="col-md-6 text-end">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary sort-btn" data-sort="name">
+                            <i class="mdi mdi-sort-alphabetical-ascending"></i> Ada görə
+                        </button>
+                        <button class="btn btn-outline-secondary sort-btn" data-sort="unit">
+                            <i class="mdi mdi-sort-alphabetical-ascending"></i> Şöbəyə görə
+                        </button>
+                        <button class="btn btn-outline-secondary sort-btn" data-sort="phone">
+                            <i class="mdi mdi-sort-numeric-ascending"></i> Telefona görə
+                        </button>
                     </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-centered mb-0" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span>Şəkil</span>
+                            </th>
+                            <th>
+                                <span>Tam ad</span>
+                            </th>
+                            <th>
+                                <span>E-poçt</span>
+                            </th>
+                            <th>
+                                <span>Telefon</span>
+                            </th>
+                            <th>
+                                <span>Şöbə</span>
+                            </th>
+                            <th>
+                                <span>Vəzifə</span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th><input type="text" class="form-control form-control-sm column-search" data-column="1" placeholder="Axtar..."></th>
+                            <th><input type="text" class="form-control form-control-sm column-search" data-column="2" placeholder="Axtar..."></th>
+                            <th><input type="text" class="form-control form-control-sm column-search" data-column="3" placeholder="Axtar..."></th>
+                            <th><input type="text" class="form-control form-control-sm column-search" data-column="4" placeholder="Axtar..."></th>
+                            <th><input type="text" class="form-control form-control-sm column-search" data-column="5" placeholder="Axtar..."></th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="avatar-sm rounded-circle img-thumbnail d-flex align-items-center justify-content-center bg-secondary text-white">
+                                        @user.FullName?.Substring(0, 1).ToUpper()
+                                    </div>
+                                </td>
+                                <td>@user.FullName</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="mailto:@user.Email">@user.Email</a>
+                                        <i class="mdi mdi-content-copy copy-icon ms-2" style="cursor:pointer; color:#4da6ff;" title="E-poçtu kopyala" data-email="@user.Email"></i>
+                                    </div>
+                                </td>
+                                <td>@user.InternalPhone</td>
+                                <td>@user.Shobe</td>
+                                <td>@user.Vazifa</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="mt-3 text-muted" id="searchResultsInfo">
+                    Ümumi @Model.Count nəticə göstərilir
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <script>
     $(document).ready(function() {
         // Initialize tooltips

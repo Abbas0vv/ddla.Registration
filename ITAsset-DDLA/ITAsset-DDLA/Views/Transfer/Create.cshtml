@@ -8,7 +8,6 @@
     ViewData["Title"] = "Yeni məhsul qeydiyyatı";
 }
 
-<div class="main-content">
     <div class="container">
         <div class="logo-header">
             <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
@@ -91,7 +90,7 @@
                         <!-- Department -->
                         <div class="mb-4">
                             <h5 class="mb-3">Departamentə</h5>
-                            <select asp-for="CreateProductViewModel.DepartmentSection" id="unitSelect" class="form-select" readonly>
+                            <select asp-for="CreateProductViewModel.DepartmentSection" id="unitSelect" class="form-control" readonly>
                                 <option value="">-- Seçilmiş istifadəçinin şöbəsi --</option>
                             </select>
                         </div>
@@ -115,18 +114,17 @@
             </form>
         </div>
     </div>
-</div>
 <script>
     // Track all products data
      const allProducts = [
          @foreach (var product in Model.StockProducts)
          {
-                                     <text>{
-                                         id: "@product.Id",
-                                         name: "@product.Name",
-                                         inventoryCode: "@product.InventoryCode",
-                                         type: "@product.Name"
-                                     },</text>
+           <text>{
+               id: "@product.Id",
+               name: "@product.Name",
+               inventoryCode: "@product.InventoryCode",
+               type: "@product.Name"
+           },</text>
          }
      ];
 

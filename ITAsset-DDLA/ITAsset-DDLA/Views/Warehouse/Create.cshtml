@@ -5,103 +5,100 @@
 @{
     ViewData["Title"] = "Yeni məhsul qeydiyyatı";
 }
-<div class="main-content">
-    <div class="row justify-content-center">
-        <div class="col-lg-10 mt-4">
-            <div class="form-container">
-                <div class="form-header">
-                    <img src="~/assets/images/ddlaLogo.png" alt="ddlaLogo" class="logo" style="height:100px;" />
-                    <h1 class="page-title">Yeni məhsul qeydiyyatı</h1>
+<div class="row justify-content-center">
+    <div class="col-lg-10 mt-4">
+        <div class="form-container">
+            <div class="form-header">
+                <img src="~/assets/images/ddlaLogo.png" alt="ddlaLogo" class="logo" style="height:100px;" />
+                <h1 class="page-title">Yeni məhsul qeydiyyatı</h1>
+            </div>
+
+            <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" required placeholder="Məhsul adı" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ImageFile" class="form-label"></label>
+                            <div class="file-input-container">
+                                <label for="ImageFile" class="file-input-label">
+                                    <span class="file-input-text">Şəkil seçin...</span>
+                                    <span class="file-input-btn"><i class="fas fa-upload me-1"></i>Seçin</span>
+                                </label>
+                                <input asp-for="ImageFile" type="file" class="d-none" id="ImageFile" />
+                            </div>
+                            <div id="imagePreviewContainer" class="mt-2" style="display: none;">
+                                <img id="imagePreview" src="#" alt="Şəkil önizləməsi" class="image-preview img-thumbnail" style="max-height: 150px;">
+                            </div>
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="TotalCount" class="form-label"></label>
+                            <input asp-for="TotalCount" class="form-control" required min="1" placeholder="Sayı" value="1" id="totalCount" />
+                            <span asp-validation-for="TotalCount" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DateofRegistration" class="form-label"></label>
+                            <input asp-for="DateofRegistration" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="DateofRegistration" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
 
-                <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label asp-for="Name" class="form-label"></label>
-                                <input asp-for="Name" class="form-control" required placeholder="Məhsul adı" />
-                                <span asp-validation-for="Name" class="text-danger"></span>
-                            </div>
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Əlavə izahat"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
 
-                            <div class="mb-3">
-                                <label asp-for="ImageFile" class="form-label"></label>
-                                <div class="file-input-container">
-                                    <label for="ImageFile" class="file-input-label">
-                                        <span class="file-input-text">Şəkil seçin...</span>
-                                        <span class="file-input-btn"><i class="fas fa-upload me-1"></i>Seçin</span>
-                                    </label>
-                                    <input asp-for="ImageFile" type="file" class="d-none" id="ImageFile" />
-                                </div>
-                                <div id="imagePreviewContainer" class="mt-2" style="display: none;">
-                                    <img id="imagePreview" src="#" alt="Şəkil önizləməsi" class="image-preview img-thumbnail" style="max-height: 150px;">
-                                </div>
-                                <span asp-validation-for="ImageFile" class="text-danger"></span>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label asp-for="DocumentFile" class="form-label"></label>
+                            <div class="file-input-container">
+                                <label for="DocumentFile" class="file-input-label">
+                                    <span class="file-input-text">Fayl seçin...</span>
+                                    <span class="file-input-btn"><i class="fas fa-paperclip me-1"></i>Seçin</span>
+                                </label>
+                                <input asp-for="DocumentFile" type="file" class="d-none" id="DocumentFile" />
                             </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label asp-for="TotalCount" class="form-label"></label>
-                                <input asp-for="TotalCount" class="form-control" required min="1" placeholder="Sayı" value="1" id="totalCount" />
-                                <span asp-validation-for="TotalCount" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="DateofRegistration" class="form-label"></label>
-                                <input asp-for="DateofRegistration" class="form-control" type="datetime-local" />
-                                <span asp-validation-for="DateofRegistration" class="text-danger"></span>
-                            </div>
+                            <small class="text-muted mt-1 d-block">İstənilən fayl tipi qəbul edilir (maksimum 5MB)</small>
+                            <span asp-validation-for="DocumentFile" class="text-danger"></span>
                         </div>
                     </div>
+                </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Description" class="form-label"></label>
-                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Əlavə izahat"></textarea>
-                        <span asp-validation-for="Description" class="text-danger"></span>
+                <div id="inventoryCodesContainer" class="inventory-codes-container card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">İnventar Kodları</h5>
                     </div>
-
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label asp-for="DocumentFile" class="form-label"></label>
-                                <div class="file-input-container">
-                                    <label for="DocumentFile" class="file-input-label">
-                                        <span class="file-input-text">Fayl seçin...</span>
-                                        <span class="file-input-btn"><i class="fas fa-paperclip me-1"></i>Seçin</span>
-                                    </label>
-                                    <input asp-for="DocumentFile" type="file" class="d-none" id="DocumentFile" />
-                                </div>
-                                <small class="text-muted mt-1 d-block">İstənilən fayl tipi qəbul edilir (maksimum 5MB)</small>
-                                <span asp-validation-for="DocumentFile" class="text-danger"></span>
-                            </div>
+                    <div class="card-body">
+                        <div id="inventoryItems" class="row g-2">
+                            <!-- Inventory code inputs will be added here dynamically -->
                         </div>
                     </div>
+                </div>
 
-                    <div id="inventoryCodesContainer" class="inventory-codes-container card mb-4">
-                        <div class="card-header bg-secondary text-white">
-                            <h5 class="mb-0">İnventar Kodları</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="inventoryItems" class="row g-2">
-                                <!-- Inventory code inputs will be added here dynamically -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end mt-4">
-                        <a asp-action="Index" class="btn btn-outline-danger me-2">
-                            <i class="fas fa-times me-1"></i>Bağla
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>Yadda saxla
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div class="d-flex justify-content-end mt-4">
+                    <a asp-action="Index" class="btn btn-outline-danger me-2">
+                        <i class="fas fa-times me-1"></i>Bağla
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Yadda saxla
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-
 <script>
     document.getElementById('ImageFile').addEventListener('change', function (e) {
         const file = e.target.files[0];

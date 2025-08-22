@@ -4,161 +4,159 @@
 
 @model List<Product>
 
-<div class="main-content">
-    <div class="container mt-5">
-        <div class="logo-header">
-            <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
-            <div class="logo-text">
-                <h1>IT Qeydiyyat Sistemi</h1>
-                <small>Dövlət Dəniz və Liman Agentliyi</small>
-            </div>
+<div class="container mt-5">
+    <div class="logo-header">
+        <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+        <div class="logo-text">
+            <h1>IT Qeydiyyat Sistemi</h1>
+            <small>Dövlət Dəniz və Liman Agentliyi</small>
         </div>
+    </div>
 
-        <!-- Add this new button section - Replace the existing button section with this -->
-        <div class="mb-3 text-end">
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Yeni Təhvil-Təslim yarat
-            </a>
-            <a asp-action="CreateBlank" class="btn btn-success ml-2">
-                <i class="fas fa-file-alt"></i> Yeni Blank yarat
-            </a>
-            <a asp-action="ExportProductsToExcel" class="btn btn-success">
-                <i class="fas fa-file-excel"></i> Excel-ə çıxar
-            </a>
-        </div>
+    <!-- Add this new button section - Replace the existing button section with this -->
+    <div class="mb-3 text-end">
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Yeni Təhvil-Təslim yarat
+        </a>
+        <a asp-action="CreateBlank" class="btn btn-success ml-2">
+            <i class="fas fa-file-alt"></i> Yeni Blank yarat
+        </a>
+        <a asp-action="ExportProductsToExcel" class="btn btn-success">
+            <i class="fas fa-file-excel"></i> Excel-ə çıxar
+        </a>
+    </div>
 
-        <div class="mb-3">
-            <input type="text" id="globalSearch" class="form-control" placeholder="Ümumi axtarış...">
-        </div>
+    <div class="mb-3">
+        <input type="text" id="globalSearch" class="form-control" placeholder="Ümumi axtarış...">
+    </div>
 
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered" id="productsTable">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>İmzalanıb</th>
-                        <th>İnventar ID</th>
-                        <th>İstifadəçi adı</th>
-                        <th>Məhsul adı</th>
-                        <th>Təsvir</th>
-                        <th>Departament/Şöbə</th>
-                        <th>Verilmə tarixi</th>
-                        <th>Alınma tarixi</th>
-                        <th>Fayl</th>
-                        <th>Əməliyyatlar</th>
-                    </tr>
-                    <tr class="column-filters">
-                        <th></th> <!-- # -->
-                        <th>
-                            <select class="form-control form-control-sm" data-column="1">
-                                <option value="">Hamısı</option>
-                                <option value="İmzalanıb">İmzalanıb</option>
-                                <option value="İmzalanmayıb">İmzalanmayıb</option>
-                            </select>
-                        </th>
-                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="2"></th>
-                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="3"></th>
-                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="4"></th>
-                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="5"></th>
-                        <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="6"></th>
-                        <th><input type="date" class="form-control form-control-sm" data-column="7"></th>
-                        <th><input type="date" class="form-control form-control-sm" data-column="8"></th>
-                        <th></th> <!-- Fayl -->
-                        <th></th> <!-- Əməliyyatlar -->
-                    </tr>
-                </thead>
-                <tbody>
-                    @{
-                        int counter = 1;
-                        foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>@counter</td>
-                                <td data-order="@item.IsSigned.ToString().ToLower()">
-                                    <span class="d-none">@((item.IsSigned ? "İmzalanıb" : "İmzalanmayıb"))</span>
-                                    @if (item.IsSigned)
-                                    {
-                                        <i class="fas fa-check-circle text-success" title="İmzalanıb"></i>
-                                    }
-                                    else
-                                    {
-                                        <i class="fas fa-times-circle text-danger" title="İmzalanmayıb"></i>
-                                    }
-                                </td>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered" id="productsTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>İmzalanıb</th>
+                    <th>İnventar ID</th>
+                    <th>İstifadəçi adı</th>
+                    <th>Məhsul adı</th>
+                    <th>Təsvir</th>
+                    <th>Departament/Şöbə</th>
+                    <th>Verilmə tarixi</th>
+                    <th>Alınma tarixi</th>
+                    <th>Fayl</th>
+                    <th>Əməliyyatlar</th>
+                </tr>
+                <tr class="column-filters">
+                    <th></th> <!-- # -->
+                    <th>
+                        <select class="form-control form-control-sm" data-column="1">
+                            <option value="">Hamısı</option>
+                            <option value="İmzalanıb">İmzalanıb</option>
+                            <option value="İmzalanmayıb">İmzalanmayıb</option>
+                        </select>
+                    </th>
+                    <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="2"></th>
+                    <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="3"></th>
+                    <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="4"></th>
+                    <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="5"></th>
+                    <th><input type="text" class="form-control form-control-sm" placeholder="Axtar..." data-column="6"></th>
+                    <th><input type="date" class="form-control form-control-sm" data-column="7"></th>
+                    <th><input type="date" class="form-control form-control-sm" data-column="8"></th>
+                    <th></th> <!-- Fayl -->
+                    <th></th> <!-- Əməliyyatlar -->
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int counter = 1;
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td data-order="@item.IsSigned.ToString().ToLower()">
+                                <span class="d-none">@((item.IsSigned ? "İmzalanıb" : "İmzalanmayıb"))</span>
+                                @if (item.IsSigned)
+                                {
+                                    <i class="fas fa-check-circle text-success" title="İmzalanıb"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-times-circle text-danger" title="İmzalanmayıb"></i>
+                                }
+                            </td>
 
-                                <td>@item.InventarId</td>
-                                <td>@item.Recipient</td>
-                                <td>@item.Name</td>
-                                <td>@item.Description</td>
-                                <td>
-                                    @{
-                                        var parts = item.DepartmentSection?.Split(',');
-                                        var sectionName = parts != null && parts.Length > 1 ? parts[1].Trim() : item.DepartmentSection;
-                                    }
-                                    @sectionName
-                                </td>
+                            <td>@item.InventarId</td>
+                            <td>@item.Recipient</td>
+                            <td>@item.Name</td>
+                            <td>@item.Description</td>
+                            <td>
+                                @{
+                                    var parts = item.DepartmentSection?.Split(',');
+                                    var sectionName = parts != null && parts.Length > 1 ? parts[1].Trim() : item.DepartmentSection;
+                                }
+                                @sectionName
+                            </td>
 
-                                <td data-order="@item.DateofIssue.ToString("yyyy-MM-dd HH:mm")">
-                                    <span class="d-none">@item.DateofIssue.ToString("dd.MM.yyyy")</span>
-                                    @item.DateofIssue.ToString("dd.MM.yyyy HH:mm")
-                                </td>
-                                <td data-order="@(item.DateofReceipt?.ToString("yyyy-MM-dd HH:mm") ?? "")">
-                                    @if (item.DateofReceipt.HasValue)
-                                    {
-                                        <span class="d-none">@item.DateofReceipt.Value.ToString("dd.MM.yyyy")</span>
-                                        @item.DateofReceipt.Value.ToString("dd.MM.yyyy HH:mm")
-                                    }
-                                    else
-                                    {
-                                        <span class="d-none">Təhvil alınmayıb</span>
-                                        <span>Təhvil alınmayıb</span>
-                                    }
-                                </td>
-                                <td>
-                                    @if (!string.IsNullOrEmpty(item.FilePath))
-                                    {
-                                        <a href="@item.FilePath" class="btn btn-sm btn-outline-primary" download>
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="GenerateHandoverPdf" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                    }
-                                </td>
-                                <td>
-                                    <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit"></i>
+                            <td data-order="@item.DateofIssue.ToString("yyyy-MM-dd HH:mm")">
+                                <span class="d-none">@item.DateofIssue.ToString("dd.MM.yyyy")</span>
+                                @item.DateofIssue.ToString("dd.MM.yyyy HH:mm")
+                            </td>
+                            <td data-order="@(item.DateofReceipt?.ToString("yyyy-MM-dd HH:mm") ?? "")">
+                                @if (item.DateofReceipt.HasValue)
+                                {
+                                    <span class="d-none">@item.DateofReceipt.Value.ToString("dd.MM.yyyy")</span>
+                                    @item.DateofReceipt.Value.ToString("dd.MM.yyyy HH:mm")
+                                }
+                                else
+                                {
+                                    <span class="d-none">Təhvil alınmayıb</span>
+                                    <span>Təhvil alınmayıb</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.FilePath))
+                                {
+                                    <a href="@item.FilePath" class="btn btn-sm btn-outline-primary" download>
+                                        <i class="fas fa-download"></i>
                                     </a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
-                                        <i class="fas fa-trash"></i>
+                                }
+                                else
+                                {
+                                    <a asp-action="GenerateHandoverPdf" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download"></i>
                                     </a>
-                                    @if (item.IsSigned)
-                                    {
-                                        <a asp-action="MarkAsSigned" asp-route-id="@item.Id"
-                                           class="btn btn-secondary btn-sm disabled"
-                                           style="margin: 8px; pointer-events:none;">
-                                            <i class="fas fa-check"></i> İmzalanıb
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <form asp-action="MarkAsSigned" asp-route-id="@item.Id" method="post" style="display:inline;">
-                                            <button type="submit" class="btn btn-outline-danger btn-sm" style="margin: 8px;">
-                                                İmzalanmayıb
-                                            </button>
-                                        </form>
-                                    }
-                                </td>
-                            </tr>
-                            counter++;
-                        }
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                                @if (item.IsSigned)
+                                {
+                                    <a asp-action="MarkAsSigned" asp-route-id="@item.Id"
+                                       class="btn btn-secondary btn-sm disabled"
+                                       style="margin: 8px; pointer-events:none;">
+                                        <i class="fas fa-check"></i> İmzalanıb
+                                    </a>
+                                }
+                                else
+                                {
+                                    <form asp-action="MarkAsSigned" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" style="margin: 8px;">
+                                            İmzalanmayıb
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                        counter++;
                     }
-                </tbody>
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 

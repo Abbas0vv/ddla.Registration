@@ -7,89 +7,85 @@
 @{
     ViewData["Title"] = "Məhsul redaktəsi";
 }
-
-<div class="main-content">
-    <div class="container">
-        <div class="logo-header">
-            <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
-            <div class="logo-text">
-                <h1>Məhsul redaktəsi</h1>
-                <small>Dövlət Dəniz və Liman Agentliyi</small>
-            </div>
+<div class="container">
+    <div class="logo-header">
+        <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+        <div class="logo-text">
+            <h1>Məhsul redaktəsi</h1>
+            <small>Dövlət Dəniz və Liman Agentliyi</small>
         </div>
-        <div class="registration-card">
+    </div>
+    <div class="registration-card">
 
-            <form method="post" asp-action="Update" enctype="multipart/form-data" id="updateForm">
-                <input type="hidden" asp-for="UpdateProductViewModel.DocumentFile" />
-                <input type="hidden" asp-for="UpdateProductViewModel.StockProductId" />
+        <form method="post" asp-action="Update" enctype="multipart/form-data" id="updateForm">
+            <input type="hidden" asp-for="UpdateProductViewModel.DocumentFile" />
+            <input type="hidden" asp-for="UpdateProductViewModel.StockProductId" />
 
-                <input type="hidden" asp-for="StockProduct.Id" />
-                <input type="hidden" asp-for="StockProduct.Name" />
-                <input type="hidden" asp-for="StockProduct.Description" />
-                <input type="hidden" asp-for="StockProduct.InventoryCode" />
-                <input type="hidden" asp-for="StockProduct.ImageUrl" />
+            <input type="hidden" asp-for="StockProduct.Id" />
+            <input type="hidden" asp-for="StockProduct.Name" />
+            <input type="hidden" asp-for="StockProduct.Description" />
+            <input type="hidden" asp-for="StockProduct.InventoryCode" />
+            <input type="hidden" asp-for="StockProduct.ImageUrl" />
 
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <!-- Recipient Section -->
-                        <div class="mb-4">
-                            <h5 class="mb-3">Məhsulu təhvil alan</h5>
-                            <select asp-for="UpdateProductViewModel.Recipient" id="recipientSelect" class="form-select" onchange="updateShobe()">
-                                <option value="" disabled selected>Seçim edin</option>
-                                @foreach (var user in Model.LdapUsers)
-                                {
-                                    <option value="@user.FullName" data-shobe="@user.Shobe">
-                                        @user.FullName
-                                    </option>
-                                }
-                            </select>
-                            <span asp-validation-for="UpdateProductViewModel.Recipient" class="error-message"></span>
-                        </div>
-                        <!-- Product Display (Read-only) -->
-                        <div class="mb-4">
-                            <h5 class="mb-3">Məhsul</h5>
-                            <div class="product-display">
-                                <div class="selected-product">
-                                    <strong>@Model.StockProduct.Name</strong><br>
-                                    <small>İnventar kodu: @Model.StockProduct.InventoryCode</small>
-                                </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Recipient Section -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Məhsulu təhvil alan</h5>
+                        <select asp-for="UpdateProductViewModel.Recipient" id="recipientSelect" class="form-select" onchange="updateShobe()">
+                            <option value="" disabled selected>Seçim edin</option>
+                            @foreach (var user in Model.LdapUsers)
+                            {
+                                <option value="@user.FullName" data-shobe="@user.Shobe">
+                                    @user.FullName
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="UpdateProductViewModel.Recipient" class="error-message"></span>
+                    </div>
+                    <!-- Product Display (Read-only) -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Məhsul</h5>
+                        <div class="product-display">
+                            <div class="selected-product">
+                                <strong>@Model.StockProduct.Name</strong><br>
+                                <small>İnventar kodu: @Model.StockProduct.InventoryCode</small>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="col-md-6">
-                        <!-- Department -->
-                        <div class="mb-4">
-                            <h5 class="mb-3">Departamentə</h5>
-                            <select asp-for="UpdateProductViewModel.DepartmentSection" id="unitSelect" class="form-select" readonly>
-                                <option value="">-- Seçilmiş istifadəçinin şöbəsi --</option>
-                            </select>
-                        </div>
+                <div class="col-md-6">
+                    <!-- Department -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Departamentə</h5>
+                        <select asp-for="UpdateProductViewModel.DepartmentSection" id="unitSelect" class="form-select" readonly>
+                            <option value="@Model.UpdateProductViewModel.DepartmentSection">@Model.UpdateProductViewModel.DepartmentSection</option>
+                        </select>
+                    </div>
 
-                        <!-- Date -->
-                        <div class="mb-4">
-                            <h5 class="mb-3">Alınma tarixi</h5>
-                            <input asp-for="UpdateProductViewModel.DateofReceipt" class="form-control" type="date" />
-                            <span asp-validation-for="UpdateProductViewModel.DateofReceipt" class="error-message"></span>
-                        </div>
+                    <!-- Date -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Alınma tarixi</h5>
+                        <input asp-for="UpdateProductViewModel.DateofReceipt" class="form-control" type="date" />
+                        <span asp-validation-for="UpdateProductViewModel.DateofReceipt" class="error-message"></span>
                     </div>
                 </div>
+            </div>
 
-                <!-- Buttons -->
-                <div class="d-flex justify-content-end mt-4">
-                    <a asp-action="Index" class="btn btn-secondary me-2">
-                        <i class="fas fa-times me-1"></i> Bağla
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i> Yadda saxla
-                    </button>
-                </div>
-            </form>
-        </div>
+            <!-- Buttons -->
+            <div class="d-flex justify-content-end mt-4">
+                <a asp-action="Index" class="btn btn-secondary me-2">
+                    <i class="fas fa-times me-1"></i> Bağla
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i> Yadda saxla
+                </button>
+            </div>
+        </form>
     </div>
 </div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Update file name display when file is selected
