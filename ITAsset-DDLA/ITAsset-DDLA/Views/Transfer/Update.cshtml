@@ -18,8 +18,8 @@
     <div class="registration-card">
 
         <form method="post" asp-action="Update" enctype="multipart/form-data" id="updateForm">
-            <input type="hidden" asp-for="UpdateProductViewModel.DocumentFile" />
-            <input type="hidden" asp-for="UpdateProductViewModel.StockProductId" />
+            <input type="hidden" asp-for="UpdateTransferProductViewModel.DocumentFile" />
+            <input type="hidden" asp-for="UpdateTransferProductViewModel.StockProductId" />
 
             <input type="hidden" asp-for="StockProduct.Id" />
             <input type="hidden" asp-for="StockProduct.Name" />
@@ -33,7 +33,7 @@
                     <!-- Recipient Section -->
                     <div class="mb-4">
                         <h5 class="mb-3">Məhsulu təhvil alan</h5>
-                        <select asp-for="UpdateProductViewModel.Recipient" id="recipientSelect" class="form-select" onchange="updateShobe()">
+                        <select asp-for="UpdateTransferProductViewModel.Recipient" id="recipientSelect" class="form-select" onchange="updateShobe()">
                             <option value="" disabled selected>Seçim edin</option>
                             @foreach (var user in Model.LdapUsers)
                             {
@@ -42,7 +42,7 @@
                                 </option>
                             }
                         </select>
-                        <span asp-validation-for="UpdateProductViewModel.Recipient" class="error-message"></span>
+                        <span asp-validation-for="UpdateTransferProductViewModel.Recipient" class="error-message"></span>
                     </div>
                     <!-- Product Display (Read-only) -->
                     <div class="mb-4">
@@ -60,16 +60,16 @@
                     <!-- Department -->
                     <div class="mb-4">
                         <h5 class="mb-3">Departamentə</h5>
-                        <select asp-for="UpdateProductViewModel.DepartmentSection" id="unitSelect" class="form-select" readonly>
-                            <option value="@Model.UpdateProductViewModel.DepartmentSection">@Model.UpdateProductViewModel.DepartmentSection</option>
+                        <select asp-for="UpdateTransferProductViewModel.DepartmentSection" id="unitSelect" class="form-select" readonly>
+                            <option value="@Model.UpdateTransferProductViewModel.DepartmentSection">@Model.UpdateTransferProductViewModel.DepartmentSection</option>
                         </select>
                     </div>
 
                     <!-- Date -->
                     <div class="mb-4">
                         <h5 class="mb-3">Alınma tarixi</h5>
-                        <input asp-for="UpdateProductViewModel.DateofReceipt" class="form-control" type="date" />
-                        <span asp-validation-for="UpdateProductViewModel.DateofReceipt" class="error-message"></span>
+                        <input asp-for="UpdateTransferProductViewModel.DateofReceipt" class="form-control" type="date" />
+                        <span asp-validation-for="UpdateTransferProductViewModel.DateofReceipt" class="error-message"></span>
                     </div>
                 </div>
             </div>

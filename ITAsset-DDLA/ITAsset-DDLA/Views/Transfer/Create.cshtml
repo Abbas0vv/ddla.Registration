@@ -25,7 +25,7 @@
                         <!-- Recipient Section -->
                         <div class="mb-4">
                             <h5 class="mb-3">Məhsulu təhvil alan</h5>
-                            <select asp-for="CreateProductViewModel.Recipient" id="recipientSelect" class="form-select" onchange="updateShobe()">
+                        <select asp-for="CreateTransferProductViewModel.Recipient" id="recipientSelect" class="form-select" onchange="updateShobe()">
                                 <option value="" disabled selected>Seçim edin</option>
                                 @foreach (var user in Model.LdapUsers)
                                 {
@@ -35,7 +35,7 @@
                                 }
                             </select>
 
-                            <span asp-validation-for="CreateProductViewModel.Recipient" class="error-message" style="color: red;"></span>
+                            <span asp-validation-for="CreateTransferProductViewModel.Recipient" class="error-message" style="color: red;"></span>
                         </div>
                         <!-- Product Selection -->
                         <div class="mb-4">
@@ -61,7 +61,7 @@
                                         <div class="form-check product-item" data-type="@product.Name">
                                             <input class="form-check-input product-checkbox"
                                                    type="checkbox"
-                                                   name="CreateProductViewModel.StockProductIds"
+                                                   name="CreateTransferProductViewModel.StockProductIds"
                                                    value="@product.Id"
                                                    id="product_@product.Id"
                                                    onchange="updateSelectedProducts()" />
@@ -71,7 +71,7 @@
                                         </div>
                                     }
                                 </div>
-                                <span asp-validation-for="CreateProductViewModel.StockProductIds" class="error-message"></span>
+                                <span asp-validation-for="CreateTransferProductViewModel.StockProductIds" class="error-message"></span>
                             </div>
 
                             <!-- Selected Products Display -->
@@ -90,7 +90,7 @@
                         <!-- Department -->
                         <div class="mb-4">
                             <h5 class="mb-3">Departamentə</h5>
-                            <select asp-for="CreateProductViewModel.DepartmentSection" id="unitSelect" class="form-control" readonly>
+                            <select asp-for="CreateTransferProductViewModel.DepartmentSection" id="unitSelect" class="form-control" readonly>
                                 <option value="">-- Seçilmiş istifadəçinin şöbəsi --</option>
                             </select>
                         </div>
@@ -98,7 +98,7 @@
                         <!-- Date -->
                         <div class="mb-4" style="margin-top: 3.3rem !important;">
                             <h5 class="mb-3">Alınma tarixi</h5>
-                            <input asp-for="CreateProductViewModel.DateofReceipt" class="form-control" type="date" />
+                            <input asp-for="CreateTransferProductViewModel.DateofReceipt" class="form-control" type="date" />
                         </div>
                     </div>
                 </div>
@@ -194,7 +194,7 @@
      document.addEventListener('DOMContentLoaded', function() {
         const stockProductSelect = document.getElementById('stockProductSelect');
         const inventoryContainer = document.getElementById('inventoryItemsContainer');
-        const countInput = document.getElementById('CreateProductViewModel_Count');
+        const countInput = document.getElementById('CreateTransferProductViewModel_Count');
         const selectedInventoryItems = document.getElementById('selectedInventoryItems');
 
         // Load inventory codes when product changes

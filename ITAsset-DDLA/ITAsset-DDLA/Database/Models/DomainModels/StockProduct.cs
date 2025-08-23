@@ -12,5 +12,5 @@ public class StockProduct
     public string? FilePath { get; set; }
     public string InventoryCode { get; set; }
     public DateTime RegistrationDate { get; set; } = DateTime.Now;
-    public List<Product> Products { get; set; } = new List<Product>();
+    public List<Transfer> Products { get; set; } = new List<Transfer>();
 }

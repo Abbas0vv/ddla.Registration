@@ -4,7 +4,7 @@ using ITAsset_DDLA.Helpers.Enums;
 
 namespace ddla.ITApplication.Database.Models.ViewModels.Product;
 
-public class UpdateProductViewModel
+public class UpdateTransferProductViewModel
 {
     [Required(ErrorMessage = "Məhsulu təhvil alan mütləq olmalıdır")]
     [Display(Name = "Məhsulu Təhvil Alan")]

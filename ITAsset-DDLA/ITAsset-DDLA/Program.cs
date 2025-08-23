@@ -42,7 +42,7 @@ public class Program
 
         var ldapSettings = builder.Configuration.GetSection("LdapSettings").Get<LdapSettings>();
 
-        builder.Services.AddScoped<IProductService, ProductService>();
+        builder.Services.AddScoped<ITransferService, TransferService>();
         builder.Services.AddScoped<IPdfService, PdfService>();
         builder.Services.AddScoped<IExcelService, ExcelService>();
         builder.Services.AddScoped<IUserService, UserService>();

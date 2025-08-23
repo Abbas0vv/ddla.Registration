@@ -1,9 +1,8 @@
-﻿using ITAsset_DDLA.Helpers.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ddla.ITApplication.Database.Models.ViewModels.Product;
 
-public class CreateProductViewModel
+public class CreateTransferProductViewModel
 {
     [Required(ErrorMessage = "Məhsulu təhvil alan mütləq olmalıdır")]
     [Display(Name = "Məhsulu Təhvil Alan")]

@@ -1,8 +1,7 @@
 ﻿using ITAsset_DDLA.Database.Models.DomainModels;
-using ITAsset_DDLA.Helpers.Enums;
 
 namespace ddla.ITApplication.Database.Models.DomainModels;
-public class Product
+public class Transfer
 {
     public int Id { get; set; }
 

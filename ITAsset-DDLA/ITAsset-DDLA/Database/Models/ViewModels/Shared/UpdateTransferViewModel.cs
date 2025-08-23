@@ -6,7 +6,7 @@ namespace ITAsset_DDLA.Database.Models.ViewModels.Shared;
 
 public class UpdateTransferViewModel
 {
-    public UpdateProductViewModel UpdateProductViewModel { get; set; }
+    public UpdateTransferProductViewModel UpdateTransferProductViewModel { get; set; }
     public List<LdapUserModel>? LdapUsers { get; set; }
     public StockProduct? StockProduct { get; set; }
 }

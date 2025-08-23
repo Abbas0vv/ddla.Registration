@@ -13,7 +13,7 @@ public class PdfService : IPdfService
         _activityLogger = activityLogger;
     }
 
-    public byte[] GenerateHandoverPdf(Product product, string username)
+    public byte[] GenerateHandoverPdf(Transfer product, string username)
     {
         if (product == null) throw new ArgumentNullException(nameof(product));
 
@@ -102,7 +102,7 @@ public class PdfService : IPdfService
             return memoryStream.ToArray();
         }
     }
-    public byte[] GenerateBlankPdf(string recipient, List<Product> products)
+    public byte[] GenerateBlankPdf(string recipient, List<Transfer> products)
     {
         using var memoryStream = new MemoryStream();
 

@@ -24,16 +24,16 @@ public class StatisticsService : IStatisticsService
         var model = new StatisticsViewModel
         {
             // Təhvil verilən məhsullar
-            TodayTransfers = await _context.Products.CountAsync(t => t.DateofIssue.Date == today),
-            MonthlyTransfers = await _context.Products.CountAsync(t => t.DateofIssue >= startOfMonth),
-            YearlyTransfers = await _context.Products.CountAsync(t => t.DateofIssue >= startOfYear),
-            TotalTransfers = await _context.Products.CountAsync(),
+            TodayTransfers = await _context.Transfers.CountAsync(t => t.DateofIssue.Date == today),
+            MonthlyTransfers = await _context.Transfers.CountAsync(t => t.DateofIssue >= startOfMonth),
+            YearlyTransfers = await _context.Transfers.CountAsync(t => t.DateofIssue >= startOfYear),
+            TotalTransfers = await _context.Transfers.CountAsync(),
 
             // Təhvil alınan məhsullar
-            TodayReceipts = await _context.Products.CountAsync(t => t.DateofReceipt.HasValue && t.DateofReceipt.Value.Date == today),
-            MonthlyReceipts = await _context.Products.CountAsync(t => t.DateofReceipt >= startOfMonth),
-            YearlyReceipts = await _context.Products.CountAsync(t => t.DateofReceipt >= startOfYear),
-            TotalReceipts = await _context.Products.CountAsync(t => t.DateofReceipt != null),
+            TodayReceipts = await _context.Transfers.CountAsync(t => t.DateofReceipt.HasValue && t.DateofReceipt.Value.Date == today),
+            MonthlyReceipts = await _context.Transfers.CountAsync(t => t.DateofReceipt >= startOfMonth),
+            YearlyReceipts = await _context.Transfers.CountAsync(t => t.DateofReceipt >= startOfYear),
+            TotalReceipts = await _context.Transfers.CountAsync(t => t.DateofReceipt != null),
 
 
             // Məhsullar

@@ -12,13 +12,13 @@ public class StockService : IStockService
 {
     private readonly ddlaAppDBContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly Lazy<IProductService> _productService;
+    private readonly Lazy<ITransferService> _productService;
     private const string FOLDER_NAME = "assets/images/Uploads/Products";
 
     public StockService(
         ddlaAppDBContext context,
         IWebHostEnvironment webHostEnvironment,
-        Lazy<IProductService> productService)
+        Lazy<ITransferService> productService)
     {
         _context = context;
         _webHostEnvironment = webHostEnvironment;

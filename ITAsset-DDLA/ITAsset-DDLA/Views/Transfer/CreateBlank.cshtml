@@ -21,8 +21,8 @@
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label asp-for="CreateProductViewModel.Recipient">İstifadəçi</label>
-                    <select asp-for="CreateProductViewModel.Recipient" class="form-control" id="recipientSelect" onchange="updateShobe()" required>
+                    <label asp-for="CreateTransferProductViewModel.Recipient">İstifadəçi</label>
+                    <select asp-for="CreateTransferProductViewModel.Recipient" class="form-control" id="recipientSelect" onchange="updateShobe()" required>
                         <option value="">Seçin...</option>
                         @if (Model.LdapUsers != null)
                         {
@@ -33,7 +33,7 @@
                         }
                     </select>
                     <div class="mb-4" style="display: none;">
-                        <select asp-for="CreateProductViewModel.DepartmentSection" id="unitSelect" class="form-control" readonly>
+                        <select asp-for="CreateTransferProductViewModel.DepartmentSection" id="unitSelect" class="form-control" readonly>
                             <option value="">-- Seçilmiş istifadəçinin şöbəsi --</option>
                         </select>
                     </div>

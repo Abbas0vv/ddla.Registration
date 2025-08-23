@@ -5,6 +5,6 @@ namespace ITAsset_DDLA.Database.Models.ViewModels.Shared;
 
 public class CompositeViewModel
 {
-    public List<Product> Products { get; set; }
+    public List<Transfer> Products { get; set; }
     public List<StockProduct> StockProducts { get; set; }
 }

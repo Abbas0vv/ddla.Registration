@@ -5,6 +5,6 @@ namespace ITAsset_DDLA.Services.Abstract;
 
 public interface IExcelService
 {
-    byte[] ExportProductsToExcel(List<Product> products);
+    byte[] ExportProductsToExcel(List<Transfer> products);
     byte[] ExportLogsToExcel(List<ActivityLog> logs);
 }

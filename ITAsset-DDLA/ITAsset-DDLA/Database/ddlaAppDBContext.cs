@@ -10,7 +10,7 @@ public class ddlaAppDBContext : IdentityDbContext<ddlaUser>
 {
     public ddlaAppDBContext(DbContextOptions<ddlaAppDBContext> options) : base(options) { }
 
-    public DbSet<Product> Products { get; set; }
+    public DbSet<Transfer> Transfers { get; set; }
     public DbSet<StockProduct> StockProducts { get; set; }
     public DbSet<UserPermission> UserPermissions { get; set; }
     public DbSet<Permission> Permissions { get; set; }

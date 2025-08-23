@@ -7,7 +7,7 @@ namespace ITAsset_DDLA.Services.Concrete;
 
 public class ExcelService : IExcelService
 {
-    public byte[] ExportProductsToExcel(List<Product> products)
+    public byte[] ExportProductsToExcel(List<Transfer> products)
     {
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Təhvil-Təslim Jurnalı");

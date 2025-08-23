@@ -19,7 +19,7 @@ namespace ddla.ITApplication.Controllers;
 [Authorize]
 public class TransferController : Controller
 {
-    private readonly IProductService _productService;
+    private readonly ITransferService _productService;
     private readonly IPdfService _pdfService;
     private readonly IExcelService _excelService;
     private readonly IStockService _stockService;
@@ -28,7 +28,7 @@ public class TransferController : Controller
     private readonly ddlaAppDBContext _context;
 
     public TransferController(
-        IProductService productService,
+        ITransferService productService,
         IStockService stockService,
         ddlaAppDBContext context,
         LdapService ldapService,
@@ -60,7 +60,7 @@ public class TransferController : Controller
 
         var model = new CreateTransferViewModel
         {
-            CreateProductViewModel = new CreateProductViewModel(),
+            CreateTransferProductViewModel = new CreateTransferProductViewModel(),
             LdapUsers = ldapUsers,
             StockProducts = await _context.StockProducts.ToListAsync()
         };
@@ -78,14 +78,14 @@ public class TransferController : Controller
         }
 
         var stockProducts = await _context.StockProducts
-            .Where(s => model.CreateProductViewModel.StockProductIds.Contains(s.Id))
+            .Where(s => model.CreateTransferProductViewModel.StockProductIds.Contains(s.Id))
             .ToListAsync();
 
         foreach (var stockProduct in stockProducts)
         {
             await _activityLogger.LogAsync(
                 User.Identity.Name,
-                $"İstifadəçi '{User.Identity.Name}' yeni məhsul təhvil verdi: '{stockProduct.Name}' (Inventar ID: {stockProduct.InventoryCode}) Təhvil alan '{model.CreateProductViewModel.Recipient}'"
+                $"İstifadəçi '{User.Identity.Name}' yeni məhsul təhvil verdi: '{stockProduct.Name}' (Inventar ID: {stockProduct.InventoryCode}) Təhvil alan '{model.CreateTransferProductViewModel.Recipient}'"
             );
         }
 
@@ -109,7 +109,7 @@ public class TransferController : Controller
 
             var model = new UpdateTransferViewModel
             {
-                UpdateProductViewModel = new UpdateProductViewModel
+                UpdateTransferProductViewModel = new UpdateTransferProductViewModel
                 {
                     Recipient = product.Recipient,
                     DepartmentSection = product.DepartmentSection,
@@ -138,16 +138,17 @@ public class TransferController : Controller
             if (!ModelState.IsValid)
             {
                 model.LdapUsers = _ldapService.GetLdapUsers();
-                if (model.UpdateProductViewModel?.StockProductId != null)
+                if (model.UpdateTransferProductViewModel?.StockProductId != null)
                 {
-                    model.StockProduct = await _stockService.GetByIdAsync(model.UpdateProductViewModel.StockProductId);
+                    model.StockProduct = await _stockService.GetByIdAsync(model.UpdateTransferProductViewModel.StockProductId);
                 }
                 return View(model);
             }
 
-            var stockProduct = await _stockService.GetByIdAsync(model.UpdateProductViewModel.StockProductId);
+            var stockProduct = await _stockService.GetByIdAsync(model.UpdateTransferProductViewModel.StockProductId);
 
-            await _productService.UpdateAsync(model);
+            var userName = User.Identity.Name ?? "Unknown";
+            await _productService.UpdateAsync(model, userName);
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
@@ -157,9 +158,9 @@ public class TransferController : Controller
             // Repopulate necessary data for the view
             var ldapUsers = _ldapService.GetLdapUsers();
 
-            if (model.UpdateProductViewModel?.StockProductId != null)
+            if (model.UpdateTransferProductViewModel?.StockProductId != null)
             {
-                model.StockProduct = await _stockService.GetByIdAsync(model.UpdateProductViewModel.StockProductId);
+                model.StockProduct = await _stockService.GetByIdAsync(model.UpdateTransferProductViewModel.StockProductId);
             }
 
             return View(model);
@@ -170,7 +171,29 @@ public class TransferController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int? id)
     {
+        if (id == null)
+            return NotFound();
+
+        var transfer = await _context.Transfers
+            .Include(t => t.StockProduct)
+            .FirstOrDefaultAsync(t => t.Id == id);
+
+        if (transfer == null)
+            return NotFound();
+
+        // Log yazmaq
+        await _activityLogger.LogAsync(
+            User.Identity?.Name ?? "Unknown",
+            $"Təhvil-Təslim silindi (ID: {transfer.Id}):\n" +
+            $"Məhsul: {transfer.StockProduct?.Name} (Inventar ID: {transfer.StockProduct?.InventoryCode})\n" +
+            $"Alan şəxs: {transfer.Recipient}\n" +
+            $"Şöbə: {transfer.DepartmentSection}\n" +
+            $"Tarix: {transfer.DateofReceipt}\n" +
+            $"Sənəd: {transfer.FilePath}"
+        );
+
         await _productService.RemoveAsync(id);
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -195,7 +218,7 @@ public class TransferController : Controller
     [HttpGet]
     public IActionResult GenerateHandoverPdf(int id)
     {
-        var product = _context.Products
+        var product = _context.Transfers
             .Include(p => p.StockProduct)
             .FirstOrDefault(p => p.Id == id);
 
@@ -215,7 +238,7 @@ public class TransferController : Controller
 
         var model = new CreateTransferViewModel
         {
-            CreateProductViewModel = new CreateProductViewModel(),
+            CreateTransferProductViewModel = new CreateTransferProductViewModel(),
             StockProducts = await _context.StockProducts.ToListAsync(),
             LdapUsers = ldapUsers // <- burada doldur
         };
@@ -233,9 +256,9 @@ public class TransferController : Controller
             return View(model);
         }
 
-        var userProducts = await _context.Products
+        var userProducts = await _context.Transfers
            .Include(p => p.StockProduct)
-           .Where(p => p.Recipient == model.CreateProductViewModel.Recipient)
+           .Where(p => p.Recipient == model.CreateTransferProductViewModel.Recipient)
            .ToListAsync();
 
         if (!userProducts.Any())
@@ -247,15 +270,15 @@ public class TransferController : Controller
         }
 
         await _activityLogger.LogAsync(User.Identity.Name,
-            $"İstifadəçi '{User.Identity.Name}' {model.CreateProductViewModel.Recipient} üçün ümumi akt yaratdı.");
+            $"İstifadəçi '{User.Identity.Name}' {model.CreateTransferProductViewModel.Recipient} üçün ümumi akt yaratdı.");
 
-        var pdfBytes = _pdfService.GenerateBlankPdf(model.CreateProductViewModel.Recipient, userProducts);
-        return File(pdfBytes, "application/pdf", $"TehvilTeslim_Blank_{model.CreateProductViewModel.Recipient}.pdf");
+        var pdfBytes = _pdfService.GenerateBlankPdf(model.CreateTransferProductViewModel.Recipient, userProducts);
+        return File(pdfBytes, "application/pdf", $"TehvilTeslim_Blank_{model.CreateTransferProductViewModel.Recipient}.pdf");
     }
     [HttpGet]
     public IActionResult ExportProductsToExcel()
     {
-        var products = _context.Products
+        var products = _context.Transfers
             .Include(p => p.StockProduct)
             .ToList();
 

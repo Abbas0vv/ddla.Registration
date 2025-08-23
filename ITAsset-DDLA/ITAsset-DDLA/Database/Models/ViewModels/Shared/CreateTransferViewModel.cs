@@ -6,7 +6,7 @@ namespace ITAsset_DDLA.Database.Models.ViewModels.Shared;
 
 public class CreateTransferViewModel
 {
-    public CreateProductViewModel CreateProductViewModel { get; set; }
+    public CreateTransferProductViewModel CreateTransferProductViewModel { get; set; }
     public List<LdapUserModel>? LdapUsers { get; set; }
     public List<StockProduct>? StockProducts { get; set; }
 }

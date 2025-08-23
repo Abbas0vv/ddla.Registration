@@ -12,12 +12,12 @@ namespace ddla.ITApplication.Controllers;
 public class WarehouseController : Controller
 {
     private readonly IStockService _stockService;
-    private readonly IProductService _productService;
+    private readonly ITransferService _productService;
     private readonly IActivityLogger _activityLogger;
 
     public WarehouseController(
         IStockService stockService,
-        IProductService productService,
+        ITransferService productService,
         IActivityLogger activityLogger)
     {
         _stockService = stockService;
