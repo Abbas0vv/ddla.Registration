@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace ITAsset_DDLA.Controllers;
 
@@ -11,12 +10,21 @@ public class ErrorController : Controller
         Response.StatusCode = 404;
         return View("NotFound");
     }
+
     [Route("Error/403")]
     public IActionResult AccessDenied()
     {
         Response.StatusCode = 403;
         return View("AccessDenied");
     }
+
+    [Route("Error/503")]
+    public IActionResult LdapConnectionFailed()
+    {
+        Response.StatusCode = 503;
+        return View("ConnectionFailed"); // Views/Error/ConnectionFailed.cshtml
+    }
+
     [Route("Error/{statusCode}")]
     public IActionResult HandleError(int statusCode)
     {
@@ -24,7 +32,8 @@ public class ErrorController : Controller
         {
             403 => RedirectToAction("AccessDenied"),
             404 => RedirectToAction("NotFound"),
-            _ => View("Error") // You can create a generic error view for other status codes
+            503 => RedirectToAction("LdapConnectionFailed"),
+            _ => View("Error") // digər status kodları üçün ümumi səhifə
         };
     }
 }

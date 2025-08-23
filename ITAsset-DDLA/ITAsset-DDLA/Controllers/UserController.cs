@@ -16,7 +16,16 @@ public class UsersController : Controller
 
     public IActionResult Index()
     {
-        var users = _ldapService.GetLdapUsers();
-        return View(users);
+        try
+        {
+            var users = _ldapService.GetLdapUsers();
+            return View(users);
+        }
+        catch (System.Runtime.InteropServices.COMException)
+        {
+            return RedirectToAction("LdapConnectionFailed", "Error");
+        }
     }
+
+
 }

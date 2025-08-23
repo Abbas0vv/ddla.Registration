@@ -45,6 +45,8 @@ public class TransferController : Controller
         _excelService = excelService;
     }
 
+    #region CRUD
+
     [Permission(PermissionType.OperationView)]
     public async Task<IActionResult> Index()
     {
@@ -56,17 +58,30 @@ public class TransferController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        var ldapUsers = _ldapService.GetLdapUsers(); // AZ dilində title və company
-
-        var model = new CreateTransferViewModel
+        try
         {
-            CreateTransferProductViewModel = new CreateTransferProductViewModel(),
-            LdapUsers = ldapUsers,
-            StockProducts = await _context.StockProducts.ToListAsync()
-        };
-        return View(model);
+            var ldapUsers = _ldapService.GetLdapUsers(); // burda exception tuta bilər
+
+            var model = new CreateTransferViewModel
+            {
+                CreateTransferProductViewModel = new CreateTransferProductViewModel(),
+                LdapUsers = ldapUsers,
+                StockProducts = await _context.StockProducts.ToListAsync()
+            };
+
+            return View(model);
+        }
+        catch (System.Runtime.InteropServices.COMException)
+        {
+            return RedirectToAction("LdapConnectionFailed", "Error");
+        }
+        catch (Exception)
+        {
+            return RedirectToAction("HandleError", "Error");
+        }
     }
 
+    [ValidateAntiForgeryToken]
     [HttpPost]
     public async Task<IActionResult> Create(CreateTransferViewModel model)
     {
@@ -105,7 +120,7 @@ public class TransferController : Controller
             if (product == null) return NotFound();
 
             var stockProduct = await _stockService.GetByIdAsync(product.StockProductId);
-            var ldapUsers = _ldapService.GetLdapUsers(); // AZ dilində title və company
+            var ldapUsers = _ldapService.GetLdapUsers(); // burda COMException ata bilər
 
             var model = new UpdateTransferViewModel
             {
@@ -117,19 +132,23 @@ public class TransferController : Controller
                     StockProductId = product.StockProductId
                 },
                 StockProduct = stockProduct,
-                LdapUsers = ldapUsers // <- burada doldur
+                LdapUsers = ldapUsers
             };
 
             return View(model);
         }
-        catch (Exception ex)
+        catch (System.Runtime.InteropServices.COMException)
         {
-            // Provide empty list to prevent null reference in view
+            return RedirectToAction("LdapConnectionFailed", "Error");
+        }
+        catch (Exception)
+        {
             ViewBag.LdapUsers = new List<string>();
             return View(new UpdateTransferViewModel());
         }
     }
 
+    [ValidateAntiForgeryToken]
     [HttpPost]
     public async Task<IActionResult> Update(UpdateTransferViewModel model)
     {
@@ -196,7 +215,10 @@ public class TransferController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+    #endregion
 
+    #region Additions
+    [ValidateAntiForgeryToken]
     [HttpPost]
     public async Task<IActionResult> MarkAsSigned(int id)
     {
@@ -228,29 +250,44 @@ public class TransferController : Controller
         return File(pdfBytes, "application/pdf", $"TehvilTeslim_{product.InventarId}.pdf");
     }
 
-
-
     [Permission(PermissionType.OperationAdd)]
     [HttpGet]
     public async Task<IActionResult> CreateBlank()
     {
-        var ldapUsers = _ldapService.GetLdapUsers(); // AZ dilində title və company
-
-        var model = new CreateTransferViewModel
+        try
         {
-            CreateTransferProductViewModel = new CreateTransferProductViewModel(),
-            StockProducts = await _context.StockProducts.ToListAsync(),
-            LdapUsers = ldapUsers // <- burada doldur
-        };
-        return View(model);
+            var ldapUsers = _ldapService.GetLdapUsers();
+
+            var model = new CreateTransferViewModel
+            {
+                CreateTransferProductViewModel = new CreateTransferProductViewModel(),
+                StockProducts = await _context.StockProducts.ToListAsync(),
+                LdapUsers = ldapUsers
+            };
+
+            return View(model);
+        }
+        catch (System.Runtime.InteropServices.COMException)
+        {
+            return RedirectToAction("LdapConnectionFailed", "Error");
+        }
+        catch (Exception)
+        {
+            return View(new CreateTransferViewModel
+            {
+                CreateTransferProductViewModel = new CreateTransferProductViewModel(),
+                StockProducts = await _context.StockProducts.ToListAsync(),
+                LdapUsers = new List<ITAsset_DDLA.LDAP.LdapUserModel>()
+            });
+        }
     }
 
+    [ValidateAntiForgeryToken]
     [HttpPost]
     public async Task<IActionResult> CreateBlank(CreateTransferViewModel model)
     {
         if (!ModelState.IsValid)
         {
-            // POST zamanı da LdapUsers-ı doldur
             model.LdapUsers = _ldapService.GetLdapUsers();
             model.StockProducts = await _context.StockProducts.ToListAsync();
             return View(model);
@@ -286,6 +323,7 @@ public class TransferController : Controller
         return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     "Təhvil-Təslim.xlsx");
-    }
+    } 
+    #endregion
 
 }
