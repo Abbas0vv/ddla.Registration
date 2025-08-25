@@ -17,7 +17,7 @@ public static class FileExtention
     public static string CreateFile(this IFormFile file, string webRootPath, string folderName)
     {
         if (!IsValidFile(file)) return String.Empty;
-        string fileName = Guid.NewGuid().ToString() + file.FileName;
+        string fileName = file.FileName;
         string path = Path.Combine(webRootPath, folderName);
         using (var stream = new FileStream(Path.Combine(path, fileName), FileMode.Create))
         {

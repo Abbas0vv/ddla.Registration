@@ -38,7 +38,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\assets\images\Uploads\Products\" />
+    <Folder Include="wwwroot\assets\ProductFiles\" />
+    <Folder Include="wwwroot\assets\images\Uploads\Transfers\" />
   </ItemGroup>
 
 </Project>

@@ -13,7 +13,8 @@ public class StockService : IStockService
     private readonly ddlaAppDBContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly Lazy<ITransferService> _productService;
-    private const string FOLDER_NAME = "assets/images/Uploads/Products";
+    private const string IMAGE_FOLDER_NAME = "assets/images/Uploads/Transfers";
+    private const string FILE_FOLDER_NAME = "assets/ProductFiles";
 
     public StockService(
         ddlaAppDBContext context,
@@ -87,8 +88,8 @@ public class StockService : IStockService
                 Name = model.Name,
                 Description = model.Description,
                 RegistrationDate = model.DateofRegistration ?? DateTime.Now,
-                ImageUrl = model.ImageFile?.CreateImageFile(_webHostEnvironment.WebRootPath, FOLDER_NAME),
-                FilePath = model.DocumentFile?.CreateImageFile(_webHostEnvironment.WebRootPath, FOLDER_NAME),
+                ImageUrl = model.ImageFile?.CreateImageFile(_webHostEnvironment.WebRootPath, IMAGE_FOLDER_NAME),
+                FilePath = model.DocumentFile?.CreateFile(_webHostEnvironment.WebRootPath, FILE_FOLDER_NAME),
                 InventoryCode = code.Trim()
             };
             _context.StockProducts.Add(stockProduct);
@@ -106,7 +107,8 @@ public class StockService : IStockService
 
         if (stockProduct == null) return;
 
-        FileExtention.RemoveFile(Path.Combine(_webHostEnvironment.WebRootPath, FOLDER_NAME, stockProduct.ImageUrl));
+        FileExtention.RemoveFile(Path.Combine(_webHostEnvironment.WebRootPath, IMAGE_FOLDER_NAME, stockProduct.ImageUrl));
+        FileExtention.RemoveFile(Path.Combine(_webHostEnvironment.WebRootPath, FILE_FOLDER_NAME, stockProduct.FilePath));
         _context.Remove(stockProduct);
         await _context.SaveChangesAsync();
     }
