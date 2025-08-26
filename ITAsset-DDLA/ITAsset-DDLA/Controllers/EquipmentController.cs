@@ -5,7 +5,6 @@ using ITAsset_DDLA.Helpers.Enums;
 using ITAsset_DDLA.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace ddla.ITApplication.Controllers
 {

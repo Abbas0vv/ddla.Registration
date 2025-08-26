@@ -40,11 +40,15 @@ public class TransferService : ITransferService
     }
     public async Task<Transfer> GetByIdAsync(int? id)
     {
-        return await _context.Transfers.FirstOrDefaultAsync(s => s.Id == id);
+        return await _context.Transfers
+            .Include(t => t.StockProduct)
+            .FirstOrDefaultAsync(s => s.Id == id);
     }
     public async Task<Transfer> GetByNameAsync(string name)
     {
-        return await _context.Transfers.FirstOrDefaultAsync(s => s.Name == name);
+        return await _context.Transfers
+            .Include(t => t.StockProduct)
+            .FirstOrDefaultAsync(s => s.Name == name);
     }
     public async Task<Transfer> GetProductByStockIdAsync(int? stockId)
     {

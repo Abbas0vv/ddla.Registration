@@ -57,10 +57,13 @@ public class AccountController : Controller
     [HttpGet]
     public async Task<IActionResult> LogOut()
     {
+        var userName = User.Identity?.Name ?? "Unknown User";
+
         await _activityLogger.LogAsync(
-            User.Identity.Name,
-            $"İstifadəçi '{User.Identity.Name}' sistemdən çıxdı."
+            userName,
+            $"İstifadəçi '{userName}' sistemdən çıxdı."
         );
+
         await _userService.LogOut();
         return RedirectToAction("Index", "Welcome");
     }
