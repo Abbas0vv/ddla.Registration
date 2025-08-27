@@ -2,9 +2,8 @@
 
 public enum TransferAction
 {
-    Created = 0,
-    Signed = 1,
-    Returned = 2,
-    Edited = 3,
-    Deleted = 4
+    Created = 0, //Təhvil-Təslim yaradıldı
+    Returned = 1, //Təhvil-Təslim Qaytarıldı
+    Edited = 2, //Təhvil-Təslim redaktə edildi
+    Deleted = 3 //Təhvil-Təslim silindi
 }

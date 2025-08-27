@@ -138,7 +138,7 @@
                                 @if (item.IsSigned)
                                 {
                                     @* Qaytarılma düyməsi: imzalanıb, amma hələ qaytarılmayıbsa görünsün *@
-                                    if (!item.IsReturned)
+                                    if (item.TransferStatus != TransferAction.Returned)
                                     {
                                         <form asp-action="Return" asp-route-id="@item.Id" method="post" style="display:inline;">
                                             <button type="submit" class="btn btn-outline-info btn-sm" style="margin: 8px;">

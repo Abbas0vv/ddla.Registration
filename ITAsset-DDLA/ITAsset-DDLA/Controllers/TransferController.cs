@@ -99,16 +99,17 @@ public class TransferController : Controller
             .Where(s => model.CreateTransferProductViewModel.StockProductIds.Contains(s.Id))
             .ToListAsync();
 
+        string userFullName = User.Identity.Name;
         foreach (var stockProduct in stockProducts)
         {
             await _activityLogger.LogAsync(
-                User.Identity.Name,
+                userFullName,
                 $"İstifadəçi '{User.Identity.Name}' yeni məhsul təhvil verdi: '{stockProduct.Name}' (Inventar ID: {stockProduct.InventoryCode}) Təhvil alan '{model.CreateTransferProductViewModel.Recipient}'"
             );
             var transfer = _transferService.GetByInventaryCode(stockProduct.InventoryCode);
         }
 
-        await _transferService.InsertMultipleAsync(model);
+        await _transferService.InsertMultipleAsync(model, userFullName);
         return RedirectToAction(nameof(Index));
     }
 
@@ -215,7 +216,7 @@ public class TransferController : Controller
             $"Sənəd: {transfer.FilePath}"
         );
 
-        await _transferService.RemoveAsync(id);
+        await _transferService.RemoveAsync(id, User.Identity.Name);
         return RedirectToAction(nameof(Index));
     }
     #endregion
@@ -230,7 +231,6 @@ public class TransferController : Controller
             return NotFound();
 
         transfer.IsSigned = true;
-        transfer.TransferStatus = TransferAction.Signed;
         await _context.SaveChangesAsync();
 
         await _activityLogger.LogAsync(
@@ -334,13 +334,13 @@ public class TransferController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin,SuperAdmin")] // və ya [Permission("Transfer.Return")]
-    public async Task<IActionResult> Return(int id, string notes)
+    public async Task<IActionResult> Return(int? id)
     {
         var user = await _userManager.GetUserAsync(User);
         var username = user?.UserName ?? User.Identity.Name ?? "system";
         try
         {
-            await _transferService.ReturnAsync(id, username, notes);
+            await _transferService.ReturnAsync(id, username);
             TempData["Success"] = "Qaytarılma qeyd edildi.";
         }
         catch (Exception ex)

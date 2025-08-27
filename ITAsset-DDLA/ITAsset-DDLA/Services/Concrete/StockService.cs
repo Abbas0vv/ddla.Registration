@@ -3,6 +3,7 @@ using ddla.ITApplication.Database.Models.ViewModels.Warehouse;
 using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.DomainModels;
+using ITAsset_DDLA.Helpers.Enums;
 using ITAsset_DDLA.Services.Abstract;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +30,7 @@ public class StockService : IStockService
     public async Task<List<StockProduct>> GetAllAsync()
     {
         return await _context.StockProducts
-            .Include(sp => sp.Products)
+            .Include(sp => sp.Transfers)
             .OrderBy(sp => sp.Id)
             .ToListAsync();
     }
@@ -67,14 +68,14 @@ public class StockService : IStockService
     {
         return await _context.StockProducts
             .Where(sp => ids.Contains(sp.Id))
-            .Include(sp => sp.Products)
+            .Include(sp => sp.Transfers)
             .ToListAsync();
     }
 
     public async Task<StockProduct> GetByIdAsync(int? id)
     {
         return await _context.StockProducts
-          .Include(sp => sp.Products)
+          .Include(sp => sp.Transfers)
           .FirstOrDefaultAsync(sp => sp.Id == id);
     }
 
@@ -102,7 +103,7 @@ public class StockService : IStockService
         if (id is null) return;
 
         var stockProduct = await _context.StockProducts
-            .Include(sp => sp.Products)
+            .Include(sp => sp.Transfers)
             .FirstOrDefaultAsync(sp => sp.Id == id);
 
         if (stockProduct == null) return;

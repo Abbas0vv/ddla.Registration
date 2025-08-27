@@ -1,4 +1,5 @@
 ﻿@using ITAsset_DDLA.Database.Models.DomainModels
+@using ITAsset_DDLA.Helpers.Enums
 @using ddla.ITApplication.Database.Models.DomainModels
 @model List<StockProduct>
 
@@ -92,16 +93,19 @@
                             </td>
                             <td>
                                 @{
-                                    bool hasRecipient = item.Products.Any(p => !string.IsNullOrEmpty(p.Recipient));
+                                    bool isActive = !item.Transfers.Any(t =>
+                                    !string.IsNullOrEmpty(t.Recipient) &&
+                                    t.TransferStatus != TransferAction.Returned
+                                    );
                                 }
 
-                                @if (hasRecipient)  // Təhvil verilmişsə
+                                @if (!isActive) 
                                 {
                                     <button class="btn btn-sm btn-secondary" disabled title="Bu məhsul təhvil verilib və aktiv edilə bilməz">
                                         <i class="fas fa-lock"></i> Deaktiv
                                     </button>
                                 }
-                                else  // Manual deaktivasiya üçün
+                                else
                                 {
                                     <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post" style="display:inline;">
                                         <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")">
@@ -110,8 +114,8 @@
                                         </button>
                                     </form>
                                 }
-                            </td>
 
+                            </td>
                         </tr>
                         counter++;
                     }

@@ -11,8 +11,8 @@ public interface ITransferService
     Task<Transfer> GetByIdAsync(int? id);
     Task<Transfer> GetByInventaryCode(string InventaryCode);
     Task<Transfer> GetByNameAsync(string name);
-    Task InsertMultipleAsync(CreateTransferViewModel model);
+    Task InsertMultipleAsync(CreateTransferViewModel model, string userFullName);
     Task UpdateAsync(UpdateTransferViewModel model, string userName);
-    Task RemoveAsync(int? id);
-    Task ReturnAsync(int transferId, string actorUserName, string notes);
+    Task RemoveAsync(int? id, string userFullName);
+    Task ReturnAsync(int? id, string actorUserName);
 }

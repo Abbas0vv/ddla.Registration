@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ddla.ITApplication.Database;
 
@@ -11,9 +12,11 @@ using ddla.ITApplication.Database;
 namespace ITAsset_DDLA.Migrations
 {
     [DbContext(typeof(ddlaAppDBContext))]
-    partial class ddlaAppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250827105235_DropReturnNotes")]
+    partial class DropReturnNotes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +46,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ActivityLogs", (string)null);
+                    b.ToTable("ActivityLogs");
                 });
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.Permission", b =>
@@ -63,7 +66,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.StockProduct", b =>
@@ -101,7 +104,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("StockProducts", (string)null);
+                    b.ToTable("StockProducts");
                 });
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.TransferHistory", b =>
@@ -135,7 +138,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasIndex("TransferId");
 
-                    b.ToTable("TransferHistories", (string)null);
+                    b.ToTable("TransferHistories");
                 });
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.UserPermission", b =>
@@ -159,7 +162,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPermissions", (string)null);
+                    b.ToTable("UserPermissions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -424,7 +427,7 @@ namespace ITAsset_DDLA.Migrations
 
                     b.HasIndex("StockProductId");
 
-                    b.ToTable("Transfers", (string)null);
+                    b.ToTable("Transfers");
                 });
 
             modelBuilder.Entity("ITAsset_DDLA.Database.Models.DomainModels.TransferHistory", b =>

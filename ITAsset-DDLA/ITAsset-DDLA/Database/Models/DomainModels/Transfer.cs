@@ -22,10 +22,7 @@ public class Transfer
     public DateTime? DateofReceipt { get; set; }
 
     // --- Yeni sahələr geri-təslim üçün ---
-    public bool IsReturned { get; set; } = false;
     public DateTime? DateOfReturn { get; set; }  
     public string? ReturnedBy { get; set; }      
-    public string? ReturnNotes { get; set; }
-
-    public TransferAction TransferStatus { get; set; } = TransferAction.Created;
+    public TransferAction TransferStatus { get; set; }
 }

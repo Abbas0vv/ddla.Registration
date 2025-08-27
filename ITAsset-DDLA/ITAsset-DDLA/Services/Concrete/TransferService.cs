@@ -75,33 +75,25 @@ public class TransferService : ITransferService
     #region CRUD
     public async Task InsertMultipleAsync(CreateTransferViewModel model, string userName)
     {
-        // Validate input
         if (model == null || model.CreateTransferProductViewModel.StockProductIds == null || !model.CreateTransferProductViewModel.StockProductIds.Any())
-        {
             throw new ArgumentException("Invalid input data - model or product IDs cannot be null/empty");
-        }
 
-        // Get the selected stock products
         var stockProducts = await _stockService.GetByIdsAsync(model.CreateTransferProductViewModel.StockProductIds);
         foreach (var stockProduct in stockProducts)
-        {
-            stockProduct.IsActive = false; // Deactivate stock products
-        }
-        // Verify we found all requested products
+            stockProduct.IsActive = false; // deactivate
+
         if (stockProducts.Count != model.CreateTransferProductViewModel.StockProductIds.Count)
         {
-            var missingIds = model.CreateTransferProductViewModel.StockProductIds.Except(stockProducts.Select(sp => sp.Id)).ToList();
+            var missingIds = model.CreateTransferProductViewModel.StockProductIds
+                .Except(stockProducts.Select(sp => sp.Id)).ToList();
             throw new KeyNotFoundException($"Could not find all requested stock products. Missing IDs: {string.Join(",", missingIds)}");
         }
 
-        // Process documents if they exist
         string filePath = null;
-
         if (model.CreateTransferProductViewModel.DocumentFile != null)
             filePath = FileExtention.CreateFile(model.CreateTransferProductViewModel.DocumentFile,
-                    _webHostEnvironment.WebRootPath, FOLDER_NAME);
+                        _webHostEnvironment.WebRootPath, FOLDER_NAME);
 
-        // Create transfers
         var transfers = stockProducts.Select(stockItem => new Transfer
         {
             Recipient = model.CreateTransferProductViewModel.Recipient,
@@ -114,24 +106,24 @@ public class TransferService : ITransferService
             TransferStatus = TransferAction.Created
         }).ToList();
 
-        foreach (var transfer in transfers)
-        {
-            var hist = new TransferHistory
-            {
-                TransferId = transfer.Id,
-                Action = TransferAction.Returned,
-                Actor = userName,
-                ActionDate = DateTime.Now,
-                FromUser = transfer.Recipient,
-                ToUser = "Anbar", // və ya konkret who received
-            };
-            _context.TransferHistories.Add(hist);
-        }
-
-        // Add all products at once
         await _context.Transfers.AddRangeAsync(transfers);
+
+        // --- History ---
+        var histories = transfers.Select(transfer => new TransferHistory
+        {
+            Transfer = transfer, // navigation property istifadə olunur
+            Action = TransferAction.Created,
+            Actor = userName,
+            ActionDate = DateTime.Now,
+            FromUser = transfer.Recipient,
+            ToUser = "Anbar"
+        }).ToList();
+
+        await _context.TransferHistories.AddRangeAsync(histories);
+
         await _context.SaveChangesAsync();
     }
+
     public async Task UpdateAsync(UpdateTransferViewModel model, string userName)
     {
         var existingTransfer = await GetProductByStockIdAsync(model.UpdateTransferProductViewModel.StockProductId);
@@ -193,7 +185,7 @@ public class TransferService : ITransferService
         var hist = new TransferHistory
         {
             TransferId = existingTransfer.Id,
-            Action = TransferAction.Returned,
+            Action = TransferAction.Edited,
             Actor = userName,
             ActionDate = DateTime.Now,
             FromUser = existingTransfer.Recipient,
@@ -221,7 +213,7 @@ public class TransferService : ITransferService
         var hist = new TransferHistory
         {
             TransferId = transfer.Id,
-            Action = TransferAction.Returned,
+            Action = TransferAction.Deleted,
             Actor = actorUserName,
             ActionDate = DateTime.Now,
             FromUser = transfer.Recipient,
@@ -231,11 +223,8 @@ public class TransferService : ITransferService
         _context.Remove(transfer);
         await _context.SaveChangesAsync();
     }
-    public async Task ReturnAsync(int transferId, string actorUserName, string notes)
+    public async Task ReturnAsync(int? transferId, string actorUserName)
     {
-        // use a transaction to avoid partial updates
-        using var tx = await _context.Database.BeginTransactionAsync();
-
         var transfer = await _context.Transfers
             .Include(t => t.StockProduct)
             .FirstOrDefaultAsync(t => t.Id == transferId);
@@ -246,11 +235,9 @@ public class TransferService : ITransferService
         if (!transfer.IsSigned)
             throw new InvalidOperationException("Hələ imzalanmayıb — qaytarma qeydə alınmaz.");
 
-        if (transfer.IsReturned)
-            throw new InvalidOperationException("Bu transfer artıq qaytarılıb.");
 
         // mark returned
-        transfer.IsReturned = true;
+        transfer.TransferStatus = TransferAction.Returned;
         transfer.DateOfReturn = DateTime.Now; // və ya DateTime.UtcNow, komandaya görə
         transfer.ReturnedBy = actorUserName;
 
@@ -267,7 +254,6 @@ public class TransferService : ITransferService
         _context.TransferHistories.Add(hist);
 
         await _context.SaveChangesAsync();
-        await tx.CommitAsync();
     }
     #endregion
 
