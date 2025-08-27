@@ -35,24 +35,27 @@
     <div class="overlay" id="overlay"></div>
 
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h3>
-                IT Məhsul <br>
-                Qeydiyyat Sistemi
-            </h3>
-        </div>
+        <a asp-action="Index" asp-controller="Home" style="text-decoration:none; color:#ecf0f1;">
+            <div class="sidebar-header">
+                <h3>
+                    IT Məhsul <br>
+                    Qeydiyyat Sistemi
+                </h3>
+            </div>
+        </a>
         <ul class="sidebar-menu">
             <!-- Əsas keçidlər -->
-            <li class="@Html.IsActive("Transfer", "Index")">
+            <li class="@Html.IsActive("Transfer", "Index", "Update", "CreateBlank")">
                 <a asp-action="Index" asp-controller="Transfer">
                     <i class="fas fa-tachometer-alt"></i> <span>Təhvil-Təslim Jurnalı</span>
                 </a>
             </li>
-            <li class="@Html.IsActive("Warehouse", "Index")">
+            <li class="@Html.IsActive("Warehouse", "Index", "Create", "Update", "Detail")">
                 <a asp-action="Index" asp-controller="Warehouse">
                     <i class="fas fa-warehouse"></i> <span>Anbar</span>
                 </a>
             </li>
+
             <li class="@Html.IsActive("Equipment", "Index")">
                 <a asp-action="Index" asp-controller="Equipment">
                     <i class="fas fa-laptop"></i> <span>Avadanlıqlar</span>
@@ -75,7 +78,7 @@
         <!-- Flyout panel -->
         <div class="flyout-menu" id="moreFlyout">
             <ul>
-                <li class="@Html.IsActive("Settings", "UpdateProfile")">
+                <li class="@Html.IsActive("Settings", "UpdateProfile", "ChangePassword")">
                     <a asp-action="UpdateProfile" asp-controller="Settings">Parametrlər</a>
                 </li>
                 <li class="@Html.IsActive("Statistics", "Index")">
@@ -83,7 +86,7 @@
                 </li>
                 @if (isAdmin)
                 {
-                    <li class="@Html.IsActive("Permission", "Index")">
+                    <li class="@Html.IsActive("Permission", "Index", "Edit")">
                         <a asp-action="Index" asp-controller="Permission">İdarəetmə</a>
                     </li>
                     <li class="@Html.IsActive("ActivityLogs", "Index")">

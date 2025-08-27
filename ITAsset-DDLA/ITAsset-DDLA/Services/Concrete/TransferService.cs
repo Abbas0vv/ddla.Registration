@@ -2,7 +2,9 @@
 using ddla.ITApplication.Database.Models.DomainModels;
 using ddla.ITApplication.Helpers.Extentions;
 using ddla.ITApplication.Services.Abstract;
+using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Database.Models.ViewModels.Shared;
+using ITAsset_DDLA.Helpers.Enums;
 using ITAsset_DDLA.Services.Abstract;
 using Microsoft.EntityFrameworkCore;
 
@@ -62,9 +64,16 @@ public class TransferService : ITransferService
             .Include(p => p.StockProduct)
             .FirstOrDefaultAsync(s => s.InventarId == InventaryCode);
     }
+    public async Task<List<Transfer>> GetAllAsync()
+    {
+        return await _context.Transfers
+            .Include(p => p.StockProduct)
+            .OrderBy(p => p.Id)
+            .ToListAsync();
+    }
 
     #region CRUD
-    public async Task InsertMultipleAsync(CreateTransferViewModel model)
+    public async Task InsertMultipleAsync(CreateTransferViewModel model, string userName)
     {
         // Validate input
         if (model == null || model.CreateTransferProductViewModel.StockProductIds == null || !model.CreateTransferProductViewModel.StockProductIds.Any())
@@ -101,37 +110,45 @@ public class TransferService : ITransferService
             FilePath = filePath,
             DepartmentSection = model.CreateTransferProductViewModel.DepartmentSection,
             DateofReceipt = model.CreateTransferProductViewModel.DateofReceipt,
-            StockProductId = stockItem.Id
+            StockProductId = stockItem.Id,
+            TransferStatus = TransferAction.Created
         }).ToList();
+
+        foreach (var transfer in transfers)
+        {
+            var hist = new TransferHistory
+            {
+                TransferId = transfer.Id,
+                Action = TransferAction.Returned,
+                Actor = userName,
+                ActionDate = DateTime.Now,
+                FromUser = transfer.Recipient,
+                ToUser = "Anbar", // və ya konkret who received
+            };
+            _context.TransferHistories.Add(hist);
+        }
 
         // Add all products at once
         await _context.Transfers.AddRangeAsync(transfers);
         await _context.SaveChangesAsync();
     }
-    public async Task<List<Transfer>> GetAllAsync()
-    {
-        return await _context.Transfers
-            .Include(p => p.StockProduct)
-            .OrderBy(p => p.Id)
-            .ToListAsync();
-    }
     public async Task UpdateAsync(UpdateTransferViewModel model, string userName)
     {
-        var existingProduct = await GetProductByStockIdAsync(model.UpdateTransferProductViewModel.StockProductId);
-        if (existingProduct == null)
+        var existingTransfer = await GetProductByStockIdAsync(model.UpdateTransferProductViewModel.StockProductId);
+        if (existingTransfer == null)
             throw new KeyNotFoundException($"Product not found");
 
         // Köhnə dəyərləri saxla
         var oldValues = new
         {
-            existingProduct.Recipient,
-            existingProduct.DepartmentSection,
-            existingProduct.DateofReceipt,
-            existingProduct.FilePath
+            existingTransfer.Recipient,
+            existingTransfer.DepartmentSection,
+            existingTransfer.DateofReceipt,
+            existingTransfer.FilePath
         };
 
         // Fayl işlənməsi
-        string filePath = existingProduct.FilePath;
+        string filePath = existingTransfer.FilePath;
         if (model.UpdateTransferProductViewModel.DocumentFile != null)
         {
             if (!string.IsNullOrEmpty(filePath))
@@ -153,7 +170,7 @@ public class TransferService : ITransferService
         // Loglama (diff ilə)
         await _activityLogger.LogAsync(
             userName,
-            $"Məhsul redaktə edildi (ID: {existingProduct.Id}):\n" +
+            $"Məhsul redaktə edildi (ID: {existingTransfer.Id}):\n" +
             $"--- Köhnə məlumatlar ---\n" +
             $"Recipient: {oldValues.Recipient}\n" +
             $"DepartmentSection: {oldValues.DepartmentSection}\n" +
@@ -167,14 +184,25 @@ public class TransferService : ITransferService
         );
 
         // Update product
-        existingProduct.Recipient = model.UpdateTransferProductViewModel.Recipient;
-        existingProduct.DepartmentSection = model.UpdateTransferProductViewModel.DepartmentSection;
-        existingProduct.DateofReceipt = model.UpdateTransferProductViewModel.DateofReceipt;
-        existingProduct.FilePath = filePath;
+        existingTransfer.Recipient = model.UpdateTransferProductViewModel.Recipient;
+        existingTransfer.DepartmentSection = model.UpdateTransferProductViewModel.DepartmentSection;
+        existingTransfer.DateofReceipt = model.UpdateTransferProductViewModel.DateofReceipt;
+        existingTransfer.FilePath = filePath;
+        existingTransfer.TransferStatus = TransferAction.Edited;
 
+        var hist = new TransferHistory
+        {
+            TransferId = existingTransfer.Id,
+            Action = TransferAction.Returned,
+            Actor = userName,
+            ActionDate = DateTime.Now,
+            FromUser = existingTransfer.Recipient,
+            ToUser = "Anbar", // və ya konkret who received
+        };
+        _context.TransferHistories.Add(hist);
         await _context.SaveChangesAsync();
     }
-    public async Task RemoveAsync(int? id)
+    public async Task RemoveAsync(int? id, string actorUserName)
     {
         if (id is null) return;
 
@@ -189,8 +217,58 @@ public class TransferService : ITransferService
 
         // No need to manually update StockProduct because it's computed
         FileExtention.RemoveFile(Path.Combine(_webHostEnvironment.WebRootPath, FOLDER_NAME, transfer.ImageUrl));
+        transfer.TransferStatus = TransferAction.Deleted;
+        var hist = new TransferHistory
+        {
+            TransferId = transfer.Id,
+            Action = TransferAction.Returned,
+            Actor = actorUserName,
+            ActionDate = DateTime.Now,
+            FromUser = transfer.Recipient,
+            ToUser = "Anbar", // və ya konkret who received
+        };
+        _context.TransferHistories.Add(hist);
         _context.Remove(transfer);
         await _context.SaveChangesAsync();
     }
+    public async Task ReturnAsync(int transferId, string actorUserName, string notes)
+    {
+        // use a transaction to avoid partial updates
+        using var tx = await _context.Database.BeginTransactionAsync();
+
+        var transfer = await _context.Transfers
+            .Include(t => t.StockProduct)
+            .FirstOrDefaultAsync(t => t.Id == transferId);
+
+        if (transfer == null)
+            throw new InvalidOperationException("Transfer tapılmadı.");
+
+        if (!transfer.IsSigned)
+            throw new InvalidOperationException("Hələ imzalanmayıb — qaytarma qeydə alınmaz.");
+
+        if (transfer.IsReturned)
+            throw new InvalidOperationException("Bu transfer artıq qaytarılıb.");
+
+        // mark returned
+        transfer.IsReturned = true;
+        transfer.DateOfReturn = DateTime.Now; // və ya DateTime.UtcNow, komandaya görə
+        transfer.ReturnedBy = actorUserName;
+
+        // add history record
+        var hist = new TransferHistory
+        {
+            TransferId = transfer.Id,
+            Action = TransferAction.Returned,
+            Actor = actorUserName,
+            ActionDate = DateTime.Now,
+            FromUser = transfer.Recipient,
+            ToUser = "Anbar", // və ya konkret who received
+        };
+        _context.TransferHistories.Add(hist);
+
+        await _context.SaveChangesAsync();
+        await tx.CommitAsync();
+    }
     #endregion
+
 }

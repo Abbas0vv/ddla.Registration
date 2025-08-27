@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.DomainModels;
+using ddla.ITApplication.Database.Models.DomainModels.Account;
 using ddla.ITApplication.Database.Models.ViewModels.Product;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.DomainModels;
@@ -9,9 +10,8 @@ using ITAsset_DDLA.Helpers.Attributes;
 using ITAsset_DDLA.Helpers.Enums;
 using ITAsset_DDLA.Services.Abstract;
 using ITAsset_DDLA.Services.Concrete;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 namespace ddla.ITApplication.Controllers;
@@ -19,7 +19,8 @@ namespace ddla.ITApplication.Controllers;
 [Authorize]
 public class TransferController : Controller
 {
-    private readonly ITransferService _productService;
+    private readonly ITransferService _transferService;
+    private readonly UserManager<ddlaUser> _userManager;
     private readonly IPdfService _pdfService;
     private readonly IExcelService _excelService;
     private readonly IStockService _stockService;
@@ -34,15 +35,17 @@ public class TransferController : Controller
         LdapService ldapService,
         IActivityLogger activityLogger,
         IPdfService pdfService,
-        IExcelService excelService)
+        IExcelService excelService,
+        UserManager<ddlaUser> userManager)
     {
-        _productService = productService;
+        _transferService = productService;
         _stockService = stockService;
         _context = context;
         _ldapService = ldapService;
         _activityLogger = activityLogger;
         _pdfService = pdfService;
         _excelService = excelService;
+        _userManager = userManager;
     }
 
     #region CRUD
@@ -50,7 +53,7 @@ public class TransferController : Controller
     [Permission(PermissionType.OperationView)]
     public async Task<IActionResult> Index()
     {
-        var models = await _productService.GetAllAsync();
+        var models = await _transferService.GetAllAsync();
         return View(models);
     }
 
@@ -102,9 +105,10 @@ public class TransferController : Controller
                 User.Identity.Name,
                 $"İstifadəçi '{User.Identity.Name}' yeni məhsul təhvil verdi: '{stockProduct.Name}' (Inventar ID: {stockProduct.InventoryCode}) Təhvil alan '{model.CreateTransferProductViewModel.Recipient}'"
             );
+            var transfer = _transferService.GetByInventaryCode(stockProduct.InventoryCode);
         }
 
-        await _productService.InsertMultipleAsync(model);
+        await _transferService.InsertMultipleAsync(model);
         return RedirectToAction(nameof(Index));
     }
 
@@ -116,7 +120,7 @@ public class TransferController : Controller
         {
             if (id == null) return NotFound();
 
-            var product = await _productService.GetByIdAsync(id.Value);
+            var product = await _transferService.GetByIdAsync(id.Value);
             if (product == null) return NotFound();
 
             var stockProduct = await _stockService.GetByIdAsync(product.StockProductId);
@@ -167,7 +171,7 @@ public class TransferController : Controller
             var stockProduct = await _stockService.GetByIdAsync(model.UpdateTransferProductViewModel.StockProductId);
 
             var userName = User.Identity.Name ?? "Unknown";
-            await _productService.UpdateAsync(model, userName);
+            await _transferService.UpdateAsync(model, userName);
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
@@ -211,8 +215,7 @@ public class TransferController : Controller
             $"Sənəd: {transfer.FilePath}"
         );
 
-        await _productService.RemoveAsync(id);
-
+        await _transferService.RemoveAsync(id);
         return RedirectToAction(nameof(Index));
     }
     #endregion
@@ -222,16 +225,17 @@ public class TransferController : Controller
     [HttpPost]
     public async Task<IActionResult> MarkAsSigned(int id)
     {
-        var product = await _productService.GetByIdAsync(id);
-        if (product == null)
+        var transfer = await _transferService.GetByIdAsync(id);
+        if (transfer == null)
             return NotFound();
 
-        product.IsSigned = true;
+        transfer.IsSigned = true;
+        transfer.TransferStatus = TransferAction.Signed;
         await _context.SaveChangesAsync();
 
         await _activityLogger.LogAsync(
             User.Identity.Name,
-            $"Məhsul '{product.Name}' (Inventar ID: {product.InventarId}) üçün təhvil-təslim \"İmzalandı\" olaraq seçildi."
+            $"Məhsul '{transfer.Name}' (Inventar ID: {transfer.InventarId}) üçün təhvil-təslim \"İmzalandı\" olaraq seçildi."
         );
 
         return RedirectToAction(nameof(Index));
@@ -323,7 +327,28 @@ public class TransferController : Controller
         return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     "Təhvil-Təslim.xlsx");
-    } 
+    }
     #endregion
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,SuperAdmin")] // və ya [Permission("Transfer.Return")]
+    public async Task<IActionResult> Return(int id, string notes)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var username = user?.UserName ?? User.Identity.Name ?? "system";
+        try
+        {
+            await _transferService.ReturnAsync(id, username, notes);
+            TempData["Success"] = "Qaytarılma qeyd edildi.";
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
 
 }

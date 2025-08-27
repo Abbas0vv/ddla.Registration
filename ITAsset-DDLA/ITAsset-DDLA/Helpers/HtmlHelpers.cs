@@ -1,19 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace ITAsset_DDLA.Helpers;
-
-public static class HtmlHelpers
+namespace ITAsset_DDLA.Helpers
 {
-    public static string IsActive(this IHtmlHelper htmlHelper, string controller, string action)
+    public static class HtmlHelpers
     {
-        var routeData = htmlHelper.ViewContext.RouteData;
+        public static string IsActive(this IHtmlHelper htmlHelper, string controller, params string[] actions)
+        {
+            var routeData = htmlHelper.ViewContext.RouteData;
+            var routeAction = routeData.Values["action"]?.ToString();
+            var routeController = routeData.Values["controller"]?.ToString();
 
-        var routeAction = routeData.Values["action"]?.ToString();
-        var routeController = routeData.Values["controller"]?.ToString();
+            bool isActive = string.Equals(controller, routeController, StringComparison.OrdinalIgnoreCase)
+                         && (actions.Length == 0 || actions.Contains(routeAction, StringComparer.OrdinalIgnoreCase));
 
-        // Null check to avoid NullReferenceException
-        var returnActive = (controller == routeController && action == routeAction);
+            return isActive ? "active" : "";
+        }
 
-        return returnActive ? "active" : "";
     }
 }

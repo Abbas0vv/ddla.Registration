@@ -134,8 +134,23 @@
                                 <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash"></i>
                                 </a>
+
                                 @if (item.IsSigned)
                                 {
+                                    @* Qaytarılma düyməsi: imzalanıb, amma hələ qaytarılmayıbsa görünsün *@
+                                    if (!item.IsReturned)
+                                    {
+                                        <form asp-action="Return" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-outline-info btn-sm" style="margin: 8px;">
+                                                <i class="fas fa-undo"></i> Qaytar
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Qaytarılıb</span>
+                                    }
+
                                     <a asp-action="MarkAsSigned" asp-route-id="@item.Id"
                                        class="btn btn-secondary btn-sm disabled"
                                        style="margin: 8px; pointer-events:none;">

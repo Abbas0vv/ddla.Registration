@@ -12,7 +12,7 @@ public class StockService : IStockService
 {
     private readonly ddlaAppDBContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly Lazy<ITransferService> _productService;
+    private readonly Lazy<ITransferService> _transferService;
     private const string IMAGE_FOLDER_NAME = "assets/images/Uploads/Transfers";
     private const string FILE_FOLDER_NAME = "assets/ProductFiles";
 
@@ -23,7 +23,7 @@ public class StockService : IStockService
     {
         _context = context;
         _webHostEnvironment = webHostEnvironment;
-        _productService = productService;
+        _transferService = productService;
     }
 
     public async Task<List<StockProduct>> GetAllAsync()

@@ -14,4 +14,5 @@ public interface ITransferService
     Task InsertMultipleAsync(CreateTransferViewModel model);
     Task UpdateAsync(UpdateTransferViewModel model, string userName);
     Task RemoveAsync(int? id);
+    Task ReturnAsync(int transferId, string actorUserName, string notes);
 }

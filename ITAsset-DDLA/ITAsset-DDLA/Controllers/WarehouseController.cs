@@ -12,7 +12,7 @@ namespace ddla.ITApplication.Controllers;
 public class WarehouseController : Controller
 {
     private readonly IStockService _stockService;
-    private readonly ITransferService _productService;
+    private readonly ITransferService _transferService;
     private readonly IActivityLogger _activityLogger;
 
     public WarehouseController(
@@ -21,7 +21,7 @@ public class WarehouseController : Controller
         IActivityLogger activityLogger)
     {
         _stockService = stockService;
-        _productService = productService;
+        _transferService = productService;
         _activityLogger = activityLogger;
     }
 
@@ -53,7 +53,7 @@ public class WarehouseController : Controller
     public async Task<IActionResult> Detail(string name)
     {
         var stockProducts = await _stockService.GetAllByNameAsync(name);
-        var products = await _productService.GetAllAsync();
+        var products = await _transferService.GetAllAsync();
 
         var model = new CompositeViewModel
         {
