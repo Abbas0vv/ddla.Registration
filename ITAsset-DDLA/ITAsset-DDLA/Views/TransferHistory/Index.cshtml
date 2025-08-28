@@ -1,0 +1,113 @@
+﻿@using ITAsset_DDLA.Helpers.Enums
+@model List<ITAsset_DDLA.Database.Models.DomainModels.TransferHistory>
+
+<div class="container">
+    <div class="logo-header">
+        <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+        <div class="logo-text">
+            <h1>Təhvil-Təslim Tarixçəsi</h1>
+            <small>Dövlət Dəniz və Liman Agentliyi</small>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <input type="text" id="globalSearch" class="form-control" placeholder="Ümumi axtarış...">
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered" id="historyTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Əməliyyat</th>
+                    <th>Əməliyyatçı</th>
+                    <th>Tarix</th>
+                    <th>Kimdən</th>
+                    <th>Kimə</th>
+                    <th>Ətraflı</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int counter = 1;
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@item.Action</td>
+                            <td>@item.Actor</td>
+                            <td data-order="@item.ActionDate.ToString("yyyy-MM-dd HH:mm")">
+                                @item.ActionDate.ToString("dd.MM.yyyy HH:mm")
+                            </td>
+                            <td>@item.FromUser</td>
+                            <td>@item.ToUser</td>
+                            <td>
+                                <button class="btn btn-sm btn-info view-transfer"
+                                        data-id="@item.TransferId">
+                                    Detallar
+                                </button>
+                            </td>
+                        </tr>
+                        counter++;
+                    }
+                }
+            </tbody>
+        </table>
+
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="transferModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Transfer Detalları</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="transferDetails">Yüklənir...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        const table = $('#historyTable').DataTable({
+            dom: 't',
+            ordering: false,
+            info: false,
+            paging: false,
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/az-AZ.json'
+            }
+        });
+
+        $('#globalSearch').on('keyup', function () {
+            table.search(this.value).draw();
+        });
+
+        $('#historyTable thead input').on('keyup change', function () {
+            const colIndex = $(this).data('column');
+            table.column(colIndex).search(this.value).draw();
+        });
+    });
+
+    $(document).on("click", ".view-transfer", function () {
+        var id = $(this).data("id");
+        $("#transferDetails").html("Yüklənir...");
+
+        $.get("/TransferHistory/TransferDetails", { id: id }, function (data) {
+            $("#transferDetails").html(data);
+
+            var myModal = new bootstrap.Modal(document.getElementById('transferModal'));
+            myModal.show();
+        });
+    });
+
+</script>

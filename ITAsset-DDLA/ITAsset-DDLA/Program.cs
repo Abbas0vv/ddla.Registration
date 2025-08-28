@@ -47,6 +47,7 @@ public class Program
         builder.Services.AddScoped<IExcelService, ExcelService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+        builder.Services.AddScoped<ITransferHistoryService, TransferHistoryService>();
         builder.Services.AddScoped<IStockService, StockService>();
         builder.Services.AddScoped<IActivityLogger, ActivityLogger>();
         builder.Services.AddScoped<IUserClaimsPrincipalFactory<ddlaUser>, CustomUserClaimsPrincipalFactory>();

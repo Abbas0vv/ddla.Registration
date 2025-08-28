@@ -1,0 +1,13 @@
+﻿@model ddla.ITApplication.Database.Models.DomainModels.Transfer
+
+<div>
+    <p><strong>Məhsul:</strong> @Model.Name</p>
+    <p><strong>Inventar ID:</strong> @Model.InventarId</p>
+    <p><strong>Qəbul edən:</strong> @Model.Recipient</p>
+    <p><strong>Təsvirdə:</strong> @Model.Description</p>
+    <p><strong>Verilmə tarixi:</strong> @Model.DateofIssue.ToString("dd.MM.yyyy")</p>
+    <p><strong>Qəbul tarixi:</strong> @(Model.DateofReceipt?.ToString("dd.MM.yyyy") ?? "Yoxdur")</p>
+    <p><strong>Geri qaytarma tarixi:</strong> @(Model.DateOfReturn?.ToString("dd.MM.yyyy") ?? "Yoxdur")</p>
+    <p><strong>Geri qaytaran:</strong> @Model.ReturnedBy</p>
+    <p><strong>Status:</strong> @Model.TransferStatus</p>
+</div>

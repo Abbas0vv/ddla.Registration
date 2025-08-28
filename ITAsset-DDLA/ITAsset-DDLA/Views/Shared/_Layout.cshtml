@@ -78,6 +78,9 @@
         <!-- Flyout panel -->
         <div class="flyout-menu" id="moreFlyout">
             <ul>
+                <li class="@Html.IsActive("TransferHistory", "Index")">
+                    <a asp-action="Index" asp-controller="TransferHistory">Təhvil-Təslim Tarixçəsi</a>
+                </li>
                 <li class="@Html.IsActive("Settings", "UpdateProfile", "ChangePassword")">
                     <a asp-action="UpdateProfile" asp-controller="Settings">Parametrlər</a>
                 </li>
