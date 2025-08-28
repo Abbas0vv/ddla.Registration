@@ -1,4 +1,5 @@
-﻿using ITAsset_DDLA.Services.Concrete;
+﻿using ITAsset_DDLA.Services.Abstract;
+using ITAsset_DDLA.Services.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +9,12 @@ namespace ITAsset_DDLA.Controllers;
 public class UsersController : Controller
 {
     private readonly LdapService _ldapService;
+    private readonly IExcelService _excelService;
 
-    public UsersController()
+    public UsersController(IExcelService excelService)
     {
         _ldapService = new LdapService("LDAP://dc01.ddla.local/OU=contact,DC=ddla,DC=local", "DDLA\\ldapuser", "FBefONQ2JMUMVpz4yLYM");
+        _excelService = excelService;
     }
 
     public IActionResult Index()
@@ -27,5 +30,15 @@ public class UsersController : Controller
         }
     }
 
+    [HttpGet]
+    public IActionResult ExportToExcel()
+    {
+        var users = _ldapService.GetLdapUsers();
+        var fileContent = _excelService.ExportUsersToExcel(users);
+
+        return File(fileContent,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "Istifadeciler.xlsx");
+    }
 
 }
