@@ -1,6 +1,4 @@
-﻿using ClosedXML.Excel;
-using ddla.ITApplication.Database;
-using ddla.ITApplication.Database.Models.DomainModels;
+﻿using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.DomainModels.Account;
 using ddla.ITApplication.Database.Models.ViewModels.Product;
 using ddla.ITApplication.Services.Abstract;
