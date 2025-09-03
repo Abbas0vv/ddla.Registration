@@ -21,8 +21,6 @@ public class LdapService
     public List<LdapUserModel> GetLdapUsers()
     {
         var ldapUsers = new List<LdapUserModel>();
-        var titles = LdapTranslations.Titles;
-        var companies = LdapTranslations.Companies;
 
         using (var entry = new DirectoryEntry(_ldapPath, _ldapUser, _ldapPassword))
         using (var searcher = new DirectorySearcher(entry))
@@ -32,16 +30,13 @@ public class LdapService
 
             foreach (SearchResult result in searcher.FindAll())
             {
-                var title = GetPropertyValue(result, "title");
-                var company = GetPropertyValue(result, "company");
-
                 ldapUsers.Add(new LdapUserModel
                 {
                     FullName = GetPropertyValue(result, "cn"),
-                    Vazifa = titles.ContainsKey(title) ? titles[title] : title,
+                    Vazifa = GetPropertyValue(result, "title"),
                     InternalPhone = GetPropertyValue(result, "telephoneNumber"),
                     Email = GetPropertyValue(result, "mail"),
-                    Shobe = companies.ContainsKey(company) ? companies[company] : company
+                    Shobe = GetPropertyValue(result, "company")
                 });
             }
         }
