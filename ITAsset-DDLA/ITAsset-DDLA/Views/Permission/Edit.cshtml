@@ -14,7 +14,22 @@
             <h4 class="mb-0">@Model?.FullName</h4>
             <small class="text-muted">@Model?.Username</small>
         </div>
+        <div class="text-end" style="padding-right: 30px; padding-top: 10px;">
+            <form asp-action="DisableUser" asp-controller="Users" method="post" class="d-inline">
+                <input type="hidden" name="userId" value="@Model.UserId" />
+                <button type="submit" class="btn btn-warning me-2">
+                    <i class="fas fa-ban"></i> Disable
+                </button>
+            </form>
 
+            <form asp-action="DeleteUser" asp-controller="Users" method="post" class="d-inline">
+                <input type="hidden" name="userId" value="@Model.UserId" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </form>
+
+        </div>
         @if (Model == null)
         {
             <div class="alert alert-danger m-3">İstifadəçi məlumatları yüklənərkən xəta baş verdi</div>
@@ -65,10 +80,11 @@
                     <a asp-action="Index" class="btn btn-outline-secondary me-2">
                         <i class="fas fa-arrow-left"></i> Geri Qayıt
                     </a>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary me-2">
                         <i class="fas fa-save"></i> Yadda Saxla
                     </button>
                 </div>
+
             </form>
         }
     </div>

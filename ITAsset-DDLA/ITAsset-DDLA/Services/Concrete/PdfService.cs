@@ -90,8 +90,8 @@ public class PdfService : IPdfService
             signatureTable.AddCell(new PdfPCell(new Phrase("Təhvil alan əməkdaş:", boldFont)) { HorizontalAlignment = Element.ALIGN_CENTER, VerticalAlignment = Element.ALIGN_MIDDLE, BackgroundColor = BaseColor.LIGHT_GRAY, Padding = 6 });
             signatureTable.AddCell(new PdfPCell(new Phrase($"Soyad Ad: {product.Recipient}", regularFont)) { Padding = 6 });
             signatureTable.AddCell(new PdfPCell(new Phrase("İmza : ____________________", regularFont)) { Padding = 6 });
-            signatureTable.AddCell(new PdfPCell(new Phrase($"Verilmə Tarixi: {product.DateofIssue:dd.MM.yyyy}", regularFont)) { Padding = 6 });
-            signatureTable.AddCell(new PdfPCell(new Phrase($"Alınma Tarixi: {(product.DateofReceipt?.ToString("dd.MM.yyyy") ?? "____________________")}", regularFont)) { Padding = 6 });
+            signatureTable.AddCell(new PdfPCell(new Phrase($"Təhvil Verilmə Tarixi: {product.DateofIssue:dd.MM.yyyy}", regularFont)) { Padding = 6 });
+            signatureTable.AddCell(new PdfPCell(new Phrase($"Təslim Alınma Tarixi: {(product.DateofReceipt?.ToString("dd.MM.yyyy") ?? "____________________")}", regularFont)) { Padding = 6 });
 
             document.Add(signatureTable);
 

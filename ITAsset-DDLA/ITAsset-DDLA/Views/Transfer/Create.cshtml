@@ -43,7 +43,7 @@
 
                             <!-- Product Type Selection -->
                             <div class="mb-3">
-                                <label class="form-label">Məhsul növü:</label>
+                                <label class="form-label">Məhsul adı:</label>
                                 <select id="productType" class="form-select" onchange="filterProductsByType()">
                                     <option value="">-- Bütün növlər --</option>
                                     @foreach (var type in Model.StockProducts.Select(p => p.Name).Distinct())

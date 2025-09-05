@@ -9,6 +9,7 @@ public class UserWithPermissionsViewModel
     public string FullName { get; set; }
     public string ProfilePictureUrl { get; set; }
     public List<PermissionType> Permissions { get; set; } = new List<PermissionType>();
+    public LocalUserStatus Status { get; set; }
 
     public bool HasPermission(PermissionType permission)
     {

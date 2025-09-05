@@ -41,14 +41,17 @@ public class PermissionController : Controller
     {
         var users = await _userService.GetAllUsersWithPermissions();
 
-        var viewModels = users.Select(u => new UserWithPermissionsViewModel
-        {
-            Id = u.Id,
-            Username = u.Username,
-            ProfilePictureUrl = u.ProfilePictureUrl,
-            FullName = u.FullName,
-            Permissions = u.Permissions.ToList()
-        }).ToList();
+        var viewModels = users
+            .Where(u => u.Status == LocalUserStatus.Active || u.Status == LocalUserStatus.Disable)
+            .Select(u => new UserWithPermissionsViewModel
+            {
+                Id = u.Id,
+                Username = u.Username,
+                ProfilePictureUrl = u.ProfilePictureUrl,
+                FullName = u.FullName,
+                Status = u.Status,
+                Permissions = u.Permissions.ToList()
+            }).ToList();
 
         return View(viewModels);
     }
@@ -101,6 +104,35 @@ public class PermissionController : Controller
 
         return View(viewModel);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> DisableUser(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return NotFound();
+
+        user.Status = LocalUserStatus.Disable;
+        user.UserPermissions.Clear(); // bütün icazələri sil
+        await _userManager.UpdateAsync(user);
+
+        TempData["SuccessMessage"] = "İstifadəçi deaktiv edildi və bütün icazələri silindi.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteUser(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return NotFound();
+
+        // Burada hələlik sadəcə status dəyişək
+        user.Status = LocalUserStatus.Delete;
+        await _userManager.UpdateAsync(user);
+
+        TempData["SuccessMessage"] = "İstifadəçi silinmiş statusa salındı.";
+        return RedirectToAction(nameof(Index));
+    }
+
 
     private List<PermissionItem> GetPermissionItems(ddlaUser user, string prefix)
     {

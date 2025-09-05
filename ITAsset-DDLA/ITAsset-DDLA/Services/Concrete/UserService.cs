@@ -39,18 +39,18 @@ public class UserService : IUserService
                 .ThenInclude(up => up.Permission)
             .ToListAsync();
 
-
         return users.Select(u => new UserWithPermissionsViewModel
         {
-
             Id = u.Id,
             Username = u.UserName,
             FullName = $"{u.FirstName} {u.LastName}",
             ProfilePictureUrl = u.ProfilePictureUrl ?? "~/assets/images/Uploads/ProfilePictures/default.jpg",
+            Status = u.Status,
             Permissions = u.UserPermissions
                 .Select(up => up.Permission.Type)
                 .ToList()
         }).ToList();
+
     }
     public async Task CreateRole()
     {
