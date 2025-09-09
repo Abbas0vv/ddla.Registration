@@ -105,6 +105,7 @@ public class PermissionController : Controller
         return View(viewModel);
     }
 
+    [ValidateAntiForgeryToken]
     [HttpPost]
     public async Task<IActionResult> DisableUser(string userId)
     {
@@ -116,9 +117,26 @@ public class PermissionController : Controller
         await _userManager.UpdateAsync(user);
 
         TempData["SuccessMessage"] = "İstifadəçi deaktiv edildi və bütün icazələri silindi.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction("Index");
     }
 
+    [ValidateAntiForgeryToken]
+    [HttpPost]
+    public async Task<IActionResult> ActivateUser(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return NotFound();
+
+        user.Status = LocalUserStatus.Active;
+        await _userManager.UpdateAsync(user);
+
+        TempData["SuccessMessage"] = "İstifadəçi aktiv edildi.";
+        return RedirectToAction("Index");
+    }
+
+
+
+    [ValidateAntiForgeryToken]
     [HttpPost]
     public async Task<IActionResult> DeleteUser(string userId)
     {
@@ -130,7 +148,7 @@ public class PermissionController : Controller
         await _userManager.UpdateAsync(user);
 
         TempData["SuccessMessage"] = "İstifadəçi silinmiş statusa salındı.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction("Index");
     }
 
 
@@ -147,6 +165,7 @@ public class PermissionController : Controller
             })
             .ToList();
     }
+    [ValidateAntiForgeryToken]
     [HttpPost]
     public async Task<IActionResult> Edit(UpdatePermissionsViewModel model)
     {

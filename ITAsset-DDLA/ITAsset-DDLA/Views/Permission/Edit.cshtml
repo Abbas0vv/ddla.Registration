@@ -15,20 +15,29 @@
             <small class="text-muted">@Model?.Username</small>
         </div>
         <div class="text-end" style="padding-right: 30px; padding-top: 10px;">
-            <form asp-action="DisableUser" asp-controller="Users" method="post" class="d-inline">
-                <input type="hidden" name="userId" value="@Model.UserId" />
+            <form asp-action="DisableUser" method="post" style="display:inline;">
+                <input type="hidden" name="UserId" value="@Model.UserId" />
+                @Html.AntiForgeryToken()
                 <button type="submit" class="btn btn-warning me-2">
                     <i class="fas fa-ban"></i> Disable
                 </button>
             </form>
 
-            <form asp-action="DeleteUser" asp-controller="Users" method="post" class="d-inline">
+            <form asp-action="ActivateUser" method="post" style="display:inline;">
                 <input type="hidden" name="userId" value="@Model.UserId" />
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-success me-2">
+                    <i class="fas fa-check"></i> Aktiv et
+                </button>
+            </form>
+
+            <form asp-action="DeleteUser" method="post" style="display:inline;">
+                <input type="hidden" name="userId" value="@Model.UserId" />
+                @Html.AntiForgeryToken()
                 <button type="submit" class="btn btn-danger">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </form>
-
         </div>
         @if (Model == null)
         {
