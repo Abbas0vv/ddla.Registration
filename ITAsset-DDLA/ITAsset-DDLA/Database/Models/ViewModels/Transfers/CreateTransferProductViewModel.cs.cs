@@ -14,6 +14,10 @@ public class CreateTransferProductViewModel
 
     [Display(Name = "Fayl")]
     public IFormFile? DocumentFile { get; set; }
+    [Display(Name = "İmzalanmış Fayl")]
+    public IFormFile? SignedFilePath { get; set; }
+    [Display(Name = "Qaytarılmış Fayl")]
+    public IFormFile? ReturnedFilePath { get; set; }
 
     [Display(Name = "Alınma Tarixi")]
     public DateTime? DateofReceipt { get; set; }

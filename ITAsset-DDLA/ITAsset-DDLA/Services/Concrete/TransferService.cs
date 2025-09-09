@@ -99,7 +99,6 @@ public class TransferService : ITransferService
             Recipient = model.CreateTransferProductViewModel.Recipient,
             IsSigned = false,
             ImageUrl = stockItem.ImageUrl,
-            FilePath = filePath,
             DepartmentSection = model.CreateTransferProductViewModel.DepartmentSection,
             DateofReceipt = model.CreateTransferProductViewModel.DateofReceipt,
             StockProductId = stockItem.Id,
@@ -179,7 +178,6 @@ public class TransferService : ITransferService
         existingTransfer.Recipient = model.UpdateTransferProductViewModel.Recipient;
         existingTransfer.DepartmentSection = model.UpdateTransferProductViewModel.DepartmentSection;
         existingTransfer.DateofReceipt = model.UpdateTransferProductViewModel.DateofReceipt;
-        existingTransfer.FilePath = filePath;
         existingTransfer.TransferStatus = TransferAction.Edited;
 
         var hist = new TransferHistory

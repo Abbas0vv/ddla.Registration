@@ -6,25 +6,32 @@
     ViewData["Title"] = "İcazə İdarəetmə Paneli";
 }
 
-    <div class="container py-4">
-        <div class="text-center mb-4">
-            <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" style="height:60px;">
-            <h2 class="mt-2">İcazə İdarəetmə Paneli</h2>
-            <p class="text-muted">Dövlət Dəniz və Liman Agentliyi</p>
-        </div>
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" style="height:60px;">
+        <h2 class="mt-2">İcazə İdarəetmə Paneli</h2>
+        <p class="text-muted">Dövlət Dəniz və Liman Agentliyi</p>
+    </div>
 
-        <div class="table-responsive shadow-sm rounded">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>İstifadəçi</th>
-                        <th class="text-center">Əməliyyat İcazələri</th>
-                        <th class="text-center">Anbar İcazələri</th>
-                        <th class="text-center">Avadanlıq İcazələri</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
+    <div class="mb-3 text-end">
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fas fa-plus"></i> Əlavə et
+        </a>
+    </div>
+
+
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>İstifadəçi</th>
+                    <th class="text-center">Əməliyyat İcazələri</th>
+                    <th class="text-center">Anbar İcazələri</th>
+                    <th class="text-center">Avadanlıq İcazələri</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
                 @foreach (var user in Model)
                 {
                     var rowClass = user.Status == LocalUserStatus.Disable ? "text-muted" : "";
@@ -45,47 +52,47 @@
                                 </div>
                             </div>
                         </td>
-                            <td class="text-center">
-                                <div class="d-flex flex-wrap justify-content-center gap-1">
-                                    @foreach (var perm in new[] { PermissionType.OperationAdd, PermissionType.OperationEdit, PermissionType.OperationDelete, PermissionType.OperationView })
-                                    {
-                                        <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
-                                            @perm.ToString().Replace("Operation", "")
-                                        </span>
-                                    }
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="d-flex flex-wrap justify-content-center gap-1">
-                                    @foreach (var perm in new[] { PermissionType.InventoryAdd, PermissionType.InventoryEdit, PermissionType.InventoryDelete, PermissionType.InventoryView })
-                                    {
-                                        <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
-                                            @perm.ToString().Replace("Inventory", "")
-                                        </span>
-                                    }
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="d-flex flex-wrap justify-content-center gap-1">
-                                    @foreach (var perm in new[] { PermissionType.EquipmentEdit, PermissionType.EquipmentView })
-                                    {
-                                        <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
-                                            @perm.ToString().Replace("Equipment", "")
-                                        </span>
-                                    }
-                                </div>
-                            </td>
-                            <td class="text-end">
-                                <a asp-action="Edit" asp-route-userId="@user.Id" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-edit"></i> Redaktə
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                        <td class="text-center">
+                            <div class="d-flex flex-wrap justify-content-center gap-1">
+                                @foreach (var perm in new[] { PermissionType.OperationAdd, PermissionType.OperationEdit, PermissionType.OperationDelete, PermissionType.OperationView })
+                                {
+                                    <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
+                                        @perm.ToString().Replace("Operation", "")
+                                    </span>
+                                }
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex flex-wrap justify-content-center gap-1">
+                                @foreach (var perm in new[] { PermissionType.InventoryAdd, PermissionType.InventoryEdit, PermissionType.InventoryDelete, PermissionType.InventoryView })
+                                {
+                                    <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
+                                        @perm.ToString().Replace("Inventory", "")
+                                    </span>
+                                }
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex flex-wrap justify-content-center gap-1">
+                                @foreach (var perm in new[] { PermissionType.EquipmentEdit, PermissionType.EquipmentView })
+                                {
+                                    <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
+                                        @perm.ToString().Replace("Equipment", "")
+                                    </span>
+                                }
+                            </div>
+                        </td>
+                        <td class="text-end">
+                            <a asp-action="Edit" asp-route-userId="@user.Id" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i> Redaktə
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
+</div>
 
 <style>
     .badge {

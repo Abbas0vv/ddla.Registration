@@ -348,4 +348,85 @@ public class TransferController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadSignedFile(int id, IFormFile signedFile)
+    {
+        if (signedFile == null || signedFile.Length == 0)
+        {
+            TempData["Error"] = "Fayl seçilməyib.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var transfer = await _context.Transfers
+            .Include(t => t.StockProduct)
+            .FirstOrDefaultAsync(t => t.Id == id);
+
+        if (transfer == null) return NotFound();
+
+        // Save file
+        var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(signedFile.FileName)}";
+        var filePath = Path.Combine("wwwroot/uploads/signed", fileName);
+        Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await signedFile.CopyToAsync(stream);
+        }
+
+        transfer.StockProduct.SignedFilePath = $"/uploads/signed/{fileName}";
+        transfer.IsSigned = true;
+        await _context.SaveChangesAsync();
+
+        TempData["Success"] = "İmzalanmış fayl əlavə edildi.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadReturnFiles(int id, IFormFile signedFile, IFormFile returnedFile)
+    {
+        if ((signedFile == null || signedFile.Length == 0) ||
+            (returnedFile == null || returnedFile.Length == 0))
+        {
+            TempData["Error"] = "Hər iki faylı yükləmək lazımdır.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var transfer = await _context.Transfers
+            .Include(t => t.StockProduct)
+            .FirstOrDefaultAsync(t => t.Id == id);
+
+        if (transfer == null) return NotFound();
+
+        // Save signed file
+        var signedFileName = $"{Guid.NewGuid()}_{Path.GetFileName(signedFile.FileName)}";
+        var signedPath = Path.Combine("wwwroot/uploads/signed", signedFileName);
+        Directory.CreateDirectory(Path.GetDirectoryName(signedPath));
+        using (var stream = new FileStream(signedPath, FileMode.Create))
+        {
+            await signedFile.CopyToAsync(stream);
+        }
+
+        // Save returned file
+        var returnedFileName = $"{Guid.NewGuid()}_{Path.GetFileName(returnedFile.FileName)}";
+        var returnedPath = Path.Combine("wwwroot/uploads/returned", returnedFileName);
+        Directory.CreateDirectory(Path.GetDirectoryName(returnedPath));
+        using (var stream = new FileStream(returnedPath, FileMode.Create))
+        {
+            await returnedFile.CopyToAsync(stream);
+        }
+
+        transfer.StockProduct.SignedFilePath = $"/uploads/signed/{signedFileName}";
+        transfer.StockProduct.ReturnedFilePath = $"/uploads/returned/{returnedFileName}";
+        transfer.TransferStatus = TransferAction.Returned;
+        transfer.DateOfReturn = DateTime.Now;
+        transfer.ReturnedBy = User.Identity?.Name;
+
+        await _context.SaveChangesAsync();
+
+        TempData["Success"] = "Qaytarılma faylları əlavə edildi.";
+        return RedirectToAction(nameof(Index));
+    }
+
 }
