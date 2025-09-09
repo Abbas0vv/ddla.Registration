@@ -15,6 +15,6 @@ public class RegisterViewModel
     [DataType(DataType.Password)]
     public string Password { get; set; }
     [DataType(DataType.Password), Compare(nameof(Password))]
-    public string ConfirmPasswor { get; set; }
+    public string ConfirmPassword { get; set; }
     public IFormFile? ProfilePicture { get; set; }
 }

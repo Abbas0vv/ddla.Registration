@@ -1,5 +1,6 @@
 ﻿using ddla.ITApplication.Database;
 using ddla.ITApplication.Database.Models.DomainModels.Account;
+using ddla.ITApplication.Database.Models.ViewModels.Account;
 using ddla.ITApplication.Services.Abstract;
 using ITAsset_DDLA.Database.Models.DomainModels;
 using ITAsset_DDLA.Database.Models.ViewModels.Admin;
@@ -243,4 +244,46 @@ public class PermissionController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(RegisterViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            var user = new ddlaUser
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                UserName = model.UserName,
+                Email = model.Email,
+                Status = LocalUserStatus.Active
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                // istəsən default rol ver
+                await _userManager.AddToRoleAsync(user, "User");
+
+                return RedirectToAction("Index"); // İcazə İdarəetmə Panelinə qaytar
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+        }
+
+        return View(model);
+    }
+
 }
