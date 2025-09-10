@@ -351,6 +351,7 @@ public class TransferController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,SuperAdmin")] // və ya [Permission("Transfer.Sign")]
     public async Task<IActionResult> UploadSignedFile(int id, IFormFile signedFile)
     {
         if (signedFile == null || signedFile.Length == 0)
@@ -384,10 +385,9 @@ public class TransferController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UploadReturnFiles(int id, IFormFile signedFile, IFormFile returnedFile)
+    public async Task<IActionResult> UploadReturnFiles(int id, IFormFile returnedFile)
     {
-        if ((signedFile == null || signedFile.Length == 0) ||
-            (returnedFile == null || returnedFile.Length == 0))
+        if (returnedFile == null || returnedFile.Length == 0)
         {
             TempData["Error"] = "Hər iki faylı yükləmək lazımdır.";
             return RedirectToAction(nameof(Index));
@@ -399,15 +399,6 @@ public class TransferController : Controller
 
         if (transfer == null) return NotFound();
 
-        // Save signed file
-        var signedFileName = $"{Guid.NewGuid()}_{Path.GetFileName(signedFile.FileName)}";
-        var signedPath = Path.Combine("wwwroot/uploads/signed", signedFileName);
-        Directory.CreateDirectory(Path.GetDirectoryName(signedPath));
-        using (var stream = new FileStream(signedPath, FileMode.Create))
-        {
-            await signedFile.CopyToAsync(stream);
-        }
-
         // Save returned file
         var returnedFileName = $"{Guid.NewGuid()}_{Path.GetFileName(returnedFile.FileName)}";
         var returnedPath = Path.Combine("wwwroot/uploads/returned", returnedFileName);
@@ -417,7 +408,6 @@ public class TransferController : Controller
             await returnedFile.CopyToAsync(stream);
         }
 
-        transfer.StockProduct.SignedFilePath = $"/uploads/signed/{signedFileName}";
         transfer.StockProduct.ReturnedFilePath = $"/uploads/returned/{returnedFileName}";
         transfer.TransferStatus = TransferAction.Returned;
         transfer.DateOfReturn = DateTime.Now;
