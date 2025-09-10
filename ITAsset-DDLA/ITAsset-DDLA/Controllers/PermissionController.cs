@@ -43,7 +43,9 @@ public class PermissionController : Controller
         var users = await _userService.GetAllUsersWithPermissions();
 
         var viewModels = users
-            .Where(u => u.Status == LocalUserStatus.Active || u.Status == LocalUserStatus.Disable)
+            .Where(u => u.Status == LocalUserStatus.Active
+                     || u.Status == LocalUserStatus.Disable
+                     || u.Status == LocalUserStatus.Delete) // silinənlər də gəlsin
             .Select(u => new UserWithPermissionsViewModel
             {
                 Id = u.Id,
@@ -53,6 +55,7 @@ public class PermissionController : Controller
                 Status = u.Status,
                 Permissions = u.Permissions.ToList()
             }).ToList();
+
 
         return View(viewModels);
     }
@@ -113,13 +116,24 @@ public class PermissionController : Controller
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return NotFound();
 
+        // statusu disable et
         user.Status = LocalUserStatus.Disable;
-        user.UserPermissions.Clear(); // bütün icazələri sil
+
+        // həmin userə aid bütün icazələri sil
+        var userPermissions = _context.UserPermissions
+                                      .Where(up => up.UserId == userId);
+
+        _context.UserPermissions.RemoveRange(userPermissions);
+
+        // user obyektini də update edək
         await _userManager.UpdateAsync(user);
+
+        await _context.SaveChangesAsync();
 
         TempData["SuccessMessage"] = "İstifadəçi deaktiv edildi və bütün icazələri silindi.";
         return RedirectToAction("Index");
     }
+
 
     [ValidateAntiForgeryToken]
     [HttpPost]
@@ -144,11 +158,21 @@ public class PermissionController : Controller
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return NotFound();
 
-        // Burada hələlik sadəcə status dəyişək
+        // statusu Delete et
         user.Status = LocalUserStatus.Delete;
+
+        // həmin userə aid bütün icazələri sil
+        var userPermissions = _context.UserPermissions
+                                      .Where(up => up.UserId == userId);
+
+        _context.UserPermissions.RemoveRange(userPermissions);
+
+        // user obyektini update et
         await _userManager.UpdateAsync(user);
 
-        TempData["SuccessMessage"] = "İstifadəçi silinmiş statusa salındı.";
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "İstifadəçi silindi və bütün icazələri silindi.";
         return RedirectToAction("Index");
     }
 
@@ -284,6 +308,26 @@ public class PermissionController : Controller
         }
 
         return View(model);
+    }
+
+    [ValidateAntiForgeryToken]
+    [HttpPost]
+    public async Task<IActionResult> HardDeleteUser(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return NotFound();
+
+        // user ilə bağlı icazələri də sil
+        var userPermissions = _context.UserPermissions.Where(up => up.UserId == userId);
+        _context.UserPermissions.RemoveRange(userPermissions);
+
+        // useri tam sil
+        await _userManager.DeleteAsync(user);
+
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "İstifadəçi bazadan tam silindi.";
+        return RedirectToAction("Index");
     }
 
 }

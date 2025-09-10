@@ -37,67 +37,134 @@
             <tbody>
                 @foreach (var user in Model)
                 {
-                    var rowClass = user.Status == LocalUserStatus.Disable ? "text-muted" : "";
+                    string rowClass = user.Status switch
+                    {
+                        LocalUserStatus.Disable => "text-muted",
+                        LocalUserStatus.Delete => "deleted-user",
+                        _ => ""
+                    };
 
                     <tr class="@rowClass">
                         <td>
                             <div class="d-flex align-items-center">
                                 <img src="~/assets/images/Uploads/ProfilePictures/@(string.IsNullOrEmpty(user.ProfilePictureUrl) ? "default.jpg" : user.ProfilePictureUrl)"
                                      class="rounded-circle me-3 border"
-                                     style="width:45px; height:45px; object-fit:cover; opacity:@(user.Status == LocalUserStatus.Disable ? "0.5" : "1");">
+                                     style="width:45px; height:45px; object-fit:cover; opacity:@(user.Status == LocalUserStatus.Delete ? "0.3" : user.Status == LocalUserStatus.Disable ? "0.5" : "1");">
                                 <div>
                                     <strong>@user.FullName</strong>
                                     <div class="small">@user.Username</div>
+
                                     @if (user.Status == LocalUserStatus.Disable)
                                     {
                                         <span class="badge bg-secondary">Disabled</span>
                                     }
+                                    else if (user.Status == LocalUserStatus.Delete)
+                                    {
+                                        <span class="badge bg-danger">Deleted</span>
+                                    }
                                 </div>
                             </div>
                         </td>
+
+                        <!-- Əməliyyat icazələri -->
                         <td class="text-center">
-                            <div class="d-flex flex-wrap justify-content-center gap-1">
-                                @foreach (var perm in new[] { PermissionType.OperationAdd, PermissionType.OperationEdit, PermissionType.OperationDelete, PermissionType.OperationView })
-                                {
-                                    <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
-                                        @perm.ToString().Replace("Operation", "")
-                                    </span>
-                                }
-                            </div>
+                            @if (user.Status == LocalUserStatus.Delete)
+                            {
+                                <span class="text-muted">İcazələr silinib</span>
+                            }
+                            else
+                            {
+                                <div class="d-flex flex-wrap justify-content-center gap-1">
+                                    @foreach (var perm in new[] { PermissionType.OperationAdd, PermissionType.OperationEdit, PermissionType.OperationDelete, PermissionType.OperationView })
+                                    {
+                                        <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
+                                            @perm.ToString().Replace("Operation", "")
+                                        </span>
+                                    }
+                                </div>
+                            }
                         </td>
+
+                        <!-- Anbar icazələri -->
                         <td class="text-center">
-                            <div class="d-flex flex-wrap justify-content-center gap-1">
-                                @foreach (var perm in new[] { PermissionType.InventoryAdd, PermissionType.InventoryEdit, PermissionType.InventoryDelete, PermissionType.InventoryView })
-                                {
-                                    <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
-                                        @perm.ToString().Replace("Inventory", "")
-                                    </span>
-                                }
-                            </div>
+                            @if (user.Status == LocalUserStatus.Delete)
+                            {
+                                <span class="text-muted">İcazələr silinib</span>
+                            }
+                            else
+                            {
+                                <div class="d-flex flex-wrap justify-content-center gap-1">
+                                    @foreach (var perm in new[] { PermissionType.InventoryAdd, PermissionType.InventoryEdit, PermissionType.InventoryDelete, PermissionType.InventoryView })
+                                    {
+                                        <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
+                                            @perm.ToString().Replace("Inventory", "")
+                                        </span>
+                                    }
+                                </div>
+                            }
                         </td>
+
+                        <!-- Avadanlıq icazələri -->
                         <td class="text-center">
-                            <div class="d-flex flex-wrap justify-content-center gap-1">
-                                @foreach (var perm in new[] { PermissionType.EquipmentEdit, PermissionType.EquipmentView })
-                                {
-                                    <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
-                                        @perm.ToString().Replace("Equipment", "")
-                                    </span>
-                                }
-                            </div>
+                            @if (user.Status == LocalUserStatus.Delete)
+                            {
+                                <span class="text-muted">İcazələr silinib</span>
+                            }
+                            else
+                            {
+                                <div class="d-flex flex-wrap justify-content-center gap-1">
+                                    @foreach (var perm in new[] { PermissionType.EquipmentEdit, PermissionType.EquipmentView })
+                                    {
+                                        <span class="badge @(user.HasPermission(perm) ? "bg-success" : "bg-secondary")">
+                                            @perm.ToString().Replace("Equipment", "")
+                                        </span>
+                                    }
+                                </div>
+                            }
                         </td>
+
+                        <!-- Əməliyyatlar -->
                         <td class="text-end">
-                            <a asp-action="Edit" asp-route-userId="@user.Id" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-edit"></i> Redaktə
-                            </a>
+                            @if (user.Status == LocalUserStatus.Delete)
+                            {
+                                <form asp-action="ActivateUser" asp-route-userId="@user.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-success me-2"
+                                            onclick="return confirm('Bu istifadəçini aktiv etmək istədiyinizə əminsiniz?');">
+                                        <i class="fas fa-check"></i> Aktiv et
+                                    </button>
+                                </form>
+
+                                <form asp-action="HardDeleteUser" asp-route-userId="@user.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Bu istifadəçini bazadan birdəfəlik silmək istədiyinizə əminsiniz?');">
+                                        <i class="fas fa-trash"></i> Tam Sil
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a asp-action="Edit" asp-route-userId="@user.Id" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i> Redaktə
+                                </a>
+                            }
                         </td>
                     </tr>
                 }
+
             </tbody>
         </table>
     </div>
 </div>
 
 <style>
+    .deleted-user {
+        background-color: #f8f9fa; /* açıq boz fon */
+        color: #6c757d; /* boz text */
+        font-style: italic;
+    }
+
     .badge {
         font-size: 0.75rem;
         padding: 0.4em 0.6em;
