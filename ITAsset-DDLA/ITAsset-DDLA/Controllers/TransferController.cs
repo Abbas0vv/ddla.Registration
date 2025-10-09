@@ -349,6 +349,7 @@ public class TransferController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin,SuperAdmin")] // və ya [Permission("Transfer.Sign")]

@@ -1,0 +1,78 @@
+﻿@using ITAsset_DDLA.Database.Models.DomainModels
+@model StockProduct
+@{
+    ViewData["Title"] = "Faylların əlavə edilməsi";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-3">Faylların əlavə edilməsi</h3>
+    <hr />
+
+    <div class="card p-4 shadow-sm">
+        <div class="mb-3">
+            <strong>Məhsul:</strong> @Model.Name <br />
+            <strong>İnventar ID:</strong> @Model.InventoryCode
+        </div>
+
+        <form asp-action="AddFiles" asp-controller="Warehouse" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <!-- İmzalanmış fayl -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">İmzalanmış fayl (.pdf)</label>
+                @if (!string.IsNullOrEmpty(Model.SignedFilePath))
+                {
+                    <div class="alert alert-success py-2">
+                        <i class="fas fa-check-circle"></i> Fayl əlavə olunub:
+                        <a href="@Url.Content(Model.SignedFilePath)" target="_blank">Bax</a>
+                    </div>
+                }
+                else
+                {
+                    <input type="file" name="SignedFile" id="SignedFile" class="form-control" accept=".pdf" required />
+                }
+            </div>
+
+            <!-- Qaytarılmış fayl -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">Qaytarılmış fayl (.pdf)</label>
+                @if (!string.IsNullOrEmpty(Model.ReturnedFilePath))
+                {
+                    <div class="alert alert-success py-2">
+                        <i class="fas fa-check-circle"></i> Fayl əlavə olunub:
+                        <a href="@Url.Content(Model.ReturnedFilePath)" target="_blank">Bax</a>
+                    </div>
+                }
+                else
+                {
+                    <input type="file" name="ReturnedFile" id="ReturnedFile" class="form-control" accept=".pdf"
+                           @(string.IsNullOrEmpty(Model.SignedFilePath) ? "disabled" : "") />
+                    @if (string.IsNullOrEmpty(Model.SignedFilePath))
+                    {
+                        <small class="text-muted">
+                            Qaytarılmış faylı yükləmək üçün əvvəlcə imzalanmış faylı əlavə edin.
+                        </small>
+                    }
+                }
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> Yüklə
+                </button>
+                <a asp-action="Index" asp-controller="Transfer" class="btn btn-secondary ms-2">Geri qayıt</a>
+            </div>
+        </form>
+    </div>
+</div>
+    
+@section Scripts {
+    <script>
+        document.getElementById('SignedFile')?.addEventListener('change', function () {
+            const returnedFile = document.getElementById('ReturnedFile');
+            if (this.files.length > 0 && returnedFile) {
+                returnedFile.removeAttribute('disabled');
+            }
+        });
+    </script>
+}
