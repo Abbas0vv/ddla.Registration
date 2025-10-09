@@ -1,0 +1,25 @@
+﻿@model Transfer
+
+<div class="container mt-4">
+    <h3>Qaytarılmış fayl əlavə et</h3>
+    <hr />
+
+    <p>
+        <strong>Əşyа:</strong> @Model.StockProduct?.Name <br />
+        <strong>İmzalanmış akt:</strong>
+        <a href="@Url.Content(Model.SignedFilePath)" target="_blank">Faylı aç</a>
+    </p>
+
+    <form asp-action="ReturnFileUpload" asp-controller="Transfer" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="Id" value="@Model.Id" />
+
+        <div class="mb-3">
+            <label for="ReturnedFile" class="form-label">Qaytarılmış fayl (.pdf)</label>
+            <input type="file" class="form-control" id="ReturnedFile" name="ReturnedFile" accept=".pdf" required />
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-upload"></i> Faylı yüklə
+        </button>
+    </form>
+</div>

@@ -8,123 +8,127 @@
     ViewData["Title"] = "Yeni məhsul qeydiyyatı";
 }
 
-    <div class="container">
-        <div class="logo-header">
-            <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
-            <div class="logo-text">
-                <h1>Yeni məhsul qeydiyyatı</h1>
-                <small>Dövlət Dəniz və Liman Agentliyi</small>
-            </div>
-        </div>
-
-        <div class="registration-card">
-
-            <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
-                <div class="row">
-                    <div class="col-md-6">
-                        <!-- Recipient Section -->
-                        <div class="mb-4">
-                            <h5 class="mb-3">Məhsulu təhvil alan</h5>
-                        <select asp-for="CreateTransferProductViewModel.Recipient" id="recipientSelect" class="form-select" onchange="updateShobe()">
-                                <option value="" disabled selected>Seçim edin</option>
-                                @foreach (var user in Model.LdapUsers)
-                                {
-                                    <option value="@user.FullName" data-shobe="@user.Shobe">
-                                        @user.FullName
-                                    </option>
-                                }
-                            </select>
-
-                            <span asp-validation-for="CreateTransferProductViewModel.Recipient" class="error-message" style="color: red;"></span>
-                        </div>
-                        <!-- Product Selection -->
-                        <div class="mb-4">
-                            <h5 class="mb-3">Məhsul</h5>
-
-                            <!-- Product Type Selection -->
-                            <div class="mb-3">
-                                <label class="form-label">Məhsul adı:</label>
-                                <select id="productType" class="form-select" onchange="filterProductsByType()">
-                                    <option value="">-- Bütün növlər --</option>
-                                    @foreach (var type in Model.StockProducts.Select(p => p.Name).Distinct())
-                                        {
-                                        <option value="@type">@type</option>
-                                        }
-                                </select>
-                            </div>
-                            <!-- Product Selection (Checkboxes) -->
-                            <div class="mb-3">
-                                <label class="form-label">Məhsullar (Çoxlu seçim):</label>
-                                <div id="productCheckboxes" style="max-height: 100px; overflow-y: auto;">
-                                    @foreach (var product in Model.StockProducts.Where(p => p.IsActive))
-                                    {
-                                        <div class="form-check product-item" data-type="@product.Name">
-                                            <input class="form-check-input product-checkbox"
-                                                   type="checkbox"
-                                                   name="CreateTransferProductViewModel.StockProductIds"
-                                                   value="@product.Id"
-                                                   id="product_@product.Id"
-                                                   onchange="updateSelectedProducts()" />
-                                            <label class="form-check-label" for="product_@product.Id">
-                                                @product.Name (İnventar: @product.InventoryCode)
-                                            </label>
-                                        </div>
-                                    }
-                                </div>
-                                <span asp-validation-for="CreateTransferProductViewModel.StockProductIds" class="error-message"></span>
-                            </div>
-
-                            <!-- Selected Products Display -->
-                            <div id="selectedProductsContainer" class="mt-3">
-                                <h6>Seçilmiş Məhsullar:</h6>
-                                <div id="selectedProductsList" class="list-group">
-                                    <div class="text-muted">Heç bir məhsul seçilməyib</div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                    </div>
-
-                    <div class="col-md-6">
-                        <!-- Department -->
-                        <div class="mb-4">
-                            <h5 class="mb-3">Departamentə</h5>
-                            <select asp-for="CreateTransferProductViewModel.DepartmentSection" id="unitSelect" class="form-control" readonly>
-                                <option value="">-- Seçilmiş istifadəçinin şöbəsi --</option>
-                            </select>
-                        </div>
-
-                        <!-- Date -->
-                        <div class="mb-4" style="margin-top: 3.3rem !important;">
-                            <h5 class="mb-3">Alınma tarixi</h5>
-                            <input asp-for="CreateTransferProductViewModel.DateofReceipt" class="form-control" type="date" />
-                        </div>
-                    </div>
-                </div>
-                <!-- Buttons -->
-                <div class="d-flex justify-content-end mt-4">
-                    <a asp-action="Index" class="btn btn-secondary me-2">
-                        <i class="fas fa-times me-1"></i> Bağla
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i> Yadda saxla
-                    </button>
-                </div>
-            </form>
+<div class="container">
+    <div class="logo-header">
+        <img src="~/assets/images/ddlaLogo.png" alt="DDLA Logo" class="img-fluid">
+        <div class="logo-text">
+            <h1>Yeni məhsul qeydiyyatı</h1>
+            <small>Dövlət Dəniz və Liman Agentliyi</small>
         </div>
     </div>
+
+    <div class="registration-card">
+
+        <form method="post" asp-action="Create" enctype="multipart/form-data" id="addForm">
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Recipient Section -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Məhsulu təhvil alan</h5>
+                        <input type="text" id="recipientSearch" class="form-control mb-2" placeholder="İstifadəçi axtar..." />
+                        <select asp-for="CreateTransferProductViewModel.Recipient"
+                                id="recipientSelect" class="form-select" onchange="updateShobe()">
+                            <option value="" disabled selected>Seçim edin</option>
+                            @foreach (var user in Model.LdapUsers)
+                            {
+                                <option value="@user.FullName" data-shobe="@user.Shobe">
+                                    @user.FullName
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="CreateTransferProductViewModel.Recipient" class="error-message" style="color: red;"></span>
+                    </div>
+
+                    <!-- Product Selection -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Məhsul</h5>
+
+                        <!-- Product Type Selection -->
+                        <div class="mb-3">
+                            <label class="form-label">Məhsul adı:</label>
+                            <input type="text" id="productTypeSearch" class="form-control mb-2" placeholder="Məhsul axtar..." />
+                            <select id="productType" class="form-select" onchange="filterProductsByType()">
+                                <option value="">-- Bütün növlər --</option>
+                                @foreach (var type in Model.StockProducts.Select(p => p.Name).Distinct())
+                                {
+                                    <option value="@type">@type</option>
+                                }
+                            </select>
+                        </div>
+                        <!-- Product Selection (Checkboxes) -->
+                        <div class="mb-3">
+                            <label class="form-label">Məhsullar (Çoxlu seçim):</label>
+                            <input type="text" id="productSearch" class="form-control mb-2" placeholder="Məhsul axtar..." />
+                            <div id="productCheckboxes" style="max-height: 100px; overflow-y: auto;">
+                                @foreach (var product in Model.StockProducts.Where(p => p.IsActive))
+                                {
+                                    <div class="form-check product-item" data-type="@product.Name">
+                                        <input class="form-check-input product-checkbox"
+                                               type="checkbox"
+                                               name="CreateTransferProductViewModel.StockProductIds"
+                                               value="@product.Id"
+                                               id="product_@product.Id"
+                                               onchange="updateSelectedProducts()" />
+                                        <label class="form-check-label" for="product_@product.Id">
+                                            @product.Name (İnventar: @product.InventoryCode)
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                            <span asp-validation-for="CreateTransferProductViewModel.StockProductIds" class="error-message"></span>
+                        </div>
+
+                        <!-- Selected Products Display -->
+                        <div id="selectedProductsContainer" class="mt-3">
+                            <h6>Seçilmiş Məhsullar:</h6>
+                            <div id="selectedProductsList" class="list-group">
+                                <div class="text-muted">Heç bir məhsul seçilməyib</div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Department -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Departamentə</h5>
+                        <select asp-for="CreateTransferProductViewModel.DepartmentSection" id="unitSelect" class="form-control" readonly>
+                            <option value="">-- Seçilmiş istifadəçinin şöbəsi --</option>
+                        </select>
+                    </div>
+
+                    <!-- Date -->
+                    <div class="mb-4" style="margin-top: 3.3rem !important;">
+                        <h5 class="mb-3">Alınma tarixi</h5>
+                        <input asp-for="CreateTransferProductViewModel.DateofReceipt" class="form-control" type="date" />
+                    </div>
+                </div>
+            </div>
+            <!-- Buttons -->
+            <div class="d-flex justify-content-end mt-4">
+                <a asp-action="Index" class="btn btn-secondary me-2">
+                    <i class="fas fa-times me-1"></i> Bağla
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i> Yadda saxla
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 <script>
     // Track all products data
      const allProducts = [
          @foreach (var product in Model.StockProducts)
          {
-           <text>{
-               id: "@product.Id",
-               name: "@product.Name",
-               inventoryCode: "@product.InventoryCode",
-               type: "@product.Name"
-           },</text>
+                   <text>{
+                       id: "@product.Id",
+                       name: "@product.Name",
+                       inventoryCode: "@product.InventoryCode",
+                       type: "@product.Name"
+                   },</text>
          }
      ];
 
@@ -294,4 +298,41 @@
             unitSelect.appendChild(opt);
         }
     }
+        document.getElementById("recipientSearch").addEventListener("keyup", function () {
+        const searchValue = this.value.toLowerCase();
+        const options = document.querySelectorAll("#recipientSelect option");
+
+        options.forEach(opt => {
+            if (opt.value.toLowerCase().includes(searchValue) || opt.text.toLowerCase().includes(searchValue)) {
+                opt.style.display = "";
+            } else {
+                opt.style.display = "none";
+            }
+        });
+    });
+        document.getElementById("productTypeSearch").addEventListener("keyup", function () {
+        const searchValue = this.value.toLowerCase();
+        const options = document.querySelectorAll("#productType option");
+
+        options.forEach(opt => {
+            if (opt.value.toLowerCase().includes(searchValue) || opt.text.toLowerCase().includes(searchValue)) {
+                opt.style.display = "";
+            } else {
+                opt.style.display = "none";
+            }
+        });
+    });
+        document.getElementById("productSearch").addEventListener("keyup", function () {
+        const searchValue = this.value.toLowerCase();
+        const items = document.querySelectorAll("#productCheckboxes .product-item");
+
+        items.forEach(item => {
+            const label = item.querySelector("label").textContent.toLowerCase();
+            if (label.includes(searchValue)) {
+                item.style.display = "";
+            } else {
+                item.style.display = "none";
+            }
+        });
+    });
 </script>

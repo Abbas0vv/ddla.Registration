@@ -18,7 +18,7 @@ public class Transfer
     public string? ImageUrl { get; set; }
     public string? FilePath => StockProduct?.FilePath;
     public string? SignedFilePath => StockProduct?.SignedFilePath;
-    public string? ReturnedFilePath => StockProduct?.ReturnedFilePath;
+    public string? ReturnedFilePath => StockProduct?.ReturnedFilePath;  
     public string DepartmentSection { get; set; }
     public DateTime DateofIssue { get; set; } = DateTime.Now;
     public DateTime? DateofReceipt { get; set; }
