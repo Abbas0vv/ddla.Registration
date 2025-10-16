@@ -136,62 +136,70 @@ public class WarehouseController : Controller
         await _stockService.RemoveAsync(id);
         return RedirectToAction(nameof(Index));
     }
-
     [HttpGet]
     public IActionResult AddFiles(int id)
     {
-        var product = _context.StockProducts.FirstOrDefault(x => x.Id == id);
-        if (product == null) return NotFound();
+        var product = _context.StockProducts.FirstOrDefault(p => p.Id == id);
+        if (product == null)
+            return NotFound();
 
-        return View(product);
-    }
-
-    [HttpPost]
-    public IActionResult AddFiles(CreateProductFilesViewModel model, int id)
-    {
-        if (!ModelState.IsValid)
-            return RedirectToAction("Index");
-        var product = _context.StockProducts.FirstOrDefault(x => x.Id == id);
         var transfer = _context.Transfers.FirstOrDefault(t => t.StockProductId == product.Id);
+        if (transfer == null)
+            return NotFound();
+
+        var model = new Transfer_Product
+        {
+            StockProduct = product,
+            Transfer = transfer
+        };
+
+        return View(model);
+    }
+    [HttpPost]
+    public IActionResult AddFiles(int id, IFormFile SignedFile, IFormFile ReturnedFile)
+    {
+        var product = _context.StockProducts.FirstOrDefault(x => x.Id == id);
         if (product == null) return NotFound();
+
+        var transfer = _context.Transfers.FirstOrDefault(t => t.StockProductId == product.Id);
+        if (transfer == null) return NotFound();
 
         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
 
-        if (model.SignedFile != null && model.SignedFile.Length > 0)
+        // İmzalanmış fayl
+        if (SignedFile != null && SignedFile.Length > 0)
         {
             var signedFolder = Path.Combine(uploadsFolder, "signed");
             Directory.CreateDirectory(signedFolder);
 
-            var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(model.SignedFile.FileName)}";
+            var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(SignedFile.FileName)}";
             var filePath = Path.Combine(signedFolder, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
-                model.SignedFile.CopyTo(stream);
+                SignedFile.CopyTo(stream);
 
-            product.SignedFilePath = $"/uploads/signed/{fileName}";
-
+            transfer.SignedFilePath = $"/uploads/signed/{fileName}";
             transfer.IsSigned = true;
         }
 
-        if (model.ReturnedFile != null && model.ReturnedFile.Length > 0 && !string.IsNullOrEmpty(product.SignedFilePath))
+        // Qaytarılmış fayl
+        if (ReturnedFile != null && ReturnedFile.Length > 0 && !string.IsNullOrEmpty(transfer.SignedFilePath))
         {
             var returnedFolder = Path.Combine(uploadsFolder, "returned");
             Directory.CreateDirectory(returnedFolder);
 
-            var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(model.ReturnedFile.FileName)}";
+            var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(ReturnedFile.FileName)}";
             var filePath = Path.Combine(returnedFolder, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
-                model.ReturnedFile.CopyTo(stream);
+                ReturnedFile.CopyTo(stream);
 
-            product.ReturnedFilePath = $"/uploads/returned/{fileName}";
+            transfer.ReturnedFilePath = $"/uploads/returned/{fileName}";
             transfer.TransferStatus = TransferAction.Returned;
         }
 
-
-
         _context.SaveChanges();
-        return RedirectToAction("Index");
+        return RedirectToAction("Index", "Transfer");
     }
 
 

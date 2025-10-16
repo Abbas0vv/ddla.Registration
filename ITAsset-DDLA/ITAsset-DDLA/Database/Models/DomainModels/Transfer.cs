@@ -17,8 +17,8 @@ public class Transfer
     public bool IsSigned { get; set; } = false;
     public string? ImageUrl { get; set; }
     public string? FilePath => StockProduct?.FilePath;
-    public string? SignedFilePath => StockProduct?.SignedFilePath;
-    public string? ReturnedFilePath => StockProduct?.ReturnedFilePath;  
+    public string? SignedFilePath { get; set; }
+    public string? ReturnedFilePath { get; set; }
     public string DepartmentSection { get; set; }
     public DateTime DateofIssue { get; set; } = DateTime.Now;
     public DateTime? DateofReceipt { get; set; }

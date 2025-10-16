@@ -12,8 +12,6 @@ public class StockProduct
     public bool IsActive { get; set; } = true;
     public string ImageUrl { get; set; }
     public string? FilePath { get; set; }
-    public string? SignedFilePath { get; set; }
-    public string? ReturnedFilePath { get; set; }
     public string InventoryCode { get; set; }
     public DateTime RegistrationDate { get; set; } = DateTime.Now;
     public List<Transfer> Transfers { get; set; } = new List<Transfer>();

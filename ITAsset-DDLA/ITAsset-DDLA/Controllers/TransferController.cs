@@ -376,7 +376,7 @@ public class TransferController : Controller
             await signedFile.CopyToAsync(stream);
         }
 
-        transfer.StockProduct.SignedFilePath = $"/uploads/signed/{fileName}";
+        transfer.SignedFilePath = $"/uploads/signed/{fileName}";
         transfer.IsSigned = true;
         await _context.SaveChangesAsync();
 
@@ -409,7 +409,7 @@ public class TransferController : Controller
             await returnedFile.CopyToAsync(stream);
         }
 
-        transfer.StockProduct.ReturnedFilePath = $"/uploads/returned/{returnedFileName}";
+        transfer.ReturnedFilePath = $"/uploads/returned/{returnedFileName}";
         transfer.TransferStatus = TransferAction.Returned;
         transfer.DateOfReturn = DateTime.Now;
         transfer.ReturnedBy = User.Identity?.Name;

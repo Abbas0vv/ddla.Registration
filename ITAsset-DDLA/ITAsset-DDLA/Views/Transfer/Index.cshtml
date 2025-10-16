@@ -142,7 +142,7 @@
                                 @if (!item.IsSigned)
                                 {
                                     <a asp-action="AddFiles" asp-controller="Warehouse" asp-route-id="@item.StockProductId"
-                                       class="btn btn-sm btn-outline-danger " tabindex="-1" aria-disabled="true">
+                                       class="btn btn-sm btn-outline-danger mt-1" tabindex="-1" aria-disabled="true">
                                         İmzalanmayıb
                                     </a>
                                 }
@@ -151,13 +151,16 @@
                                     if (item.TransferStatus != TransferAction.Returned)
                                     {
                                         <a asp-action="AddFiles" asp-controller="Warehouse" asp-route-id="@item.StockProductId"
-                                           class="btn btn-outline-info btn-sm">
+                                           class="btn btn-outline-info btn-sm mt-1">
                                             <i class="fas fa-undo"></i> Qaytar
                                         </a>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-success">Qaytarılıb</span>
+                                        <a asp-action="AddFiles" asp-controller="Warehouse" asp-route-id="@item.StockProductId"
+                                           class="badge bg-success">
+                                            <i class="fas fa-undo"></i> Qaytarılıb
+                                        </a>
                                     }
                                 }
 

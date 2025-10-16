@@ -1,5 +1,5 @@
-﻿@using ITAsset_DDLA.Database.Models.DomainModels
-@model StockProduct
+﻿@using ITAsset_DDLA.Database.Models.ViewModels.Shared
+@model Transfer_Product
 @{
     ViewData["Title"] = "Faylların əlavə edilməsi";
 }
@@ -10,21 +10,21 @@
 
     <div class="card p-4 shadow-sm">
         <div class="mb-3">
-            <strong>Məhsul:</strong> @Model.Name <br />
-            <strong>İnventar ID:</strong> @Model.InventoryCode
+            <strong>Məhsul:</strong> @Model.StockProduct.Name <br />
+            <strong>İnventar ID:</strong> @Model.StockProduct.InventoryCode
         </div>
 
         <form asp-action="AddFiles" asp-controller="Warehouse" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="Id" value="@Model.StockProduct.Id" />
 
             <!-- İmzalanmış fayl -->
             <div class="mb-4">
                 <label class="form-label fw-bold">İmzalanmış fayl (.pdf)</label>
-                @if (!string.IsNullOrEmpty(Model.SignedFilePath))
+                @if (!string.IsNullOrEmpty(Model.Transfer.SignedFilePath))
                 {
                     <div class="alert alert-success py-2">
                         <i class="fas fa-check-circle"></i> Fayl əlavə olunub:
-                        <a href="@Url.Content(Model.SignedFilePath)" target="_blank">Bax</a>
+                        <a href="@Url.Content(Model.Transfer.SignedFilePath)" target="_blank">Bax</a>
                     </div>
                 }
                 else
@@ -36,18 +36,18 @@
             <!-- Qaytarılmış fayl -->
             <div class="mb-4">
                 <label class="form-label fw-bold">Qaytarılmış fayl (.pdf)</label>
-                @if (!string.IsNullOrEmpty(Model.ReturnedFilePath))
+                @if (!string.IsNullOrEmpty(Model.Transfer.ReturnedFilePath))
                 {
                     <div class="alert alert-success py-2">
                         <i class="fas fa-check-circle"></i> Fayl əlavə olunub:
-                        <a href="@Url.Content(Model.ReturnedFilePath)" target="_blank">Bax</a>
+                        <a href="@Url.Content(Model.Transfer.ReturnedFilePath)" target="_blank">Bax</a>
                     </div>
                 }
                 else
                 {
                     <input type="file" name="ReturnedFile" id="ReturnedFile" class="form-control" accept=".pdf"
-                           @(string.IsNullOrEmpty(Model.SignedFilePath) ? "disabled" : "") />
-                    @if (string.IsNullOrEmpty(Model.SignedFilePath))
+                           @(string.IsNullOrEmpty(Model.Transfer.SignedFilePath) ? "disabled" : "") />
+                    @if (string.IsNullOrEmpty(Model.Transfer.SignedFilePath))
                     {
                         <small class="text-muted">
                             Qaytarılmış faylı yükləmək üçün əvvəlcə imzalanmış faylı əlavə edin.
